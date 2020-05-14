@@ -10,7 +10,7 @@ namespace TSKT.Mahjongs
         public PaymentRule payment = new PaymentRule(30000, 20, 10, -10, -20);
         public EndRule end = new EndRule();
 
-        public int initialPoint = 25000;
+        public int initialScore = 25000;
         public RedTile redTile = RedTile.赤ドラ3;
     }
 }

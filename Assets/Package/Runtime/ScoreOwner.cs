@@ -12,7 +12,7 @@ namespace TSKT.Mahjongs
         public ScoreOwner(Game game)
         {
             this.game = game;
-            score = game.rule.initialPoint;
+            score = game.rule.initialScore;
         }
     }
 }
