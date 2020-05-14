@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace TSKT.Mahjongs.Hands
 {
@@ -123,7 +122,7 @@ namespace TSKT.Mahjongs.Hands
 
         static public (int 向聴数, List<Structure>) Build(Hand hand)
         {
-            var result = (向聴数: int.MaxValue, nodes: new List<Structure>());
+            var result = (向聴数: int.MaxValue, structures: new List<Structure>());
             var queue = new Queue<Structure>();
             queue.Enqueue(new Structure(hand));
 
@@ -137,13 +136,13 @@ namespace TSKT.Mahjongs.Hands
                     if (result.向聴数 > score)
                     {
                         result.向聴数 = score;
-                        result.nodes.Clear();
-                        result.nodes.Add(task);
+                        result.structures.Clear();
+                        result.structures.Add(task);
                     }
                     else if (result.向聴数 == score)
                     {
                         result.向聴数 = score;
-                        result.nodes.Add(task);
+                        result.structures.Add(task);
                     }
                     continue;
                 }
@@ -152,13 +151,13 @@ namespace TSKT.Mahjongs.Hands
                 // 刻子
                 if (task.unsolvedTiles.Count(_ => _ == tile) >= 3)
                 {
-                    var node = new Structure(task);
+                    var structure = new Structure(task);
                     for (int i = 0; i < 3; ++i)
                     {
-                        node.unsolvedTiles.Remove(tile);
+                        structure.unsolvedTiles.Remove(tile);
                     }
-                    node.sets.Add(new Set(tile, tile, tile));
-                    queue.Enqueue(node);
+                    structure.sets.Add(new Set(tile, tile, tile));
+                    queue.Enqueue(structure);
                 }
                 if (tile.IsSuited()
                     && tile.Number() <= 8)
@@ -172,31 +171,31 @@ namespace TSKT.Mahjongs.Hands
                         if (task.unsolvedTiles.Contains(plusOne)
                             && task.unsolvedTiles.Contains(plusTwo))
                         {
-                            var node = new Structure(task);
-                            node.unsolvedTiles.Remove(tile);
-                            node.unsolvedTiles.Remove(plusOne);
-                            node.unsolvedTiles.Remove(plusTwo);
-                            node.sets.Add(new Set(tile, plusOne, plusTwo));
-                            queue.Enqueue(node);
+                            var structure = new Structure(task);
+                            structure.unsolvedTiles.Remove(tile);
+                            structure.unsolvedTiles.Remove(plusOne);
+                            structure.unsolvedTiles.Remove(plusTwo);
+                            structure.sets.Add(new Set(tile, plusOne, plusTwo));
+                            queue.Enqueue(structure);
                         }
                         // 塔子
                         if (task.unsolvedTiles.Contains(plusTwo))
                         {
-                            var node = new Structure(task);
-                            node.unsolvedTiles.Remove(tile);
-                            node.unsolvedTiles.Remove(plusTwo);
-                            node.塔子.Add((tile, plusTwo));
-                            queue.Enqueue(node);
+                            var structure = new Structure(task);
+                            structure.unsolvedTiles.Remove(tile);
+                            structure.unsolvedTiles.Remove(plusTwo);
+                            structure.塔子.Add((tile, plusTwo));
+                            queue.Enqueue(structure);
                         }
                     }
                     // 塔子
                     if (task.unsolvedTiles.Contains(plusOne))
                     {
-                        var node = new Structure(task);
-                        node.unsolvedTiles.Remove(tile);
-                        node.unsolvedTiles.Remove(plusOne);
-                        node.塔子.Add((tile, plusOne));
-                        queue.Enqueue(node);
+                        var structure = new Structure(task);
+                        structure.unsolvedTiles.Remove(tile);
+                        structure.unsolvedTiles.Remove(plusOne);
+                        structure.塔子.Add((tile, plusOne));
+                        queue.Enqueue(structure);
                     }
                 }
                 // 頭
@@ -205,22 +204,22 @@ namespace TSKT.Mahjongs.Hands
                     // 同じ対子が二組あるのは許可しない。
                     if (!task.pairs.Contains(tile))
                     {
-                        var node = new Structure(task);
+                        var structure = new Structure(task);
                         for (int i = 0; i < 2; ++i)
                         {
-                            node.unsolvedTiles.Remove(tile);
+                            structure.unsolvedTiles.Remove(tile);
                         }
-                        node.pairs.Add(tile);
-                        queue.Enqueue(node);
+                        structure.pairs.Add(tile);
+                        queue.Enqueue(structure);
                     }
                 }
                 // 浮き牌
                 // ただし浮き牌内で塔子、対子ができないようにする
                 {
-                    bool canAddPrimeTile = true;
+                    bool canAddIsolatedTile = true;
                     if (task.isolatedTiles.Contains(tile))
                     {
-                        canAddPrimeTile = false;
+                        canAddIsolatedTile = false;
                     }
                     if (tile.IsSuited())
                     {
@@ -229,7 +228,7 @@ namespace TSKT.Mahjongs.Hands
                             var minusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() - 1);
                             if (task.isolatedTiles.Contains(minusOne))
                             {
-                                canAddPrimeTile = false;
+                                canAddIsolatedTile = false;
                             }
                         }
                         if (tile.Number() > 2)
@@ -237,16 +236,16 @@ namespace TSKT.Mahjongs.Hands
                             var minusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() - 2);
                             if (task.isolatedTiles.Contains(minusTwo))
                             {
-                                canAddPrimeTile = false;
+                                canAddIsolatedTile = false;
                             }
                         }
                     }
-                    if (canAddPrimeTile)
+                    if (canAddIsolatedTile)
                     {
-                        var node = new Structure(task);
-                        node.unsolvedTiles.Remove(tile);
-                        node.isolatedTiles.Add(tile);
-                        queue.Enqueue(node);
+                        var structure = new Structure(task);
+                        structure.unsolvedTiles.Remove(tile);
+                        structure.isolatedTiles.Add(tile);
+                        queue.Enqueue(structure);
                     }
                 }
             }
