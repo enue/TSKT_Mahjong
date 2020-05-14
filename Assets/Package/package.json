@@ -1,0 +1,13 @@
+{
+    "name": "com.github.enue.tskt_mahjong",
+    "displayName": "TSKT Mahjong",
+    "version": "0.0.0",
+    "unity": "2019.3",
+    "description": "",
+    "keywords": [],
+    "category": "",
+    "dependencies": {
+        "com.github.enue.tskt_container": "0.5.2",
+        "com.github.enue.tskt_math": "0.8.2"
+    }
+}
