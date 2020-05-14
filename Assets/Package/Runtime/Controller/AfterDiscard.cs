@@ -72,7 +72,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public RoundResult AdvanceTurn(out AfterDraw afterDraw,
+        public AfterDraw AdvanceTurn(out RoundResult roundResult,
             out Dictionary<Player, ExhausiveDrawType> finishRoundStates)
         {
             if (CanAdvanceTurn)
@@ -93,13 +93,13 @@ namespace TSKT.Mahjongs
                 }
 
                 var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
-                afterDraw = Round.players[playerIndex].Draw();
+                roundResult = null;
                 finishRoundStates = null;
-                return null;
+                return Round.players[playerIndex].Draw();
             }
 
-            afterDraw = null;
-            return FinishRound(out finishRoundStates);
+            roundResult = FinishRound(out finishRoundStates);
+            return null;
         }
 
         // TODO : 九種九牌

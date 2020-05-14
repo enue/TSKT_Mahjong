@@ -61,7 +61,7 @@ else
 {
     // 鳴かないなら下家へ手番を移す
     // このとき流局判定も行われる
-    var roundResult = afterDiscard.AdvanceTurn(out var afterDraw, out var finishRoundStates);
+    var afterDraw = afterDiscard.AdvanceTurn(out var roundResult, out var finishRoundStates);
 }
 ```
 
