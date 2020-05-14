@@ -252,6 +252,14 @@ namespace TSKT.Mahjongs
             return rons.ContainsKey(player);
         }
 
+        public GameResult Ron(
+            out Dictionary<Player, CompletedResult> result,
+            out Dictionary<Player, int> scoreDiffs,
+            params Player[] players)
+        {
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result, out scoreDiffs);
+        }
+
         public bool CanOpenQuad(Player player)
         {
             if (player == DiscardPlayer)

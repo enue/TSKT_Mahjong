@@ -139,9 +139,25 @@ namespace TSKT.Mahjongs
             return !tsumo.役無し;
         }
 
+        public GameResult Tsumo(
+            out Dictionary<Player, CompletedResult> result,
+            out Dictionary<Player, int> scoreDiffs)
+        {
+            return CompletedHand.Execute(
+                new Dictionary<Player, CompletedHand>() { { DrawPlayer, tsumo } },
+                out result, out scoreDiffs);
+        }
+
         public bool CanRon(Player player)
         {
             return rons.ContainsKey(player);
+        }
+        public GameResult Ron(
+            out Dictionary<Player, CompletedResult> result,
+            out Dictionary<Player, int> scoreDiffs,
+            params Player[] players)
+        {
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result, out scoreDiffs);
         }
 
         public bool CanClosedQuad(TileType tile)
