@@ -72,25 +72,36 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public AfterDraw AdvanceTurn()
+        public GameResult AdvanceTurn(out AfterDraw afterDraw,
+            out (Dictionary<Player, int> scoreDiffs, Dictionary<Player, ExhausiveDrawType> states) finishRoundResult)
         {
-            // フリテン判定
-            foreach (var player in Round.players)
+            if (CanAdvanceTurn)
             {
-                if (player.フリテン)
+                // フリテン判定
+                foreach (var player in Round.players)
                 {
-                    continue;
+                    if (player.フリテン)
+                    {
+                        continue;
+                    }
+                    var hand = player.hand.Clone();
+                    hand.tiles.Add(DiscardedTile);
+                    if (hand.Solve().向聴数 == -1)
+                    {
+                        player.フリテン = true;
+                    }
                 }
-                var hand = player.hand.Clone();
-                hand.tiles.Add(DiscardedTile);
-                if (hand.Solve().向聴数 == -1)
-                {
-                    player.フリテン = true;
-                }
+
+                var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
+                afterDraw = Round.players[playerIndex].Draw();
+                finishRoundResult = default;
+                return null;
             }
 
-            var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
-            return Round.players[playerIndex].Draw();
+            var gameResult = FinishRound(out var scoreDiff, out var states);
+            afterDraw = null;
+            finishRoundResult = (scoreDiff, states);
+            return gameResult;
         }
 
         // TODO : 九種九牌
@@ -140,7 +151,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public GameResult FinishRound(
+        GameResult FinishRound(
             out Dictionary<Player, int> scoreDiffs,
             out Dictionary<Player, ExhausiveDrawType> states)
         {
