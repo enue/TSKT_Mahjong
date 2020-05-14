@@ -60,7 +60,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public bool CanAdvanceTurn
+        bool CanAdvanceTurn
         {
             get
             {
