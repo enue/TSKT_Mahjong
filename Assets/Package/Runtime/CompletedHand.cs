@@ -1270,22 +1270,21 @@ namespace TSKT.Mahjongs
         }
 
         // TODO : RuleSettingによってトリロンで流局するように
-        static public GameResult Execute(Dictionary<Player, CompletedHand> completedHands,
-            out Dictionary<Player, CompletedResult> result,
-            out Dictionary<Player, int> scoreDiffs)
+        static public RoundResult Execute(Dictionary<Player, CompletedHand> completedHands,
+            out Dictionary<Player, CompletedResult> playerResults)
         {
-            result = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
+            playerResults = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
 
             var round = completedHands.First().Key.round;
             var game = round.game;
 
-            scoreDiffs = new Dictionary<Player, int>();
+            var scoreDiffs = new Dictionary<Player, int>();
             foreach (var it in round.players)
             {
                 scoreDiffs[it] = -it.scoreOwner.score;
             }
 
-            foreach (var it in result)
+            foreach (var it in playerResults)
             {
                 foreach (var pair in it.Value.scoreDiffs)
                 {
@@ -1318,11 +1317,15 @@ namespace TSKT.Mahjongs
 
             if (completedHands.ContainsKey(round.Dealer))
             {
-                return game.AdvanceRoundBy親上がり();
+                var result = game.AdvanceRoundBy親上がり();
+                result.scoreDiffs = scoreDiffs;
+                return result;
             }
             else
             {
-                return game.AdvanceRoundBy子上がり();
+                var result = game.AdvanceRoundBy子上がり();
+                result.scoreDiffs = scoreDiffs;
+                return result;
             }
         }
     }

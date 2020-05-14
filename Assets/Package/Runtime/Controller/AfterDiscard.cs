@@ -72,8 +72,8 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public GameResult AdvanceTurn(out AfterDraw afterDraw,
-            out (Dictionary<Player, int> scoreDiffs, Dictionary<Player, ExhausiveDrawType> states) finishRoundResult)
+        public RoundResult AdvanceTurn(out AfterDraw afterDraw,
+            out Dictionary<Player, ExhausiveDrawType> finishRoundStates)
         {
             if (CanAdvanceTurn)
             {
@@ -94,14 +94,12 @@ namespace TSKT.Mahjongs
 
                 var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
                 afterDraw = Round.players[playerIndex].Draw();
-                finishRoundResult = default;
+                finishRoundStates = null;
                 return null;
             }
 
-            var gameResult = FinishRound(out var scoreDiff, out var states);
             afterDraw = null;
-            finishRoundResult = (scoreDiff, states);
-            return gameResult;
+            return FinishRound(out finishRoundStates);
         }
 
         // TODO : 九種九牌
@@ -151,24 +149,22 @@ namespace TSKT.Mahjongs
             }
         }
 
-        GameResult FinishRound(
-            out Dictionary<Player, int> scoreDiffs,
+        RoundResult FinishRound(
             out Dictionary<Player, ExhausiveDrawType> states)
         {
             if (ShouldSuspendRound)
             {
-                scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
                 states = null;
-                return Round.game.AdvanceRoundByテンパイ流局();
+                var result = Round.game.AdvanceRoundByテンパイ流局();
+                result.scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+                return result;
             }
-            return FinishRoundAsExhausiveDraw(out scoreDiffs, out states);
+            return FinishRoundAsExhausiveDraw(out states);
         }
 
-        GameResult FinishRoundAsExhausiveDraw(
-            out Dictionary<Player, int> scoreDiffs,
-            out Dictionary<Player, ExhausiveDrawType> states)
+        RoundResult FinishRoundAsExhausiveDraw(out Dictionary<Player, ExhausiveDrawType> states)
         {
-            scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+            var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
             states = new Dictionary<Player, ExhausiveDrawType>();
 
             var 流し満貫 = Round.players
@@ -236,15 +232,21 @@ namespace TSKT.Mahjongs
             {
                 if (dealerState == ExhausiveDrawType.ノーテン)
                 {
-                    return Round.game.AdvanceRoundByノーテン流局();
+                    var result = Round.game.AdvanceRoundByノーテン流局();
+                    result.scoreDiffs = scoreDiffs;
+                    return result;
                 }
                 else if (dealerState == ExhausiveDrawType.流し満貫)
                 {
-                    return Round.game.AdvanceRoundBy親上がり();
+                    var result = Round.game.AdvanceRoundBy親上がり();
+                    result.scoreDiffs = scoreDiffs;
+                    return result;
                 }
                 else if (dealerState == ExhausiveDrawType.テンパイ)
                 {
-                    return Round.game.AdvanceRoundByテンパイ流局();
+                    var result = Round.game.AdvanceRoundByテンパイ流局();
+                    result.scoreDiffs = scoreDiffs;
+                    return result;
                 }
                 else
                 {
@@ -254,7 +256,9 @@ namespace TSKT.Mahjongs
             else
             {
                 // 子の流し満貫
-                return Round.game.AdvanceRoundBy子上がり();
+                var result = Round.game.AdvanceRoundBy子上がり();
+                result.scoreDiffs = scoreDiffs;
+                return result;
             }
         }
 
@@ -263,12 +267,11 @@ namespace TSKT.Mahjongs
             return rons.ContainsKey(player);
         }
 
-        public GameResult Ron(
+        public RoundResult Ron(
             out Dictionary<Player, CompletedResult> result,
-            out Dictionary<Player, int> scoreDiffs,
             params Player[] players)
         {
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result, out scoreDiffs);
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result);
         }
 
         public bool CanOpenQuad(Player player)

@@ -24,8 +24,7 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(-1, TileType.M1, TileType.M2, TileType.M3, TileType.M4, TileType.M5, TileType.M6, TileType.M4, TileType.M5, TileType.M6, TileType.P7, TileType.P8, TileType.P9, TileType.M8, TileType.M8)]
         public void シャンテン数(int expected, params TileType[] tiles)
         {
-            var game = new Game(0, new RuleSetting());
-            var round = game.StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
 
             {
                 var hand = new Hand();
@@ -50,12 +49,12 @@ namespace TSKT.Tests.Mahjongs
                         uraDoraTiles: null,
                         槍槓: false);
                     var player = round.players[round.dealer + 1];
-                    CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results, out var diffs);
+                    var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
                     var result = results[player];
                     Debug.Log(result.tsumoPenalty.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
                     Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満)));
-                    Assert.AreEqual(0, diffs.Values.Sum());
+                    Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
                 }
             }
 
@@ -82,8 +81,7 @@ namespace TSKT.Tests.Mahjongs
             bool riichi,
             params TileType[] tiles)
         {
-            var game = new Game(0, new RuleSetting());
-            var round = game.StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
 
             var hand = new Hand();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(_, red: false)).ToList()));
@@ -106,14 +104,13 @@ namespace TSKT.Tests.Mahjongs
                 槍槓: false);
 
             var player = round.Dealer;
-            CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
-                out var results,
-                out var diffs);
+            var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
+                out var results);
             var result = results[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.dealerTsumoPenalty);
-            Assert.AreEqual(0, diffs.Values.Sum());
+            Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
         }
 
         [Test]
@@ -138,8 +135,7 @@ namespace TSKT.Tests.Mahjongs
             bool riichi,
             params TileType[] tiles)
         {
-            var game = new Game(0, new RuleSetting());
-            var round = game.StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
 
             var hand = new Hand();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(_, red: false)).ToList()));
@@ -163,12 +159,12 @@ namespace TSKT.Tests.Mahjongs
 
 
             var player = round.players[1];
-            CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results, out var diffs);
+            var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
             var result = results[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.ronPenalty);
-            Assert.AreEqual(0, diffs.Values.Sum());
+            Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
         }
     }
 }

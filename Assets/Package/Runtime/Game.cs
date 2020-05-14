@@ -18,7 +18,13 @@ namespace TSKT.Mahjongs
         public readonly ScoreOwner[] scoreOwners;
         public readonly RuleSetting rule;
 
-        public Game(int firstDealer, RuleSetting rule)
+        static public BeforeRoundStart Create(int firstDealer, RuleSetting rule)
+        {
+            var game = new Game(firstDealer, rule);
+            return new BeforeRoundStart(game);
+        }
+
+        Game(int firstDealer, RuleSetting rule)
         {
             this.rule = rule;
             this.firstDealer = firstDealer;
@@ -36,18 +42,18 @@ namespace TSKT.Mahjongs
             return round.Start();
         }
 
-        public GameResult AdvanceRoundBy親上がり()
+        public RoundResult AdvanceRoundBy親上がり()
         {
             ++連荘;
             ++本場;
 
             if (ShouldFinish)
             {
-                return new GameResult(this);
+                return new RoundResult(new GameResult(this));
             }
-            return null;
+            return new RoundResult(new BeforeRoundStart(this));
         }
-        public GameResult AdvanceRoundBy子上がり()
+        public RoundResult AdvanceRoundBy子上がり()
         {
             連荘 = 0;
             本場 = 0;
@@ -63,25 +69,25 @@ namespace TSKT.Mahjongs
 
             if (ShouldFinish)
             {
-                return new GameResult(this);
+                return new RoundResult(new GameResult(this));
             }
-            return null;
+            return new RoundResult(new BeforeRoundStart(this));
         }
 
-        public GameResult AdvanceRoundByノーテン流局()
+        public RoundResult AdvanceRoundByノーテン流局()
         {
             return AdvanceRoundBy子上がり();
         }
 
-        public GameResult AdvanceRoundByテンパイ流局()
+        public RoundResult AdvanceRoundByテンパイ流局()
         {
             ++本場;
 
             if (ShouldFinish)
             {
-                return new GameResult(this);
+                return new RoundResult(new GameResult(this));
             }
-            return null;
+            return new RoundResult(new BeforeRoundStart(this));
         }
 
 
