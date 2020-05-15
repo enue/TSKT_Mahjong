@@ -14,7 +14,7 @@ namespace TSKT.Mahjongs
         public readonly Tile newTileInHand;
         public readonly Tile 加槓牌;
         public readonly Hands.Solution handSolution;
-        public readonly CompletedHand tsumo;
+        public readonly CompletedHand? tsumo;
 
         public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
         public readonly bool openDoraAfterDiscard;
@@ -136,14 +136,14 @@ namespace TSKT.Mahjongs
             {
                 return false;
             }
-            return !tsumo.役無し;
+            return !tsumo.Value.役無し;
         }
 
         public RoundResult Tsumo(
             out Dictionary<Player, CompletedResult> result)
         {
             return CompletedHand.Execute(
-                new Dictionary<Player, CompletedHand>() { { DrawPlayer, tsumo } },
+                new Dictionary<Player, CompletedHand>() { { DrawPlayer, tsumo.Value } },
                 out result);
         }
 
