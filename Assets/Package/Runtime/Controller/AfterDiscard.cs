@@ -10,6 +10,7 @@ namespace TSKT.Mahjongs
         public Round Round => DiscardPlayer.round;
         public int DiscardPlayerIndex => DiscardPlayer.index;
         public Player DiscardPlayer { get; }
+        public bool Consumed { get; private set; }
 
         public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
 
@@ -75,6 +76,12 @@ namespace TSKT.Mahjongs
         public AfterDraw AdvanceTurn(out RoundResult roundResult,
             out Dictionary<Player, ExhausiveDrawType> finishRoundStates)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             if (CanAdvanceTurn)
             {
                 // フリテン判定
@@ -271,6 +278,12 @@ namespace TSKT.Mahjongs
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result);
         }
 
@@ -289,6 +302,12 @@ namespace TSKT.Mahjongs
         }
         public AfterDraw OpenQuad(Player player)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return Round.ExecuteOpenQuad(player, DiscardPlayer);
         }
 
@@ -309,6 +328,12 @@ namespace TSKT.Mahjongs
         }
         public AfterDraw Pon(Player player, (Tile, Tile) 対子)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             foreach (var it in Round.players)
             {
                 it.一発 = false;
@@ -348,6 +373,12 @@ namespace TSKT.Mahjongs
         }
         public AfterDraw Chi(Player player, (Tile, Tile) 塔子)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             foreach (var it in Round.players)
             {
                 it.一発 = false;

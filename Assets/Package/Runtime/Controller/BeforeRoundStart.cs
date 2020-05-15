@@ -10,6 +10,8 @@ namespace TSKT.Mahjongs
         public Round Round => null;
         public readonly Game game;
 
+        public bool Consumed { get; private set; }
+
         public BeforeRoundStart(Game game)
         {
             this.game = game;
@@ -17,6 +19,12 @@ namespace TSKT.Mahjongs
 
         public AfterDraw StartRound(params TileType[][] initialPlayerTilesByCheat)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return game.StartRound(initialPlayerTilesByCheat);
         }
     }

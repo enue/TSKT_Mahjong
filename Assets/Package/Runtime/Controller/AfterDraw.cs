@@ -11,6 +11,8 @@ namespace TSKT.Mahjongs
         public int DrawPlayerIndex => DrawPlayer.index;
         public Player DrawPlayer { get; }
 
+        public bool Consumed { get; private set; }
+
         public readonly Tile newTileInHand;
         public readonly Tile 加槓牌;
         public readonly Hands.Solution handSolution;
@@ -118,6 +120,12 @@ namespace TSKT.Mahjongs
 
         public AfterDiscard Discard(Tile tile, bool riichi)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             DrawPlayer.Discard(tile, riichi);
             if (openDoraAfterDiscard)
             {
@@ -142,6 +150,12 @@ namespace TSKT.Mahjongs
         public RoundResult Tsumo(
             out Dictionary<Player, CompletedResult> result)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return CompletedHand.Execute(
                 new Dictionary<Player, CompletedHand>() { { DrawPlayer, tsumo.Value } },
                 out result);
@@ -155,6 +169,12 @@ namespace TSKT.Mahjongs
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result);
         }
 
@@ -170,6 +190,12 @@ namespace TSKT.Mahjongs
         }
         public AfterDraw ClosedQuad(TileType tile)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return Round.ExecuteClosedQuad(DrawPlayer, tile);
         }
 
@@ -184,6 +210,12 @@ namespace TSKT.Mahjongs
         }
         public AfterDraw AddedOpenQuad(Tile tile)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
             return Round.ExecuteAddedOpenQuad(DrawPlayer, tile);
         }
     }

@@ -8,5 +8,6 @@ namespace TSKT.Mahjongs
     public interface IController
     {
         Round Round { get; }
+        bool Consumed { get; }
     }
 }
