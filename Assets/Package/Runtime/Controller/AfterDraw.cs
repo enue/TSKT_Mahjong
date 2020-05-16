@@ -23,6 +23,7 @@ namespace TSKT.Mahjongs
 
         bool 鳴きなし => Round.players.All(_ => _.hand.melds.Count == 0);
         bool 一巡目 => DrawPlayer.discardedTiles.Count == 0;
+        bool DrewFromOtherPlayer => newTileInHand == null;
 
         public AfterDraw(Player player, Tile newTileInHand,
             bool 嶺上,
@@ -189,6 +190,11 @@ namespace TSKT.Mahjongs
             {
                 return false;
             }
+            // 鳴いた直後にカンはできない
+            if (DrewFromOtherPlayer)
+            {
+                return false;
+            }
             // 暗槓は立直後でもできる
             return DrawPlayer.CanClosedQuad(tile);
         }
@@ -207,6 +213,11 @@ namespace TSKT.Mahjongs
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
+            {
+                return false;
+            }
+            // 鳴いた直後にカンはできない
+            if (DrewFromOtherPlayer)
             {
                 return false;
             }
