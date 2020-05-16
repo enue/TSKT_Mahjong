@@ -50,7 +50,7 @@ namespace TSKT.Tests.Mahjongs
                         doraTiles: null,
                         uraDoraTiles: null,
                         槍槓: false,
-                        役満複合: round.game.rule.役満複合);
+                        handCap: round.game.rule.handCap);
                     var player = round.players[round.dealer + 1];
                     var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
                     var result = results[player];
@@ -106,7 +106,7 @@ namespace TSKT.Tests.Mahjongs
                 doraTiles: null,
                 uraDoraTiles: null,
                 槍槓: false,
-                役満複合: round.game.rule.役満複合);
+                handCap: round.game.rule.handCap);
 
             var player = round.Dealer;
             var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
@@ -162,7 +162,7 @@ namespace TSKT.Tests.Mahjongs
                 doraTiles: null,
                 uraDoraTiles: null,
                 槍槓: false,
-                役満複合: round.game.rule.役満複合);
+                handCap: round.game.rule.handCap);
 
             var player = round.players[1];
             var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);

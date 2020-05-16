@@ -22,10 +22,10 @@ namespace TSKT.Mahjongs.Rules
         流局,
         // 頭ハネ
     }
-    public enum 役満複合
+    public enum HandCap
     {
-        なし,
-        ダブル役満あり,
-        トリプル役満あり,
+        役満,
+        ダブル役満,
+        トリプル役満,
     }
 }

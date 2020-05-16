@@ -522,22 +522,22 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public (ScoreType? type, int score) 基本点(Rules.役満複合 役満複合)
+        public (ScoreType? type, int score) 基本点(Rules.HandCap handCap)
         {
             int maxYakumanCount;
-            switch(役満複合)
+            switch(handCap)
             {
-                case Rules.役満複合.なし:
+                case Rules.HandCap.役満:
                     maxYakumanCount = 1;
                     break;
-                case Rules.役満複合.ダブル役満あり:
+                case Rules.HandCap.ダブル役満:
                     maxYakumanCount = 2;
                     break;
-                case Rules.役満複合.トリプル役満あり:
+                case Rules.HandCap.トリプル役満:
                     maxYakumanCount = 3;
                     break;
                 default:
-                    throw new System.ArgumentException(役満複合.ToString());
+                    throw new System.ArgumentException(handCap.ToString());
             }
 
             var yakumanCount = Mathf.Min(役満.Values.Sum(), maxYakumanCount);
