@@ -20,7 +20,7 @@ namespace TSKT.Mahjongs
         readonly TileType ownWind;
         readonly TileType roundWind;
         public readonly Dictionary<役, int> Yakus;
-        public readonly HashSet<役> 役満;
+        public readonly Dictionary<役, int> 役満;
 
         public bool 役無し => Yakus.Count == 0 && 役満.Count == 0;
         public int Han => Yakus.Values.Sum() + Dora + UraDora + RedTile;
@@ -52,7 +52,7 @@ namespace TSKT.Mahjongs
             this.roundWind = roundWind;
             this.ronTarget = ronTarget;
             Yakus = new Dictionary<役, int>();
-            役満 = new HashSet<役>();
+            役満 = new Dictionary<役, int>();
             面前 = structure.melds.Length == 0 || structure.melds.All(_ => _.暗槓);
             this.doraTiles = doraTiles ?? System.Array.Empty<TileType>();
             this.uraDoraTiles = (riichi ? uraDoraTiles : null) ?? System.Array.Empty<TileType>();
@@ -76,7 +76,7 @@ namespace TSKT.Mahjongs
                 if (ronTarget != null
                     && !ronTarget.Riichi)
                 {
-                    役満.Add(役.オープン立直);
+                    役満.Add(役.オープン立直, 1);
                 }
                 else
                 {
@@ -109,15 +109,15 @@ namespace TSKT.Mahjongs
             }
             if (天和)
             {
-                役満.Add(役.天和);
+                役満.Add(役.天和, 1);
             }
             if (地和)
             {
-                役満.Add(役.地和);
+                役満.Add(役.地和, 1);
             }
             if (人和)
             {
-                役満.Add(役.人和);
+                役満.Add(役.人和, 1);
             }
             {
                 var v = タンヤオ;
@@ -281,44 +281,44 @@ namespace TSKT.Mahjongs
 
             if (緑一色)
             {
-                役満.Add(役.緑一色);
+                役満.Add(役.緑一色, 1);
             }
             if (大三元)
             {
-                役満.Add(役.大三元);
+                役満.Add(役.大三元, 1);
             }
             if (字一色)
             {
-                役満.Add(役.字一色);
+                役満.Add(役.字一色, 1);
             }
             if (国士無双)
             {
-                役満.Add(役.国士無双);
+                役満.Add(役.国士無双, 1);
             }
             if (九蓮宝燈)
             {
-                役満.Add(役.九蓮宝燈);
+                役満.Add(役.九蓮宝燈, 1);
             }
             if (四暗刻)
             {
-                役満.Add(役.四暗刻);
+                役満.Add(役.四暗刻, 1);
             }
             if (清老頭)
             {
-                役満.Add(役.清老頭);
+                役満.Add(役.清老頭, 1);
             }
             if (四槓子)
             {
-                役満.Add(役.四槓子);
+                役満.Add(役.四槓子, 1);
             }
 
             if (大四喜)
             {
-                役満.Add(役.大四喜);
+                役満.Add(役.大四喜, 2);
             }
             else if (小四喜)
             {
-                役満.Add(役.小四喜);
+                役満.Add(役.小四喜, 1);
             }
         }
 
@@ -540,7 +540,7 @@ namespace TSKT.Mahjongs
                     throw new System.ArgumentException(役満複合.ToString());
             }
 
-            var yakumanCount = Mathf.Min(役満.Count, maxYakumanCount);
+            var yakumanCount = Mathf.Min(役満.Values.Sum(), maxYakumanCount);
             if (yakumanCount == 1)
             {
                 return (ScoreType.役満, 8000);

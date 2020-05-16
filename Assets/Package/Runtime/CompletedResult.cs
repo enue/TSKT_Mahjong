@@ -26,7 +26,7 @@ namespace TSKT.Mahjongs
             redTile = source.RedTile;
             if (source.役満.Count > 0)
             {
-                display役s = source.役満.ToDictionary(_ => _, _ => 0);
+                display役s = source.役満.ToDictionary(_ => _.Key, _ => 0);
                 displayScore = null;
             }
             else

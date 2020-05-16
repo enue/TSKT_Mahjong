@@ -56,7 +56,7 @@ namespace TSKT.Tests.Mahjongs
                     var result = results[player];
                     Debug.Log(result.tsumoPenalty.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
-                    Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満)));
+                    Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
                     Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
                 }
             }
@@ -112,7 +112,7 @@ namespace TSKT.Tests.Mahjongs
             var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
                 out var results);
             var result = results[player];
-            Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満)));
+            Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.dealerTsumoPenalty);
             Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
@@ -167,7 +167,7 @@ namespace TSKT.Tests.Mahjongs
             var player = round.players[1];
             var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
             var result = results[player];
-            Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満)));
+            Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.ronPenalty);
             Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
