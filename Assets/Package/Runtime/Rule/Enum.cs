@@ -16,4 +16,10 @@ namespace TSKT.Mahjongs.Rules
         半荘戦,
         一荘戦,
     }
+    public enum TripleRon
+    {
+        有効,
+        流局,
+        // 頭ハネ
+    }
 }

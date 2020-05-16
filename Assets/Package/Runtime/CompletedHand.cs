@@ -1269,14 +1269,22 @@ namespace TSKT.Mahjongs
             }
         }
 
-        // TODO : RuleSettingによってトリロンで流局するように
         static public RoundResult Execute(Dictionary<Player, CompletedHand> completedHands,
             out Dictionary<Player, CompletedResult> playerResults)
         {
-            playerResults = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
-
             var round = completedHands.First().Key.round;
             var game = round.game;
+
+            if (completedHands.Count == 3
+                && game.rule.tripleRon == Rules.TripleRon.流局)
+            {
+                playerResults = new Dictionary<Player, CompletedResult>();
+                var result = game.AdvanceRoundBy子上がり();
+                result.scoreDiffs = round.players.ToDictionary(_ => _, _ => 0);
+                return result;
+            }
+
+            playerResults = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
 
             var scoreDiffs = new Dictionary<Player, int>();
             foreach (var it in round.players)
