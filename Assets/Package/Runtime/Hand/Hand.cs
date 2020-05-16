@@ -7,8 +7,14 @@ namespace TSKT.Mahjongs
 {
     public class Hand
     {
+        readonly Player owner;
         readonly public List<Tile> tiles = new List<Tile>();
         readonly public List<Meld> melds = new List<Meld>();
+
+        public Hand(Player owner)
+        {
+            this.owner = owner;
+        }
 
         public void Sort()
         {
@@ -17,7 +23,7 @@ namespace TSKT.Mahjongs
 
         public Hand Clone()
         {
-            var result = new Hand();
+            var result = new Hand(owner);
             result.tiles.AddRange(tiles);
             result.melds.AddRange(melds);
             return result;
@@ -46,6 +52,53 @@ namespace TSKT.Mahjongs
                     }
                 }
             }
+        }
+
+        public void BuildClosedQuad(TileType tileType)
+        {
+            var meld = new Meld();
+            melds.Add(meld);
+            for (int i = 0; i < 4; ++i)
+            {
+                var tile = tiles.First(_ => _.type == tileType);
+                tiles.Remove(tile);
+                meld.tileFroms.Add((tile, owner));
+            }
+        }
+
+        public TileType[] GetWinningTiles()
+        {
+            var solution = Solve();
+            if (solution.向聴数 != 0)
+            {
+                return System.Array.Empty<TileType>();
+            }
+
+            var result = new List<TileType>();
+            foreach (TileType tile in System.Enum.GetValues(typeof(TileType)))
+            {
+                if (tile.季節牌())
+                {
+                    continue;
+                }
+                if (tile.花牌())
+                {
+                    continue;
+                }
+                if (AllTiles.Count(_ => _.type == tile) == 4)
+                {
+                    continue;
+                }
+
+                var clone = Clone();
+                clone.tiles.Add(new Tile(tile, false));
+                if (clone.Solve().向聴数 == -1)
+                {
+                    result.Add(tile);
+                }
+            }
+
+            return result.ToArray();
         }
     }
 

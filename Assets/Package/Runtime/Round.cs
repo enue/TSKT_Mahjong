@@ -94,14 +94,8 @@ namespace TSKT.Mahjongs
 
         public AfterDraw ExecuteClosedQuad(Player player, TileType tileType)
         {
-            var meld = new Meld();
-            player.hand.melds.Add(meld);
-            for (int i = 0; i < 4; ++i)
-            {
-                var tile = player.hand.tiles.First(_ => _.type == tileType);
-                player.hand.tiles.Remove(tile);
-                meld.tileFroms.Add((tile, player));
-            }
+            player.hand.BuildClosedQuad(tileType);
+
             var t = DrawFromDeadWallTile(player);
             deadWallTile.OpenDora();
             return new AfterDraw(player, t, 嶺上: true, openDoraAfterDiscard: false);

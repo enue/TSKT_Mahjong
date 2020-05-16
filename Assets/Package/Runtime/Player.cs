@@ -10,7 +10,7 @@ namespace TSKT.Mahjongs
         readonly public ScoreOwner scoreOwner;
         readonly public Round round;
         readonly public int index;
-        readonly public Hand hand = new Hand();
+        readonly public Hand hand;
         readonly public List<Tile> discardPile = new List<Tile>();
         readonly public List<Tile> discardedTiles = new List<Tile>();
         readonly public TileType wind;
@@ -52,6 +52,7 @@ namespace TSKT.Mahjongs
             this.round = round;
             this.index = index;
             this.wind = wind;
+            hand = new Hand(this);
         }
 
         public AfterDraw Draw()
@@ -188,8 +189,28 @@ namespace TSKT.Mahjongs
             {
                 return false;
             }
-            return hand.tiles.Count(_ => _.type == tile) == 4;
+
+            if (hand.tiles.Count(_ => _.type == tile) < 4)
+            {
+                return false;
+            }
+
+            if (Riichi)
+            {
+                // 待ち牌が変わる暗槓はできない
+                var winningTiles = hand.GetWinningTiles();
+                var clone = hand.Clone();
+                clone.BuildClosedQuad(tile);
+                var winningTileAfterClosedQuad = clone.GetWinningTiles();
+                if (!winningTiles.SequenceEqual(winningTileAfterClosedQuad))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
+
         public bool CanOpenQuad(TileType tile)
         {
             if (Riichi)
