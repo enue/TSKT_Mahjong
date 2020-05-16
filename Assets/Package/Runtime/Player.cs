@@ -18,6 +18,7 @@ namespace TSKT.Mahjongs
         public int? RiichiIndexInTotalDiscardTiles { get; private set; }
 
         public bool DoubleRiichi { get; private set; }
+        public bool OpenRiichi { get; private set; }
         public bool 一発;
         public bool フリテン;
 
@@ -65,7 +66,7 @@ namespace TSKT.Mahjongs
             return new AfterDraw(this, t, 嶺上: false, openDoraAfterDiscard: false);
         }
 
-        public void Discard(Tile tile, bool riichi)
+        public void Discard(Tile tile, bool riichi, bool openRiichi)
         {
             if (riichi)
             {
@@ -76,6 +77,7 @@ namespace TSKT.Mahjongs
                 }
                 Riichi = true;
                 一発 = true;
+                OpenRiichi = openRiichi;
             }
             else
             {

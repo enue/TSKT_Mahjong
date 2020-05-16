@@ -118,7 +118,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDiscard Discard(Tile tile, bool riichi)
+        public AfterDiscard Discard(Tile tile, bool riichi, bool openRiichi = false)
         {
             if (Consumed)
             {
@@ -126,7 +126,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            DrawPlayer.Discard(tile, riichi);
+            DrawPlayer.Discard(tile, riichi, openRiichi);
             if (openDoraAfterDiscard)
             {
                 DrawPlayer.round.deadWallTile.OpenDora();

@@ -23,6 +23,7 @@ namespace TSKT.Mahjongs
         河底撈魚,
 
         ダブル立直,
+        オープン立直,
         七対子,
         対々和,
         三暗刻,

@@ -34,6 +34,7 @@ namespace TSKT.Mahjongs
             Player ronTarget,
             bool riichi,
             bool doubleRiichi,
+            bool openRiichi,
             bool 一発,
             bool 嶺上,
             bool 海底,
@@ -68,6 +69,19 @@ namespace TSKT.Mahjongs
             else if (riichi)
             {
                 Yakus.Add(役.立直, 1);
+            }
+            if (openRiichi)
+            {
+                // 立直していない状態でオープンリーチに放銃すると役満払い
+                if (ronTarget != null
+                    && !ronTarget.Riichi)
+                {
+                    役満.Add(役.オープン立直);
+                }
+                else
+                {
+                    Yakus.Add(役.オープン立直, 1);
+                }
             }
 
             if (一発)
@@ -105,7 +119,6 @@ namespace TSKT.Mahjongs
             {
                 役満.Add(役.人和);
             }
-
             {
                 var v = タンヤオ;
                 if (v > 0)
