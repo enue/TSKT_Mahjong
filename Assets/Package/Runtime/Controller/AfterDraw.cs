@@ -88,9 +88,12 @@ namespace TSKT.Mahjongs
             {
                 return false;
             }
-            if (DrawPlayer.scoreOwner.score < 1000)
+            if (Round.game.rule.end.endWhenScoreUnderZero)
             {
-                return false;
+                if (DrawPlayer.scoreOwner.score < 1000)
+                {
+                    return false;
+                }
             }
             if (!DrawPlayer.hand.tiles.Contains(tile))
             {
