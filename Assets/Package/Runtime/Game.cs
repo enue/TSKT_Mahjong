@@ -95,9 +95,12 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                if (scoreOwners.Select(_ => _.score).Min() < 0)
+                if (rule.end.endWhenScoreUnderZero)
                 {
-                    return true;
+                    if (scoreOwners.Select(_ => _.score).Min() < 0)
+                    {
+                        return true;
+                    }
                 }
 
                 if (!IsExtraRound)
