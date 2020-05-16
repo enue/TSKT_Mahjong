@@ -61,7 +61,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool CanAdvanceTurn
+        bool CanRoundContinue
         {
             get
             {
@@ -82,7 +82,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            if (CanAdvanceTurn)
+            if (CanRoundContinue)
             {
                 // フリテン判定
                 foreach (var player in Round.players)
