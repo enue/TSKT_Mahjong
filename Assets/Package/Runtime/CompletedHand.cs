@@ -513,9 +513,13 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                if (役満.Count > 0)
+                if (役満.Count == 1)
                 {
                     return (ScoreType.役満, 8000);
+                }
+                else if (役満.Count > 1)
+                {
+                    return (ScoreType.ダブル役満, 16000);
                 }
                 var han = Han;
 
