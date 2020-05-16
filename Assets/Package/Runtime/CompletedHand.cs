@@ -301,7 +301,7 @@ namespace TSKT.Mahjongs
 
             if (大四喜)
             {
-                役満.Add(役.四槓子);
+                役満.Add(役.大四喜);
             }
             else if (小四喜)
             {
