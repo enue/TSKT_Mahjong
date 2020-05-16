@@ -28,4 +28,9 @@ namespace TSKT.Mahjongs.Rules
         ダブル役満,
         トリプル役満,
     }
+    public enum 四家立直
+    {
+        続行,
+        流局,
+    }
 }

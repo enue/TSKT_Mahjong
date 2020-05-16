@@ -110,7 +110,29 @@ namespace TSKT.Mahjongs
         }
 
         // TODO : 九種九牌
-        bool ShouldSuspendRound => 四家立直 || 四開槓 || 四風子連打;
+        bool ShouldSuspendRound
+        {
+            get
+            {
+                if (Round.game.rule.四家立直 == Rules.四家立直.流局)
+                {
+                    if (四家立直)
+                    {
+                        return true;
+                    }
+                }
+                if (四開槓)
+                {
+                    return true;
+                }
+                if (四風子連打)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         bool 四家立直 => Round.players.All(_ => _.Riichi);
         bool 四開槓
         {
