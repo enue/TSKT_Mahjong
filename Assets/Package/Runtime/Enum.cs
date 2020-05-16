@@ -67,6 +67,7 @@ namespace TSKT.Mahjongs
         ノーテン,
         テンパイ,
         流し満貫,
+        九種九牌,
     }
 
     public enum ScoreType

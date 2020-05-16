@@ -21,6 +21,9 @@ namespace TSKT.Mahjongs
         public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
         public readonly bool openDoraAfterDiscard;
 
+        bool 鳴きなし => Round.players.All(_ => _.hand.melds.Count == 0);
+        bool 一巡目 => DrawPlayer.discardedTiles.Count == 0;
+
         public AfterDraw(Player player, Tile newTileInHand,
             bool 嶺上,
             bool openDoraAfterDiscard,
@@ -36,8 +39,6 @@ namespace TSKT.Mahjongs
                 handSolution = DrawPlayer.hand.Solve();
                 if (handSolution.向聴数 == -1)
                 {
-                    var 鳴きなし = Round.players.All(_ => _.hand.melds.Count == 0);
-                    var 一巡目 = DrawPlayer.discardedTiles.Count == 0;
                     tsumo = handSolution.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
                         ronTarget: null,
                         嶺上: 嶺上,
@@ -217,6 +218,44 @@ namespace TSKT.Mahjongs
             Consumed = true;
 
             return Round.ExecuteAddedOpenQuad(DrawPlayer, tile);
+        }
+
+        public bool Can九種九牌
+        {
+            get
+            {
+                if (!鳴きなし)
+                {
+                    return false;
+                }
+                if (!一巡目)
+                {
+                    return false;
+                }
+                return DrawPlayer.hand.tiles
+                    .Select(_ => _.type)
+                    .Where(_ => _.么九牌())
+                    .Distinct()
+                    .Count() >= 9;
+            }
+        }
+
+        public RoundResult 九種九牌(out Dictionary<Player, ExhausiveDrawType> finishRoundStates)
+        {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
+            finishRoundStates = new Dictionary<Player, ExhausiveDrawType>()
+            {
+                {DrawPlayer, ExhausiveDrawType.九種九牌}
+            };
+
+            var result = Round.game.AdvanceRoundByテンパイ流局();
+            result.scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+            return result;
         }
     }
 }

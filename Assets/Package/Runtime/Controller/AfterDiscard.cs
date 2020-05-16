@@ -109,7 +109,6 @@ namespace TSKT.Mahjongs
             return null;
         }
 
-        // TODO : 九種九牌
         bool ShouldSuspendRound
         {
             get
