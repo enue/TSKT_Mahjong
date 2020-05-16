@@ -22,6 +22,7 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(-1, TileType.M2, TileType.M3, TileType.M4, TileType.P1, TileType.P2, TileType.P3, TileType.S1, TileType.S2, TileType.S3, TileType.S5, TileType.S6, TileType.S7, TileType.北, TileType.北)]
         [TestCase(-1, TileType.M2, TileType.M3, TileType.M4, TileType.P4, TileType.P5, TileType.P6, TileType.S3, TileType.S4, TileType.S5, TileType.S5, TileType.S6, TileType.S7, TileType.S8, TileType.S8)]
         [TestCase(-1, TileType.M1, TileType.M2, TileType.M3, TileType.M4, TileType.M5, TileType.M6, TileType.M4, TileType.M5, TileType.M6, TileType.P7, TileType.P8, TileType.P9, TileType.M8, TileType.M8)]
+        [TestCase(-1, TileType.M2, TileType.M2, TileType.白, TileType.白, TileType.白, TileType.發, TileType.發, TileType.發, TileType.中, TileType.中, TileType.中, TileType.M3, TileType.M3, TileType.M3)]
         public void シャンテン数(int expected, params TileType[] tiles)
         {
             var round = Game.Create(0, new RuleSetting()).StartRound().Round;
@@ -47,7 +48,8 @@ namespace TSKT.Tests.Mahjongs
                         人和: false,
                         doraTiles: null,
                         uraDoraTiles: null,
-                        槍槓: false);
+                        槍槓: false,
+                        役満複合: round.game.rule.役満複合);
                     var player = round.players[round.dealer + 1];
                     var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
                     var result = results[player];
@@ -101,7 +103,8 @@ namespace TSKT.Tests.Mahjongs
                 人和: false,
                 doraTiles: null,
                 uraDoraTiles: null,
-                槍槓: false);
+                槍槓: false,
+                役満複合: round.game.rule.役満複合);
 
             var player = round.Dealer;
             var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
@@ -155,8 +158,8 @@ namespace TSKT.Tests.Mahjongs
                 人和: false,
                 doraTiles: null,
                 uraDoraTiles: null,
-                槍槓: false);
-
+                槍槓: false,
+                役満複合: round.game.rule.役満複合);
 
             var player = round.players[1];
             var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);

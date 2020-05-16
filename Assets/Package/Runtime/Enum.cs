@@ -77,6 +77,7 @@ namespace TSKT.Mahjongs
         役満,
         数え役満,
         ダブル役満,
+        トリプル役満,
     }
 
     public enum RelativePlayer

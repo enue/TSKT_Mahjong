@@ -42,7 +42,8 @@ namespace TSKT.Mahjongs.Hands
                 人和: 人和,
                 doraTiles: player.round.deadWallTile.DoraTiles,
                 uraDoraTiles: player.round.deadWallTile.UraDoraTiles,
-                槍槓: 槍槓);
+                槍槓: 槍槓,
+                役満複合: player.round.game.rule.役満複合);
         }
 
         public CompletedHand ChoiceCompletedHand(TileType newTileInHand, TileType ownWind, TileType roundWind,
@@ -58,7 +59,8 @@ namespace TSKT.Mahjongs.Hands
             bool 人和,
             TileType[] doraTiles,
             TileType[] uraDoraTiles,
-            bool 槍槓)
+            bool 槍槓,
+            Rules.役満複合 役満複合)
         {
             var result = (score: int.MinValue, completed: default(CompletedHand));
 
@@ -78,9 +80,9 @@ namespace TSKT.Mahjongs.Hands
                     槍槓: 槍槓,
                     doraTiles: doraTiles,
                     uraDoraTiles: uraDoraTiles);
-                if (result.score < item.基本点.score)
+                if (result.score < item.基本点(役満複合).score)
                 {
-                    result = (item.基本点.score, item);
+                    result = (item.基本点(役満複合).score, item);
                 }
             }
 

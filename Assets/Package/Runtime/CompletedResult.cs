@@ -20,7 +20,7 @@ namespace TSKT.Mahjongs
 
         public CompletedResult(CompletedHand source, Player player)
         {
-            scoreType = source.基本点.type;
+            scoreType = source.基本点(player.round.game.rule.役満複合).type;
             dora = source.Dora;
             uraDora = source.UraDora;
             redTile = source.RedTile;
@@ -50,7 +50,7 @@ namespace TSKT.Mahjongs
                 ronPenalty = null;
                 if (asDealer)
                 {
-                    dealerTsumoPenalty = 親自摸Penalty(source.基本点.score, player.round.game.本場);
+                    dealerTsumoPenalty = 親自摸Penalty(source.基本点(player.round.game.rule.役満複合).score, player.round.game.本場);
                     tsumoPenalty = null;
 
                     foreach (var it in player.round.players)
@@ -64,7 +64,7 @@ namespace TSKT.Mahjongs
                 }
                 else
                 {
-                    tsumoPenalty = 子自摸Penalty(source.基本点.score, player.round.game.本場);
+                    tsumoPenalty = 子自摸Penalty(source.基本点(player.round.game.rule.役満複合).score, player.round.game.本場);
                     dealerTsumoPenalty = null;
 
                     foreach (var it in player.round.players)
@@ -86,7 +86,7 @@ namespace TSKT.Mahjongs
             }
             else
             {
-                ronPenalty = RonPenalty(source.基本点.score, asDealer, player.round.game.本場);
+                ronPenalty = RonPenalty(source.基本点(player.round.game.rule.役満複合).score, asDealer, player.round.game.本場);
                 dealerTsumoPenalty = null;
                 tsumoPenalty = null;
 

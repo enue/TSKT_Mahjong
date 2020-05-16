@@ -13,5 +13,6 @@ namespace TSKT.Mahjongs
         public int initialScore = 25000;
         public RedTile redTile = RedTile.赤ドラ3;
         public TripleRon tripleRon = TripleRon.有効;
+        public 役満複合 役満複合 = 役満複合.トリプル役満あり;
     }
 }

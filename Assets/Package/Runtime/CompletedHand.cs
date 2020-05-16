@@ -509,52 +509,71 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public (ScoreType? type, int score) 基本点
+        public (ScoreType? type, int score) 基本点(Rules.役満複合 役満複合)
         {
-            get
+            int maxYakumanCount;
+            switch(役満複合)
             {
-                if (役満.Count == 1)
-                {
-                    return (ScoreType.役満, 8000);
-                }
-                else if (役満.Count > 1)
-                {
-                    return (ScoreType.ダブル役満, 16000);
-                }
-                var han = Han;
+                case Rules.役満複合.なし:
+                    maxYakumanCount = 1;
+                    break;
+                case Rules.役満複合.ダブル役満あり:
+                    maxYakumanCount = 2;
+                    break;
+                case Rules.役満複合.トリプル役満あり:
+                    maxYakumanCount = 3;
+                    break;
+                default:
+                    throw new System.ArgumentException(役満複合.ToString());
+            }
 
-                if (han == 5)
-                {
-                    return (ScoreType.満貫, 2000);
-                }
-                if (han >= 6 && han <= 7)
-                {
-                    return (ScoreType.跳満, 3000);
-                }
-                if (han >= 8 && han <= 10)
-                {
-                    return (ScoreType.倍満, 4000);
-                }
-                if (han >= 11 && han <= 12)
-                {
-                    return (ScoreType.三倍満, 6000);
-                }
-                if (han >= 13)
-                {
-                    return (ScoreType.数え役満, 8000);
-                }
+            var yakumanCount = Mathf.Min(役満.Count, maxYakumanCount);
+            if (yakumanCount == 1)
+            {
+                return (ScoreType.役満, 8000);
+            }
+            else if (yakumanCount == 2)
+            {
+                return (ScoreType.ダブル役満, 16000);
+            }
+            else if (yakumanCount > 2)
+            {
+                return (ScoreType.トリプル役満, 24000);
+            }
 
-                var fu = Fu;
+            var han = Han;
 
-                var value = fu * (1 << (han + 2));
-                if (value < 2000)
-                {
-                    return (null, value);
-                }
-                else
-                {
-                    return (ScoreType.満貫, 2000);
-                }
+            if (han == 5)
+            {
+                return (ScoreType.満貫, 2000);
+            }
+            if (han >= 6 && han <= 7)
+            {
+                return (ScoreType.跳満, 3000);
+            }
+            if (han >= 8 && han <= 10)
+            {
+                return (ScoreType.倍満, 4000);
+            }
+            if (han >= 11 && han <= 12)
+            {
+                return (ScoreType.三倍満, 6000);
+            }
+            if (han >= 13)
+            {
+                return (ScoreType.数え役満, 8000);
+            }
+
+            var fu = Fu;
+
+            var value = fu * (1 << (han + 2));
+            if (value < 2000)
+            {
+                return (null, value);
+            }
+            else
+            {
+                return (ScoreType.満貫, 2000);
             }
         }
 
