@@ -9,7 +9,7 @@ namespace TSKT.Mahjongs
         readonly public GameResult gameResult;
         readonly public BeforeRoundStart beforeRoundStart;
         public Dictionary<Player, int> scoreDiffs;
-        public Dictionary<Player, NoCompletedFinishType> states;
+        public Dictionary<Player, ExhausiveDrawType> states;
 
         public RoundResult(GameResult gameResult)
         {

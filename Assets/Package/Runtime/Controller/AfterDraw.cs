@@ -254,18 +254,13 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public RoundResult 九種九牌(out Dictionary<Player, NoCompletedFinishType> finishRoundStates)
+        public RoundResult 九種九牌()
         {
             if (Consumed)
             {
                 throw new System.Exception("consumed controller");
             }
             Consumed = true;
-
-            finishRoundStates = new Dictionary<Player, NoCompletedFinishType>()
-            {
-                {DrawPlayer, NoCompletedFinishType.九種九牌}
-            };
 
             var result = Round.game.AdvanceRoundByテンパイ流局();
             result.scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);

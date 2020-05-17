@@ -62,12 +62,11 @@ namespace TSKT.Mahjongs
         国士無双十三面待ち,
     }
 
-    public enum NoCompletedFinishType
+    public enum ExhausiveDrawType
     {
         ノーテン,
         テンパイ,
         流し満貫,
-        九種九牌,
     }
 
     public enum ScoreType
