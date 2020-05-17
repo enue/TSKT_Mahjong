@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TSKT.Mahjongs
 {
-    public class BeforeClosedQuad : IController
+    public class BeforeClosedQuad : IBeforeQuad
     {
         public Round Round => DeclarePlayer.round;
         public int DeclarePlayerIndex => DeclarePlayer.index;
@@ -70,7 +70,7 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
-        public AfterDraw ExecuteClosedQuad()
+        public AfterDraw Execute()
         {
             if (Consumed)
             {

@@ -12,4 +12,9 @@ namespace TSKT.Mahjongs
         bool CanRon(Player player);
         AfterDraw Ron(out RoundResult roundResult, out Dictionary<Player, CompletedResult> result, params Player[] players);
     }
+    public interface IBeforeQuad : IController
+    {
+        Player DeclarePlayer { get; }
+        AfterDraw Execute();
+    }
 }
