@@ -149,7 +149,7 @@ namespace TSKT.Mahjongs
                 throw new System.Exception("consumed controller");
             }
             Consumed = true;
-            throw new System.Exception();
+            throw new System.NotImplementedException();
         }
 
         public bool CanDeclareClosedQuad(TileType tile)
