@@ -254,7 +254,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public RoundResult 九種九牌(out Dictionary<Player, ExhausiveDrawType> finishRoundStates)
+        public RoundResult 九種九牌(out Dictionary<Player, NoCompletedFinishType> finishRoundStates)
         {
             if (Consumed)
             {
@@ -262,9 +262,9 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            finishRoundStates = new Dictionary<Player, ExhausiveDrawType>()
+            finishRoundStates = new Dictionary<Player, NoCompletedFinishType>()
             {
-                {DrawPlayer, ExhausiveDrawType.九種九牌}
+                {DrawPlayer, NoCompletedFinishType.九種九牌}
             };
 
             var result = Round.game.AdvanceRoundByテンパイ流局();

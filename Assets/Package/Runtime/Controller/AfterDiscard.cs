@@ -73,8 +73,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public AfterDraw AdvanceTurn(out RoundResult roundResult,
-            out Dictionary<Player, ExhausiveDrawType> finishRoundStates)
+        public AfterDraw AdvanceTurn(out RoundResult roundResult)
         {
             if (Consumed)
             {
@@ -101,11 +100,10 @@ namespace TSKT.Mahjongs
 
                 var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
                 roundResult = null;
-                finishRoundStates = null;
                 return Round.players[playerIndex].Draw();
             }
 
-            roundResult = FinishRound(out finishRoundStates);
+            roundResult = FinishRound();
             return null;
         }
 
@@ -176,23 +174,21 @@ namespace TSKT.Mahjongs
             }
         }
 
-        RoundResult FinishRound(
-            out Dictionary<Player, ExhausiveDrawType> states)
+        RoundResult FinishRound()
         {
             if (ShouldSuspendRound)
             {
-                states = null;
                 var result = Round.game.AdvanceRoundByテンパイ流局();
                 result.scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
                 return result;
             }
-            return FinishRoundAsExhausiveDraw(out states);
+            return FinishRoundAsExhausiveDraw();
         }
 
-        RoundResult FinishRoundAsExhausiveDraw(out Dictionary<Player, ExhausiveDrawType> states)
+        RoundResult FinishRoundAsExhausiveDraw()
         {
             var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
-            states = new Dictionary<Player, ExhausiveDrawType>();
+            var states = new Dictionary<Player, NoCompletedFinishType>();
 
             var 流し満貫 = Round.players
                 .Where(_ => _.discardedTiles.Count == _.discardPile.Count && _.discardedTiles.All(x => x.type.么九牌()))
@@ -201,7 +197,7 @@ namespace TSKT.Mahjongs
             {
                 foreach (var it in 流し満貫)
                 {
-                    states.Add(it, ExhausiveDrawType.流し満貫);
+                    states.Add(it, NoCompletedFinishType.流し満貫);
                     if (it.IsDealer)
                     {
                         foreach (var player in Round.players)
@@ -230,15 +226,17 @@ namespace TSKT.Mahjongs
             {
                 foreach (var it in Round.players)
                 {
-                    states.Add(it, (it.hand.Solve().向聴数 == 0) ? ExhausiveDrawType.テンパイ : ExhausiveDrawType.ノーテン);
+                    states.Add(it, (it.hand.Solve().向聴数 == 0)
+                        ? NoCompletedFinishType.テンパイ
+                        : NoCompletedFinishType.ノーテン);
                 }
-                var getterCount = states.Count(_ => _.Value == ExhausiveDrawType.テンパイ);
+                var getterCount = states.Count(_ => _.Value == NoCompletedFinishType.テンパイ);
 
                 if (getterCount > 0 && getterCount < 4)
                 {
                     foreach (var it in states)
                     {
-                        if (it.Value == ExhausiveDrawType.テンパイ)
+                        if (it.Value == NoCompletedFinishType.テンパイ)
                         {
                             scoreDiffs[it.Key] += 3000 / getterCount;
                         }
@@ -257,22 +255,25 @@ namespace TSKT.Mahjongs
 
             if (states.TryGetValue(Round.Dealer, out var dealerState))
             {
-                if (dealerState == ExhausiveDrawType.ノーテン)
+                if (dealerState == NoCompletedFinishType.ノーテン)
                 {
                     var result = Round.game.AdvanceRoundByノーテン流局();
                     result.scoreDiffs = scoreDiffs;
+                    result.states = states;
                     return result;
                 }
-                else if (dealerState == ExhausiveDrawType.流し満貫)
+                else if (dealerState == NoCompletedFinishType.流し満貫)
                 {
                     var result = Round.game.AdvanceRoundBy親上がり();
                     result.scoreDiffs = scoreDiffs;
+                    result.states = states;
                     return result;
                 }
-                else if (dealerState == ExhausiveDrawType.テンパイ)
+                else if (dealerState == NoCompletedFinishType.テンパイ)
                 {
                     var result = Round.game.AdvanceRoundByテンパイ流局();
                     result.scoreDiffs = scoreDiffs;
+                    result.states = states;
                     return result;
                 }
                 else
@@ -285,6 +286,7 @@ namespace TSKT.Mahjongs
                 // 子の流し満貫
                 var result = Round.game.AdvanceRoundBy子上がり();
                 result.scoreDiffs = scoreDiffs;
+                result.states = states;
                 return result;
             }
         }
