@@ -70,7 +70,7 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
-        public AfterDraw Execute()
+        public AfterDraw BuildQuad()
         {
             if (Consumed)
             {
@@ -79,6 +79,12 @@ namespace TSKT.Mahjongs
             Consumed = true;
 
             return Round.ExecuteAddedOpenQuad(DeclarePlayer, tile);
+        }
+
+        public IController DoDefaultAction(out RoundResult roundResult)
+        {
+            roundResult = null;
+            return BuildQuad();
         }
     }
 }

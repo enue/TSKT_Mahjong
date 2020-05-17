@@ -426,5 +426,10 @@ namespace TSKT.Mahjongs
 
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }
+
+        public IController DoDefaultAction(out RoundResult roundResult)
+        {
+            return AdvanceTurn(out roundResult);
+        }
     }
 }
