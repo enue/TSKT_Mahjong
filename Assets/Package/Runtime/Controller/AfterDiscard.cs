@@ -73,7 +73,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public AfterDraw AdvanceTurn(out RoundResult roundResult)
+        public IController AdvanceTurn(out RoundResult roundResult)
         {
             if (Consumed)
             {
@@ -104,7 +104,7 @@ namespace TSKT.Mahjongs
             }
 
             roundResult = FinishRound();
-            return null;
+            return roundResult.beforeRoundStart; 
         }
 
         bool ShouldSuspendRound
