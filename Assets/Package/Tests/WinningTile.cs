@@ -47,7 +47,7 @@ namespace TSKT.Tests.Mahjongs
 
         public void GetWinningTiles(TileType[] expecteds, params TileType[] handTiles)
         {
-            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).Round;
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();

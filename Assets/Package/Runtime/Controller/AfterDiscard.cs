@@ -73,7 +73,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public IController AdvanceTurn(out RoundResult roundResult)
+        public AfterDraw AdvanceTurn(out RoundResult roundResult)
         {
             if (Consumed)
             {
@@ -103,8 +103,7 @@ namespace TSKT.Mahjongs
                 return Round.players[playerIndex].Draw();
             }
 
-            roundResult = FinishRound();
-            return roundResult.beforeRoundStart; 
+            return FinishRound(out roundResult);
         }
 
         bool ShouldSuspendRound
@@ -174,18 +173,18 @@ namespace TSKT.Mahjongs
             }
         }
 
-        RoundResult FinishRound()
+        AfterDraw FinishRound(out RoundResult roundResult)
         {
             if (ShouldSuspendRound)
             {
-                var result = Round.game.AdvanceRoundByテンパイ流局();
-                result.scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+                var result = Round.game.AdvanceRoundBy途中流局(out var gameResult);
+                roundResult = new RoundResult(gameResult);
                 return result;
             }
-            return FinishRoundAsExhausiveDraw();
+            return FinishRoundAsExhausiveDraw(out roundResult);
         }
 
-        RoundResult FinishRoundAsExhausiveDraw()
+        AfterDraw FinishRoundAsExhausiveDraw(out RoundResult roundResult)
         {
             var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
             var states = new Dictionary<Player, ExhausiveDrawType>();
@@ -257,23 +256,26 @@ namespace TSKT.Mahjongs
             {
                 if (dealerState == ExhausiveDrawType.ノーテン)
                 {
-                    var result = Round.game.AdvanceRoundByノーテン流局();
-                    result.scoreDiffs = scoreDiffs;
-                    result.states = states;
+                    var result = Round.game.AdvanceRoundByノーテン流局(out var gameResult);
+                    roundResult = new RoundResult(gameResult);
+                    roundResult.scoreDiffs = scoreDiffs;
+                    roundResult.states = states;
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.流し満貫)
                 {
-                    var result = Round.game.AdvanceRoundBy親上がり();
-                    result.scoreDiffs = scoreDiffs;
-                    result.states = states;
+                    var result = Round.game.AdvanceRoundBy親上がり(out var gameResult);
+                    roundResult = new RoundResult(gameResult);
+                    roundResult.scoreDiffs = scoreDiffs;
+                    roundResult.states = states;
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.テンパイ)
                 {
-                    var result = Round.game.AdvanceRoundByテンパイ流局();
-                    result.scoreDiffs = scoreDiffs;
-                    result.states = states;
+                    var result = Round.game.AdvanceRoundByテンパイ流局(out var gameResult);
+                    roundResult = new RoundResult(gameResult);
+                    roundResult.scoreDiffs = scoreDiffs;
+                    roundResult.states = states;
                     return result;
                 }
                 else
@@ -284,9 +286,10 @@ namespace TSKT.Mahjongs
             else
             {
                 // 子の流し満貫
-                var result = Round.game.AdvanceRoundBy子上がり();
-                result.scoreDiffs = scoreDiffs;
-                result.states = states;
+                var result = Round.game.AdvanceRoundBy子上がり(out var gameResult);
+                roundResult = new RoundResult(gameResult);
+                roundResult.scoreDiffs = scoreDiffs;
+                roundResult.states = states;
                 return result;
             }
         }
@@ -296,7 +299,8 @@ namespace TSKT.Mahjongs
             return rons.ContainsKey(player);
         }
 
-        public RoundResult Ron(
+        public AfterDraw Ron(
+            out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
         {
@@ -306,7 +310,9 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result);
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]),
+                out roundResult,
+                out result);
         }
 
         public bool CanOpenQuad(Player player)

@@ -25,7 +25,7 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(-1, TileType.M2, TileType.M2, TileType.白, TileType.白, TileType.白, TileType.發, TileType.發, TileType.發, TileType.中, TileType.中, TileType.中, TileType.M3, TileType.M3, TileType.M3)]
         public void シャンテン数(int expected, params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
 
             {
                 var hand = round.players[0].hand;
@@ -53,7 +53,7 @@ namespace TSKT.Tests.Mahjongs
                         槍槓: false,
                         handCap: round.game.rule.handCap);
                     var player = round.players[round.dealer + 1];
-                    var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
+                    CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var roundResult, out var results);
                     var result = results[player];
                     Debug.Log(result.tsumoPenalty.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
@@ -86,7 +86,7 @@ namespace TSKT.Tests.Mahjongs
             bool riichi,
             params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();
@@ -112,7 +112,8 @@ namespace TSKT.Tests.Mahjongs
                 handCap: round.game.rule.handCap);
 
             var player = round.Dealer;
-            var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
+            CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
+                out var roundResult,
                 out var results);
             var result = results[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
@@ -143,7 +144,7 @@ namespace TSKT.Tests.Mahjongs
             bool riichi,
             params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).StartRound().Round;
+            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();
@@ -169,7 +170,9 @@ namespace TSKT.Tests.Mahjongs
                 handCap: round.game.rule.handCap);
 
             var player = round.players[1];
-            var roundResult = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var results);
+            CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
+                out var roundResult,
+                out var results);
             var result = results[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);

@@ -152,7 +152,8 @@ namespace TSKT.Mahjongs
             return !tsumo.Value.役無し;
         }
 
-        public RoundResult Tsumo(
+        public AfterDraw Tsumo(
+            out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result)
         {
             if (Consumed)
@@ -163,6 +164,7 @@ namespace TSKT.Mahjongs
 
             return CompletedHand.Execute(
                 new Dictionary<Player, CompletedHand>() { { DrawPlayer, tsumo.Value } },
+                out roundResult,
                 out result);
         }
 
@@ -170,7 +172,8 @@ namespace TSKT.Mahjongs
         {
             return rons.ContainsKey(player);
         }
-        public RoundResult Ron(
+        public AfterDraw Ron(
+            out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
         {
@@ -180,7 +183,9 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]), out result);
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]),
+                out roundResult,
+                out result);
         }
 
         public bool CanClosedQuad(TileType tile)
@@ -254,7 +259,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public RoundResult 九種九牌()
+        public AfterDraw 九種九牌(out RoundResult roundResult)
         {
             if (Consumed)
             {
@@ -262,9 +267,20 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            var result = Round.game.AdvanceRoundByテンパイ流局();
-            result.scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+            var result = Round.game.AdvanceRoundBy途中流局(out var gameResult);
+            roundResult = new RoundResult(gameResult);
             return result;
+        }
+
+        public AfterDraw ResetRound(params TileType[][] initialPlayerTilesByCheat)
+        {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
+            return Round.game.StartRound(initialPlayerTilesByCheat);
         }
     }
 }

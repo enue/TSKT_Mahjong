@@ -18,10 +18,10 @@ namespace TSKT.Mahjongs
         public readonly ScoreOwner[] scoreOwners;
         public readonly RuleSetting rule;
 
-        static public BeforeRoundStart Create(int firstDealer, RuleSetting rule)
+        static public AfterDraw Create(int firstDealer, RuleSetting rule)
         {
             var game = new Game(firstDealer, rule);
-            return new BeforeRoundStart(game);
+            return game.StartRound();
         }
 
         Game(int firstDealer, RuleSetting rule)
@@ -42,18 +42,20 @@ namespace TSKT.Mahjongs
             return round.Start();
         }
 
-        public RoundResult AdvanceRoundBy親上がり()
+        public AfterDraw AdvanceRoundBy親上がり(out GameResult gameResult)
         {
             ++連荘;
             ++本場;
 
             if (ShouldFinish)
             {
-                return new RoundResult(new GameResult(this));
+                gameResult = new GameResult(this);
+                return null;
             }
-            return new RoundResult(new BeforeRoundStart(this));
+            gameResult = null;
+            return StartRound();
         }
-        public RoundResult AdvanceRoundBy子上がり()
+        public AfterDraw AdvanceRoundBy子上がり(out GameResult gameResult)
         {
             連荘 = 0;
             本場 = 0;
@@ -69,25 +71,35 @@ namespace TSKT.Mahjongs
 
             if (ShouldFinish)
             {
-                return new RoundResult(new GameResult(this));
+                gameResult = new GameResult(this);
+                return null;
             }
-            return new RoundResult(new BeforeRoundStart(this));
+            gameResult = null;
+            return StartRound();
         }
 
-        public RoundResult AdvanceRoundByノーテン流局()
+        public AfterDraw AdvanceRoundByノーテン流局(out GameResult gameResult)
         {
-            return AdvanceRoundBy子上がり();
+            return AdvanceRoundBy子上がり(out gameResult);
         }
 
-        public RoundResult AdvanceRoundByテンパイ流局()
+
+        public AfterDraw AdvanceRoundBy途中流局(out GameResult gameResult)
+        {
+            return AdvanceRoundByテンパイ流局(out gameResult);
+        }
+
+        public AfterDraw AdvanceRoundByテンパイ流局(out GameResult gameResult)
         {
             ++本場;
 
             if (ShouldFinish)
             {
-                return new RoundResult(new GameResult(this));
+                gameResult = new GameResult(this);
+                return null;
             }
-            return new RoundResult(new BeforeRoundStart(this));
+            gameResult = null;
+            return StartRound();
         }
 
 
