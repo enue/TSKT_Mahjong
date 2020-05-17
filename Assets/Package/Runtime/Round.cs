@@ -109,7 +109,7 @@ namespace TSKT.Mahjongs
             player.hand.tiles.Remove(tile);
 
             var drawTile = DrawFromDeadWallTile(player);
-            return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true, 加槓牌: tile);
+            return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
         }
 
         public AfterDraw ExecuteOpenQuad(Player player, Player discardPlayer)

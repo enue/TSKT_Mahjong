@@ -14,7 +14,6 @@ namespace TSKT.Mahjongs
         public bool Consumed { get; private set; }
 
         public readonly Tile newTileInHand;
-        public readonly Tile 加槓牌;
         public readonly Hands.Solution handSolution;
         public readonly CompletedHand? tsumo;
 
@@ -27,12 +26,10 @@ namespace TSKT.Mahjongs
 
         public AfterDraw(Player player, Tile newTileInHand,
             bool 嶺上,
-            bool openDoraAfterDiscard,
-            Tile 加槓牌 = null)
+            bool openDoraAfterDiscard)
         {
             DrawPlayer = player;
             this.newTileInHand = newTileInHand;
-            this.加槓牌 = 加槓牌;
             this.openDoraAfterDiscard = openDoraAfterDiscard;
 
             if (newTileInHand != null)
@@ -49,36 +46,6 @@ namespace TSKT.Mahjongs
                         地和: 鳴きなし && 一巡目 && !player.IsDealer,
                         人和: false,
                         槍槓: false);
-                }
-            }
-            if (加槓牌 != null)
-            {
-                foreach (var ronPlayer in Round.players)
-                {
-                    if (ronPlayer == DrawPlayer)
-                    {
-                        continue;
-                    }
-                    var hand = ronPlayer.hand.Clone();
-                    hand.tiles.Add(加槓牌);
-                    var solution = hand.Solve();
-                    if (solution.向聴数 > -1)
-                    {
-                        continue;
-                    }
-                    var completed = solution.ChoiceCompletedHand(ronPlayer, 加槓牌.type,
-                        ronTarget: DrawPlayer,
-                        嶺上: false,
-                        海底: false,
-                        河底: false,
-                        天和: false,
-                        地和: false,
-                        人和: false,
-                        槍槓: true);
-                    if (!completed.役無し)
-                    {
-                        rons.Add(ronPlayer, completed);
-                    }
                 }
             }
         }
@@ -170,7 +137,7 @@ namespace TSKT.Mahjongs
 
         public bool CanRon(Player player)
         {
-            return rons.ContainsKey(player);
+            return false;
         }
         public AfterDraw Ron(
             out RoundResult roundResult,
@@ -182,10 +149,7 @@ namespace TSKT.Mahjongs
                 throw new System.Exception("consumed controller");
             }
             Consumed = true;
-
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]),
-                out roundResult,
-                out result);
+            throw new System.Exception();
         }
 
         public bool CanClosedQuad(TileType tile)
@@ -214,7 +178,7 @@ namespace TSKT.Mahjongs
             return Round.ExecuteClosedQuad(DrawPlayer, tile);
         }
 
-        public bool CanAddedOpenQuad(TileType tile)
+        public bool CanDeclareAddedOpenQuad(TileType tile)
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
@@ -228,7 +192,7 @@ namespace TSKT.Mahjongs
             }
             return DrawPlayer.CanAddedOpenQuad(tile);
         }
-        public AfterDraw AddedOpenQuad(Tile tile)
+        public BeforeAddedOpenQuad DeclareAddedOpenQuad(Tile tile)
         {
             if (Consumed)
             {
@@ -236,7 +200,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return Round.ExecuteAddedOpenQuad(DrawPlayer, tile);
+            return new BeforeAddedOpenQuad(DrawPlayer, tile);
         }
 
         public bool Can九種九牌
