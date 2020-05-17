@@ -135,23 +135,6 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
-        public bool CanRon(Player player)
-        {
-            return false;
-        }
-        public AfterDraw Ron(
-            out RoundResult roundResult,
-            out Dictionary<Player, CompletedResult> result,
-            params Player[] players)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-            throw new System.NotImplementedException();
-        }
-
         public bool CanDeclareClosedQuad(TileType tile)
         {
             // 海底はカンできない
@@ -250,6 +233,47 @@ namespace TSKT.Mahjongs
         public IController DoDefaultAction(out RoundResult roundResult)
         {
             throw new System.NotImplementedException();
+        }
+
+        public ICommand[] ExecutableCommands
+        {
+            get
+            {
+                var result = new List<ICommand>();
+                foreach (var tile in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
+                {
+                    if (CanDeclareClosedQuad(tile))
+                    {
+                        result.Add(new Commands.DeclareClosedQuad(this, tile));
+                    }
+                }
+
+                foreach (var tile in DrawPlayer.hand.tiles)
+                {
+                    if (CanDeclareAddedOpenQuad(tile.type))
+                    {
+                        result.Add(new Commands.DeclareAddedOpenQuad(this, tile));
+                    }
+                    if (CanDiscard(tile))
+                    {
+                        result.Add(new Commands.Discard(this, tile));
+                    }
+                    if (CanRiichi(tile))
+                    {
+                        result.Add(new Commands.Riichi(this, tile));
+                    }
+                }
+                if (CanTsumo())
+                {
+                    result.Add(new Commands.Tsumo(this));
+                }
+                if (Can九種九牌)
+                {
+                    result.Add(new Commands.九種九牌(this));
+                }
+
+                return result.ToArray();
+            }
         }
     }
 }

@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace TSKT.Mahjongs
 {
-    public class AfterDiscard : IController
+    public class AfterDiscard : IController, IRonableController
     {
         public Round Round => DiscardPlayer.round;
         public int DiscardPlayerIndex => DiscardPlayer.index;
         public Player DiscardPlayer { get; }
         public bool Consumed { get; private set; }
 
-        public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
+        public Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
         public Tile DiscardedTile => Round.players[DiscardPlayerIndex].discardPile.Last();
 
@@ -55,7 +55,7 @@ namespace TSKT.Mahjongs
                         槍槓: false);
                     if (!completed.役無し)
                     {
-                        rons.Add(ronPlayer, completed);
+                        PlayerRons.Add(ronPlayer, completed);
                     }
                 }
             }
@@ -296,7 +296,7 @@ namespace TSKT.Mahjongs
 
         public bool CanRon(Player player)
         {
-            return rons.ContainsKey(player);
+            return PlayerRons.ContainsKey(player);
         }
 
         public AfterDraw Ron(
@@ -310,7 +310,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]),
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]),
                 out roundResult,
                 out result);
         }
@@ -385,6 +385,12 @@ namespace TSKT.Mahjongs
 
         public bool CanChi(Player player, out List<(Tile left, Tile right)> combinations)
         {
+            if (player == DiscardPlayer)
+            {
+                combinations = null;
+                return false;
+            }
+
             // 河底はチーできない
             if (Round.wallTile.tiles.Count == 0)
             {
@@ -430,6 +436,40 @@ namespace TSKT.Mahjongs
         public IController DoDefaultAction(out RoundResult roundResult)
         {
             return AdvanceTurn(out roundResult);
+        }
+
+        public ICommand[] ExecutableCommands
+        {
+            get
+            {
+                var result = new List<ICommand>();
+                foreach (var player in Round.players)
+                {
+                    if (CanRon(player))
+                    {
+                        result.Add(new Commands.Ron(player, this));
+                    }
+                    if (CanChi(player, out var combinations))
+                    {
+                        foreach(var combination in combinations)
+                        {
+                            result.Add(new Commands.Chi(player, this, combination));
+                        }
+                    }
+                    if (CanPon(player, out var pairs))
+                    {
+                        foreach (var pair in pairs)
+                        {
+                            result.Add(new Commands.Chi(player, this, pair));
+                        }
+                    }
+                    if (CanOpenQuad(player))
+                    {
+                        result.Add(new Commands.Kan(player, this));
+                    }
+                }
+                return result.ToArray();
+            }
         }
     }
 }

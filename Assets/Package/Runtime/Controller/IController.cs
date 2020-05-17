@@ -9,13 +9,19 @@ namespace TSKT.Mahjongs
     {
         Round Round { get; }
         bool Consumed { get; }
-        bool CanRon(Player player);
-        AfterDraw Ron(out RoundResult roundResult, out Dictionary<Player, CompletedResult> result, params Player[] players);
 
         IController DoDefaultAction(out RoundResult roundResult);
+        ICommand[] ExecutableCommands { get; }
     }
 
-    public interface IBeforeQuad : IController
+    public interface IRonableController
+    {
+        bool CanRon(Player player);
+        AfterDraw Ron(out RoundResult roundResult, out Dictionary<Player, CompletedResult> result, params Player[] players);
+        Dictionary<Player, CompletedHand> PlayerRons { get; }
+    }
+
+    public interface IBeforeQuad : IController, IRonableController
     {
         Player DeclarePlayer { get; }
         AfterDraw BuildQuad();

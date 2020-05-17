@@ -9,23 +9,24 @@ namespace TSKT.Mahjongs.Commands
     public abstract class CommandAfterDraw : ICommand
     {
         public readonly AfterDraw afterDraw;
-        public readonly Player player;
 
-        public CommandAfterDraw(Player player, AfterDraw afterDraw)
+        public CommandAfterDraw(AfterDraw afterDraw)
         {
-            this.player = player;
             this.afterDraw = afterDraw;
         }
 
         public abstract CommandPriority Priority { get; }
         public abstract CommandResult TryExecute();
+        public abstract Player Executor { get; }
     }
 
     public class 九種九牌 : CommandAfterDraw
     {
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
-        public 九種九牌(Player player, AfterDraw afterDraw) : base(player, afterDraw)
+        public override Player Executor => afterDraw.DrawPlayer;
+
+        public 九種九牌(AfterDraw afterDraw) : base(afterDraw)
         {
         }
 
@@ -41,8 +42,10 @@ namespace TSKT.Mahjongs.Commands
     {
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
+        public override Player Executor => afterDraw.DrawPlayer;
         readonly Tile tile;
-        public Discard(AfterDraw afterDraw, Tile tile) : base(afterDraw.DrawPlayer, afterDraw)
+
+        public Discard(AfterDraw afterDraw, Tile tile) : base(afterDraw)
         {
             this.tile = tile;
         }
@@ -52,12 +55,14 @@ namespace TSKT.Mahjongs.Commands
             return new CommandResult(afterDraw.Discard(tile, false));
         }
     }
-    public class Richi : CommandAfterDraw
+    public class Riichi : CommandAfterDraw
     {
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
+        public override Player Executor => afterDraw.DrawPlayer;
         readonly Tile tile;
-        public Richi(AfterDraw afterDraw, Tile tile) : base(afterDraw.DrawPlayer, afterDraw)
+
+        public Riichi(AfterDraw afterDraw, Tile tile) : base(afterDraw)
         {
             this.tile = tile;
         }
@@ -71,8 +76,10 @@ namespace TSKT.Mahjongs.Commands
     {
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
+        public override Player Executor => afterDraw.DrawPlayer;
         readonly TileType tile;
-        public DeclareClosedQuad(AfterDraw afterDraw, TileType tile) : base(afterDraw.DrawPlayer, afterDraw)
+
+        public DeclareClosedQuad(AfterDraw afterDraw, TileType tile) : base(afterDraw)
         {
             this.tile = tile;
         }
@@ -87,8 +94,10 @@ namespace TSKT.Mahjongs.Commands
     {
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
+        public override Player Executor => afterDraw.DrawPlayer;
         readonly Tile tile;
-        public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile) : base(afterDraw.DrawPlayer, afterDraw)
+
+        public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile) : base(afterDraw)
         {
             this.tile = tile;
         }
@@ -103,7 +112,9 @@ namespace TSKT.Mahjongs.Commands
     {
         public static CommandPriority GetPriority => CommandPriority.Tsumo;
         public override CommandPriority Priority => GetPriority;
-        public Tsumo(AfterDraw afterDraw) : base(afterDraw.DrawPlayer, afterDraw)
+        public override Player Executor => afterDraw.DrawPlayer;
+
+        public Tsumo(AfterDraw afterDraw) : base(afterDraw)
         {
         }
 

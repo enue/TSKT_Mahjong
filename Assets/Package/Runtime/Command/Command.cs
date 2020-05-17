@@ -1,31 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TSKT;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace TSKT.Mahjongs
 {
-    public enum CommandPriority
-    {
-        Lowest,
-        Chi,
-        Pon,
-        Ron,
-        Tsumo,
-    }
-
     public interface ICommand
     {
-        CommandPriority Priority { get; }
+        Commands.CommandPriority Priority { get; }
         CommandResult TryExecute();
+        Player Executor { get; }
     }
 
     public class CommandSelector
     {
         public readonly IController origin;
         public readonly List<ICommand> commands = new List<ICommand>();
-        public CommandPriority MaxPriority => commands.Count == 0 ? CommandPriority.Lowest : commands.Max(_ => _.Priority);
+        public Commands.CommandPriority MaxPriority => commands.Count == 0 ? Commands.CommandPriority.Lowest : commands.Max(_ => _.Priority);
 
         public CommandSelector(IController origin)
         {
@@ -41,7 +31,7 @@ namespace TSKT.Mahjongs
                 return new CommandResult(nextController, roundResult);
             }
 
-            var rons = new List<Player>();
+            var ronExecutor = new List<Player>();
             var maxPriority = MaxPriority;
             foreach (var it in commands.Where(_ => _.Priority == maxPriority))
             {
@@ -49,30 +39,18 @@ namespace TSKT.Mahjongs
                 var commandResult = it.TryExecute();
                 if (commandResult != null)
                 {
-                    Debug.Assert(rons.Count == 0);
+                    Debug.Assert(ronExecutor.Count == 0);
                     return commandResult;
                 }
 
-                if (it is Commands.Ron ron)
-                {
-                    executedCommands.Add(it);
-                    rons.Add(ron.player);
-                }
-                else if (it is Commands.槍槓 槍槓)
-                {
-                    executedCommands.Add(it);
-                    rons.Add(槍槓.player);
-                }
-                else
-                {
-                    throw new System.ArgumentException(it.ToString());
-                }
+                executedCommands.Add(it);
+                ronExecutor.Add(it.Executor);
             }
 
-            Debug.Assert(rons.Count > 0);
+            Debug.Assert(ronExecutor.Count > 0);
 
             {
-                var nextController = origin.Ron(out var roundResult, out var completedResults, rons.ToArray());
+                var nextController = ((IRonableController)origin).Ron(out var roundResult, out var completedResults, ronExecutor.ToArray());
                 return new CommandResult(nextController, roundResult, completedResults);
             }
         }
@@ -82,15 +60,26 @@ namespace TSKT.Mahjongs
     {
         public readonly IController nextController;
         public readonly RoundResult roundResult;
-        public readonly Dictionary<Mahjongs.Player, CompletedResult> completedResults;
+        public readonly Dictionary<Player, CompletedResult> completedResults;
 
         public CommandResult(IController nextController,
             RoundResult roundResult = null,
-            Dictionary<Mahjongs.Player, CompletedResult> completedResults = null)
+            Dictionary<Player, CompletedResult> completedResults = null)
         {
             this.nextController = nextController;
             this.roundResult = roundResult;
             this.completedResults = completedResults;
         }
+    }
+}
+namespace TSKT.Mahjongs.Commands
+{
+    public enum CommandPriority
+    {
+        Lowest,
+        Chi,
+        Pon,
+        Ron,
+        Tsumo,
     }
 }

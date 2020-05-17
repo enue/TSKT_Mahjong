@@ -14,7 +14,7 @@ namespace TSKT.Mahjongs
         public bool Consumed { get; private set; }
 
         public readonly TileType tile;
-        public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
+        public Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
         public BeforeClosedQuad(Player declarePlayer, TileType tile)
         {
@@ -45,14 +45,14 @@ namespace TSKT.Mahjongs
                     槍槓: false);
                 if (completed.役満.ContainsKey(役.国士無双))
                 {
-                    rons.Add(ronPlayer, completed);
+                    PlayerRons.Add(ronPlayer, completed);
                 }
             }
         }
 
         public bool CanRon(Player player)
         {
-            return rons.ContainsKey(player);
+            return PlayerRons.ContainsKey(player);
         }
         public AfterDraw Ron(
             out RoundResult roundResult,
@@ -65,7 +65,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => rons[_]),
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]),
                 out roundResult,
                 out result);
         }
@@ -85,6 +85,22 @@ namespace TSKT.Mahjongs
         {
             roundResult = null;
             return BuildQuad();
+        }
+
+        public ICommand[] ExecutableCommands
+        {
+            get
+            {
+                var result = new List<ICommand>();
+                foreach (var player in Round.players)
+                {
+                    if (CanRon(player))
+                    {
+                        result.Add(new Commands.槍槓(player, this));
+                    }
+                }
+                return result.ToArray();
+            }
         }
     }
 }
