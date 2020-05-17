@@ -9,5 +9,7 @@ namespace TSKT.Mahjongs
     {
         Round Round { get; }
         bool Consumed { get; }
+        bool CanRon(Player player);
+        AfterDraw Ron(out RoundResult roundResult, out Dictionary<Player, CompletedResult> result, params Player[] players);
     }
 }
