@@ -7,10 +7,10 @@ namespace TSKT.Mahjongs
 {
     public readonly struct CompletedResult
     {
-        public readonly (int dealer, int player)? tsumoPenalty;
-        public readonly int? dealerTsumoPenalty;
-        public readonly int? ronPenalty;
-        public readonly Dictionary<Player, int> scoreDiffs;
+        public readonly (double dealer, double player)? tsumoPenalty;
+        public readonly double? dealerTsumoPenalty;
+        public readonly double? ronPenalty;
+        public readonly Dictionary<Player, double> scoreDiffs;
         public readonly (int han, int fu)? displayScore;
         public readonly ScoreType? scoreType;
         public readonly Dictionary<役, int> display役s;
@@ -20,7 +20,7 @@ namespace TSKT.Mahjongs
 
         public CompletedResult(CompletedHand source, Player player)
         {
-            scoreType = source.基本点(player.round.game.rule.handCap).type;
+            scoreType = source.基本点(player.round.game.rule).type;
             dora = source.Dora;
             uraDora = source.UraDora;
             redTile = source.RedTile;
@@ -32,7 +32,7 @@ namespace TSKT.Mahjongs
             else
             {
                 display役s = source.Yakus;
-                if (source.Han >= 5)
+                if (source.Han >= 5 && player.round.game.rule.青天井 == Rules.青天井.なし)
                 {
                     displayScore = null;
                 }
@@ -43,14 +43,14 @@ namespace TSKT.Mahjongs
             }
 
             var asDealer = player.IsDealer;
-            scoreDiffs = new Dictionary<Player, int>();
+            scoreDiffs = new Dictionary<Player, double>();
 
             if (source.自摸)
             {
                 ronPenalty = null;
                 if (asDealer)
                 {
-                    dealerTsumoPenalty = 親自摸Penalty(source.基本点(player.round.game.rule.handCap).score, player.round.game.本場);
+                    dealerTsumoPenalty = 親自摸Penalty(source.基本点(player.round.game.rule).score, player.round.game.本場);
                     tsumoPenalty = null;
 
                     foreach (var it in player.round.players)
@@ -64,7 +64,7 @@ namespace TSKT.Mahjongs
                 }
                 else
                 {
-                    tsumoPenalty = 子自摸Penalty(source.基本点(player.round.game.rule.handCap).score, player.round.game.本場);
+                    tsumoPenalty = 子自摸Penalty(source.基本点(player.round.game.rule).score, player.round.game.本場);
                     dealerTsumoPenalty = null;
 
                     foreach (var it in player.round.players)
@@ -86,7 +86,7 @@ namespace TSKT.Mahjongs
             }
             else
             {
-                ronPenalty = RonPenalty(source.基本点(player.round.game.rule.handCap).score, asDealer, player.round.game.本場);
+                ronPenalty = RonPenalty(source.基本点(player.round.game.rule).score, asDealer, player.round.game.本場);
                 dealerTsumoPenalty = null;
                 tsumoPenalty = null;
 
@@ -95,19 +95,19 @@ namespace TSKT.Mahjongs
             }
         }
 
-        static int 親自摸Penalty(int basicScore, int 本場)
+        static double 親自摸Penalty(double basicScore, int 本場)
         {
             return Ceil(basicScore * 2) + 本場 * 100;
         }
 
-        static (int dealer, int player) 子自摸Penalty(int basicScore, int 本場)
+        static (double dealer, double player) 子自摸Penalty(double basicScore, int 本場)
         {
             return (
                 Ceil(basicScore * 2) + 本場 * 100,
                 Ceil(basicScore) + 本場 * 100);
         }
 
-        static int RonPenalty(int basicScore, bool asDealer, int 本場)
+        static double RonPenalty(double basicScore, bool asDealer, int 本場)
         {
             if (asDealer)
             {
@@ -119,14 +119,14 @@ namespace TSKT.Mahjongs
             }
         }
 
-        static int Ceil(int score)
+        static double Ceil(double score)
         {
-            var fraction = score % 100;
+            var fraction = score % 100.0;
             if (fraction == 0)
             {
                 return score;
             }
-            return score + 100 - fraction;
+            return score + 100.0 - fraction;
         }
 
     }

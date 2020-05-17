@@ -15,5 +15,6 @@ namespace TSKT.Mahjongs
         public TripleRon tripleRon = TripleRon.有効;
         public HandCap handCap = HandCap.トリプル役満;
         public 四家立直 四家立直 = 四家立直.流局;
+        public 青天井 青天井 = 青天井.なし;
     }
 }

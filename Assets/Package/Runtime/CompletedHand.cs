@@ -522,10 +522,10 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public (ScoreType? type, int score) 基本点(Rules.HandCap handCap)
+        public (ScoreType? type, double score) 基本点(RuleSetting rule)
         {
             int maxYakumanCount;
-            switch(handCap)
+            switch(rule.handCap)
             {
                 case Rules.HandCap.役満:
                     maxYakumanCount = 1;
@@ -537,21 +537,38 @@ namespace TSKT.Mahjongs
                     maxYakumanCount = 3;
                     break;
                 default:
-                    throw new System.ArgumentException(handCap.ToString());
+                    throw new System.ArgumentException(rule.handCap.ToString());
             }
 
             var yakumanCount = Mathf.Min(役満.Values.Sum(), maxYakumanCount);
             if (yakumanCount == 1)
             {
+                if (rule.青天井 == Rules.青天井.役満固定)
+                {
+                    return (ScoreType.役満, 2500000);
+                }
                 return (ScoreType.役満, 8000);
             }
             else if (yakumanCount == 2)
             {
+                if (rule.青天井 == Rules.青天井.役満固定)
+                {
+                    return (ScoreType.役満, 5000000);
+                }
                 return (ScoreType.ダブル役満, 16000);
             }
             else if (yakumanCount > 2)
             {
+                if (rule.青天井 == Rules.青天井.役満固定)
+                {
+                    return (ScoreType.役満, 7500000);
+                }
                 return (ScoreType.トリプル役満, 24000);
+            }
+
+            if (rule.青天井 == Rules.青天井.役満固定)
+            {
+                return (null, Fu * Unity.Mathematics.math.pow(2, Han + 2));
             }
 
             var han = Han;
@@ -1318,13 +1335,13 @@ namespace TSKT.Mahjongs
                 playerResults = new Dictionary<Player, CompletedResult>();
                 var result = game.AdvanceRoundBy子上がり(out var gameResult);
                 roundResult = new RoundResult(gameResult);
-                roundResult.scoreDiffs = round.players.ToDictionary(_ => _, _ => 0);
+                roundResult.scoreDiffs = round.players.ToDictionary(_ => _, _ => 0.0);
                 return result;
             }
 
             playerResults = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
 
-            var scoreDiffs = new Dictionary<Player, int>();
+            var scoreDiffs = new Dictionary<Player, double>();
             foreach (var it in round.players)
             {
                 scoreDiffs[it] = -it.scoreOwner.score;

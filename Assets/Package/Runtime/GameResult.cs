@@ -8,7 +8,7 @@ namespace TSKT.Mahjongs
     public class GameResult
     {
         public readonly int[] sortedPlayerIndices;
-        public readonly Dictionary<int, (int rank, int reward)> playerRanks;
+        public readonly Dictionary<int, (int rank, double reward)> playerRanks;
 
         public GameResult(Game game)
         {
@@ -29,7 +29,7 @@ namespace TSKT.Mahjongs
                 .ThenByDescending(_ => orderedPositionFromFirstOrder[RelativePlayerUtil.GetByPlayerIndex(game.firstDealer, _)])
                 .ToArray();
 
-            var rewards = new Dictionary<int, int>();
+            var rewards = new Dictionary<int, double>();
             var topPlayerIndex = sortedPlayerIndices[0];
             rewards[topPlayerIndex] = umas[0];
 
@@ -39,13 +39,13 @@ namespace TSKT.Mahjongs
                 if (playerIndex != topPlayerIndex)
                 {
                     var score = game.scoreOwners[playerIndex].score;
-                    var p = Mathf.RoundToInt((score - kaesi) / 1000f);
+                    var p = System.Math.Round((score - kaesi) / 1000.0);
                     rewards[playerIndex] = p + umas[i];
                     rewards[topPlayerIndex] -= p;
                 }
             }
 
-            playerRanks = new Dictionary<int, (int rank, int reward)>();
+            playerRanks = new Dictionary<int, (int rank, double reward)>();
             for (int i = 0; i < sortedPlayerIndices.Length; ++i)
             {
                 var playerIndex = sortedPlayerIndices[i];

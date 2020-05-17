@@ -33,4 +33,10 @@ namespace TSKT.Mahjongs.Rules
         続行,
         流局,
     }
+    public enum 青天井
+    {
+        なし,
+        役満固定,
+        // 役満は13翻,
+    }
 }

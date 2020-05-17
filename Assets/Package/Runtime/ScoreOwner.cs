@@ -7,7 +7,7 @@ namespace TSKT.Mahjongs
     public class ScoreOwner
     {
         public readonly Game game;
-        public int score;
+        public double score;
 
         public ScoreOwner(Game game)
         {

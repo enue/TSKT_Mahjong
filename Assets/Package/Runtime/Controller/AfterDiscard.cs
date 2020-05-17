@@ -186,7 +186,7 @@ namespace TSKT.Mahjongs
 
         AfterDraw FinishRoundAsExhausiveDraw(out RoundResult roundResult)
         {
-            var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+            var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0.0);
             var states = new Dictionary<Player, ExhausiveDrawType>();
 
             var 流し満貫 = Round.players

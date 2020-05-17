@@ -51,11 +51,11 @@ namespace TSKT.Tests.Mahjongs
                         doraTiles: null,
                         uraDoraTiles: null,
                         槍槓: false,
-                        handCap: round.game.rule.handCap);
+                        rule: round.game.rule);
                     var player = round.players[round.dealer + 1];
                     CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var roundResult, out var results);
                     var result = results[player];
-                    Debug.Log(result.tsumoPenalty.Value);
+                    Debug.Log("ツモ:" + result.tsumoPenalty.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
                     Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
                     Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
@@ -109,7 +109,7 @@ namespace TSKT.Tests.Mahjongs
                 doraTiles: null,
                 uraDoraTiles: null,
                 槍槓: false,
-                handCap: round.game.rule.handCap);
+                rule: round.game.rule);
 
             var player = round.Dealer;
             CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
@@ -167,7 +167,7 @@ namespace TSKT.Tests.Mahjongs
                 doraTiles: null,
                 uraDoraTiles: null,
                 槍槓: false,
-                handCap: round.game.rule.handCap);
+                rule: round.game.rule);
 
             var player = round.players[1];
             CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },

@@ -2,7 +2,8 @@
     "name": "TKST.Mahjong",
     "references": [
         "TSKTContainer",
-        "TSKT.Math"
+        "TSKT.Math",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
