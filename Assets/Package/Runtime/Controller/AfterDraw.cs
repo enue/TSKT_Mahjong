@@ -152,7 +152,7 @@ namespace TSKT.Mahjongs
             throw new System.Exception();
         }
 
-        public bool CanClosedQuad(TileType tile)
+        public bool CanDeclareClosedQuad(TileType tile)
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
@@ -167,7 +167,7 @@ namespace TSKT.Mahjongs
             // 暗槓は立直後でもできる
             return DrawPlayer.CanClosedQuad(tile);
         }
-        public AfterDraw ClosedQuad(TileType tile)
+        public BeforeClosedQuad DeclareClosedQuad(TileType tile)
         {
             if (Consumed)
             {
@@ -175,7 +175,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return Round.ExecuteClosedQuad(DrawPlayer, tile);
+            return new BeforeClosedQuad(DrawPlayer, tile);
         }
 
         public bool CanDeclareAddedOpenQuad(TileType tile)
