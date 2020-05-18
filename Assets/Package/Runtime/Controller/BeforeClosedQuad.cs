@@ -28,7 +28,7 @@ namespace TSKT.Mahjongs
                     continue;
                 }
                 var hand = ronPlayer.hand.Clone();
-                hand.tiles.Add(new Tile(tile, false));
+                hand.tiles.Add(new Tile(0, tile, false));
                 var solution = hand.Solve();
                 if (solution.向聴数 > -1)
                 {

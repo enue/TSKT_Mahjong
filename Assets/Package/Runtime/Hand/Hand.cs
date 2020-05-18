@@ -16,6 +16,14 @@ namespace TSKT.Mahjongs
             this.owner = owner;
         }
 
+        public Serializables.Hand ToSerializable()
+        {
+            var result = new Serializables.Hand();
+            result.tiles = tiles.Select(_ => _.id).ToArray();
+            result.melds = melds.Select(_ => _.ToSerializable()).ToArray();
+            return result;
+        }
+
         public void Sort()
         {
             tiles.Sort();
@@ -91,7 +99,7 @@ namespace TSKT.Mahjongs
                 }
 
                 var clone = Clone();
-                clone.tiles.Add(new Tile(tile, false));
+                clone.tiles.Add(new Tile(0, tile, false));
                 if (clone.Solve().向聴数 == -1)
                 {
                     result.Add(tile);
@@ -127,6 +135,13 @@ namespace TSKT.Mahjongs
                 return result;
             }
         }
+        public Serializables.Meld ToSerializable()
+        {
+            var result = new Serializables.Meld();
+            result.tileFroms = tileFroms
+                .Select(_ => new Serializables.Meld.Pair() { tile = _.tile.id, from = _.from.index })
+                .ToArray();
+            return result;
+        }
     }
-
 }

@@ -73,6 +73,18 @@ namespace TSKT.Mahjongs
             deadWallTile.OpenDora();
         }
 
+        public Serializables.Round ToSerializable()
+        {
+            var result = new Serializables.Round();
+            result.deadWallTile = deadWallTile.ToSerializable();
+            result.dealer = dealer;
+            result.players = players.Select(_ => _.ToSerializable()).ToArray();
+            result.roundWind = roundWind;
+            result.totalDiscardedTiles = totalDiscardedTiles.Select(_ => _.id).ToArray();
+            result.wallTile = wallTile.ToSerializable();
+            return result;
+        }
+
         public AfterDraw Start()
         {
             return Dealer.Draw();

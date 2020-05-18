@@ -5,9 +5,10 @@ using TSKT.Mahjongs.Rules;
 
 namespace TSKT.Mahjongs
 {
+    [System.Serializable]
     public class RuleSetting
     {
-        public PaymentRule payment = new PaymentRule(30000, 20, 10, -10, -20);
+        public PaymentRule payment = new PaymentRule();
         public EndRule end = new EndRule();
 
         public int initialScore = 25000;

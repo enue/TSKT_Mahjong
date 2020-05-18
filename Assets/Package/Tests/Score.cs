@@ -30,7 +30,7 @@ namespace TSKT.Tests.Mahjongs
             {
                 var hand = round.players[0].hand;
                 hand.tiles.Clear();
-                hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(_, red: false)).ToList()));
+                hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
                 var solution = hand.Solve();
                 Assert.AreEqual(expected, solution.向聴数);
 
@@ -67,7 +67,7 @@ namespace TSKT.Tests.Mahjongs
             {
                 var hand = round.players[0].hand;
                 hand.tiles.Clear();
-                hand.tiles.AddRange(tiles.Select(_ => new Tile(_, red: false)));
+                hand.tiles.AddRange(tiles.Select(_ => new Tile(0, _, red: false)));
 
                 foreach (var it in hand.tiles)
                 {
@@ -90,7 +90,7 @@ namespace TSKT.Tests.Mahjongs
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();
-            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(_, red: false)).ToList()));
+            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             var solution = hand.Solve();
             Assert.AreEqual(-1, solution.向聴数);
 
@@ -148,7 +148,7 @@ namespace TSKT.Tests.Mahjongs
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();
-            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(_, red: false)).ToList()));
+            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             var solution = hand.Solve();
             Assert.AreEqual(-1, solution.向聴数);
 

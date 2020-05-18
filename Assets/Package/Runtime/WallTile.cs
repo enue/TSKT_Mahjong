@@ -8,6 +8,7 @@ namespace TSKT.Mahjongs
     public class WallTile
     {
         readonly public List<Tile> tiles = new List<Tile>();
+        readonly public Tile[] allTiles;
 
         public WallTile(Rules.RedTile redTile)
         {
@@ -40,25 +41,36 @@ namespace TSKT.Mahjongs
                 if (it == TileType.M5 && m5rCount > 0)
                 {
                     --m5rCount;
-                    tiles.Add(new Tile(it, true));
+                    tiles.Add(new Tile(tiles.Count + 1, it, true));
                 }
                 else if (it == TileType.P5 && p5rCount > 0)
                 {
                     --p5rCount;
-                    tiles.Add(new Tile(it, true));
+                    tiles.Add(new Tile(tiles.Count + 1, it, true));
                 }
                 else if (it == TileType.S5 && s5rCount > 0)
                 {
                     --s5rCount;
-                    tiles.Add(new Tile(it, true));
+                    tiles.Add(new Tile(tiles.Count + 1, it, true));
                 }
                 else
                 {
-                    tiles.Add(new Tile(it, false));
+                    tiles.Add(new Tile(tiles.Count + 1, it, false));
                 }
             }
             RandomUtil.Shuffle(ref tiles);
+
+            allTiles = tiles.ToArray();
         }
+
+        public Serializables.WallTile ToSerializable()
+        {
+            var result = new Serializables.WallTile();
+            result.allTiles = allTiles.Select(_ => _.ToSerializable()).ToArray();
+            result.tiles = tiles.Select(_ => _.id).ToArray();
+            return result;
+        }
+
     }
 
     public class DeadWallTile
@@ -69,6 +81,16 @@ namespace TSKT.Mahjongs
         readonly public List<Tile> uraDoraIndicatorTiles = new List<Tile>();
         public int DrawnCount { get; private set; }
         public int RemainingReplacementTileCount => 4 - DrawnCount;
+
+        public Serializables.DeadWallTile ToSerializable()
+        {
+            var result = new Serializables.DeadWallTile();
+            result.doraIndicatorTiles = doraIndicatorTiles.Select(_ => _.id).ToArray();
+            result.drawnCount = DrawnCount;
+            result.tiles = tiles.Select(_ => _.id).ToArray();
+            result.uraDoraIndicatorTiles = uraDoraIndicatorTiles.Select(_ => _.id).ToArray();
+            return result;
+        }
 
         public void OpenDora()
         {

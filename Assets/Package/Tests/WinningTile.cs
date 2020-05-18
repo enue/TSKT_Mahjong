@@ -51,7 +51,7 @@ namespace TSKT.Tests.Mahjongs
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();
-            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(handTiles.Select(_ => new Tile(_, red: false)).ToList()));
+            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(handTiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             Assert.AreEqual(
                 expecteds.OrderBy(_ => _).ToArray(),
                 hand.GetWinningTiles().OrderBy(_ => _).ToArray());
