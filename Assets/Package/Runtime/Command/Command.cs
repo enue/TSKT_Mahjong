@@ -43,7 +43,6 @@ namespace TSKT.Mahjongs
                     return commandResult;
                 }
 
-                executedCommands.Add(it);
                 ronExecutor.Add(it.Executor);
             }
 
