@@ -73,13 +73,13 @@ namespace TSKT.Mahjongs.Serializables
     [System.Serializable]
     public struct Tile
     {
-        public int id;
+        public int index;
         public TileType type;
         public bool red;
 
         public Tile(Mahjongs.Tile source)
         {
-            id = source.id;
+            index = source.index;
             red = source.red;
             type = source.type;
         }
@@ -128,7 +128,7 @@ namespace TSKT.Mahjongs.Serializables
             dealer = source.dealer;
             players = source.players.Select(_ => _.ToSerializable()).ToArray();
             roundWind = source.roundWind;
-            totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => _.id).ToArray();
+            totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => _.index).ToArray();
             wallTile = source.wallTile.ToSerializable();
         }
     }
@@ -150,8 +150,8 @@ namespace TSKT.Mahjongs.Serializables
 
         public Player(Mahjongs.Player source)
         {
-            discardedTiles = source.discardedTiles.Select(_ => _.id).ToArray();
-            discardPile = source.discardPile.Select(_ => _.id).ToArray();
+            discardedTiles = source.discardedTiles.Select(_ => _.index).ToArray();
+            discardPile = source.discardPile.Select(_ => _.index).ToArray();
             doubleRiichi = source.DoubleRiichi;
             hand = source.hand.ToSerializable();
             openRiichi = source.OpenRiichi;
@@ -171,7 +171,7 @@ namespace TSKT.Mahjongs.Serializables
 
         public Hand(Mahjongs.Hand source)
         {
-            tiles = source.tiles.Select(_ => _.id).ToArray();
+            tiles = source.tiles.Select(_ => _.index).ToArray();
             melds = source.melds.Select(_ => _.ToSerializable()).ToArray();
         }
     }
@@ -190,7 +190,7 @@ namespace TSKT.Mahjongs.Serializables
         public Meld(Mahjongs.Meld source)
         {
             tileFroms = source.tileFroms
-                .Select(_ => new Pair() { tile = _.tile.id, from = _.from.index })
+                .Select(_ => new Pair() { tile = _.tile.index, from = _.from.index })
                 .ToArray();
         }
     }
@@ -204,7 +204,8 @@ namespace TSKT.Mahjongs.Serializables
         public WallTile(Mahjongs.WallTile source)
         {
             allTiles = source.allTiles.Select(_ => _.ToSerializable()).ToArray();
-            tiles = source.tiles.Select(_ => _.id).ToArray();
+            tiles = source.tiles.Select(_ => _.index).ToArray();
+        }
         }
     }
 
@@ -218,10 +219,10 @@ namespace TSKT.Mahjongs.Serializables
 
         public DeadWallTile(Mahjongs.DeadWallTile source)
         {
-            doraIndicatorTiles = source.doraIndicatorTiles.Select(_ => _.id).ToArray();
+            doraIndicatorTiles = source.doraIndicatorTiles.Select(_ => _.index).ToArray();
             drawnCount = source.DrawnCount;
-            tiles = source.tiles.Select(_ => _.id).ToArray();
-            uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => _.id).ToArray();
+            tiles = source.tiles.Select(_ => _.index).ToArray();
+            uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => _.index).ToArray();
         }
     }
 }

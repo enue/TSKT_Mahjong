@@ -6,13 +6,13 @@ namespace TSKT.Mahjongs
 {
     public class Tile : System.IComparable<Tile>
     {
-        readonly public int id;
+        readonly public int index;
         readonly public TileType type;
         readonly public bool red;
 
-        public Tile(int id, TileType type, bool red)
+        public Tile(int index, TileType type, bool red)
         {
-            this.id = id;
+            this.index = index;
             this.type = type;
             this.red = red;
         }
@@ -33,7 +33,7 @@ namespace TSKT.Mahjongs
         public Serializables.Tile ToSerializable()
         {
             var result = new Serializables.Tile();
-            result.id = id;
+            result.index = index;
             result.red = red;
             result.type = type;
             return result;

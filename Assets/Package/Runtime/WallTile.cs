@@ -41,21 +41,21 @@ namespace TSKT.Mahjongs
                 if (it == TileType.M5 && m5rCount > 0)
                 {
                     --m5rCount;
-                    tiles.Add(new Tile(tiles.Count + 1, it, true));
+                    tiles.Add(new Tile(tiles.Count, it, true));
                 }
                 else if (it == TileType.P5 && p5rCount > 0)
                 {
                     --p5rCount;
-                    tiles.Add(new Tile(tiles.Count + 1, it, true));
+                    tiles.Add(new Tile(tiles.Count, it, true));
                 }
                 else if (it == TileType.S5 && s5rCount > 0)
                 {
                     --s5rCount;
-                    tiles.Add(new Tile(tiles.Count + 1, it, true));
+                    tiles.Add(new Tile(tiles.Count, it, true));
                 }
                 else
                 {
-                    tiles.Add(new Tile(tiles.Count + 1, it, false));
+                    tiles.Add(new Tile(tiles.Count, it, false));
                 }
             }
             RandomUtil.Shuffle(ref tiles);

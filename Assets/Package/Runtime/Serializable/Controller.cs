@@ -34,7 +34,7 @@ namespace TSKT.Mahjongs.Serializables
             round = source.Round.ToSerializable();
 
             drawPlayerIndex = source.DrawPlayerIndex;
-            newTileInHand = source.newTileInHand?.id ?? -1;
+            newTileInHand = source.newTileInHand?.index ?? -1;
             openDoraAfterDiscard = source.openDoraAfterDiscard;
             嶺上 = source.嶺上;
         }
@@ -53,7 +53,7 @@ namespace TSKT.Mahjongs.Serializables
             round = source.Round.ToSerializable();
 
             declarePlayerIndex = source.DeclarePlayerIndex;
-            tile = source.tile.id;
+            tile = source.tile.index;
         }
     }
 
