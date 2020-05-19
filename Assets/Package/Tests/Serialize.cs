@@ -34,7 +34,7 @@ namespace TSKT.Tests.Mahjongs
             Assert.AreEqual(json1_0, json1_1);
         }
         [Test]
-        public void Process()
+        public void MonkeyTest()
         {
             IController controller = Game.Create(0, new RuleSetting());
             for (int i = 0; i < 1000; ++i)
