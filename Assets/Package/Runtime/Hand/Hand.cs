@@ -122,7 +122,7 @@ namespace TSKT.Mahjongs
     {
         public readonly List<(Tile tile, int fromPlayerIndex)> tileFroms = new List<(Tile, int)>();
 
-        public bool 順子 => tileFroms[0].tile != tileFroms[1].tile;
+        public bool 順子 => tileFroms[0].tile.type != tileFroms[1].tile.type;
         public bool 槓子 => tileFroms.Count == 4;
         public bool 暗槓 => 槓子 && tileFroms.All(_ => _.fromPlayerIndex == tileFroms[0].fromPlayerIndex);
 
