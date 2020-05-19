@@ -33,5 +33,32 @@ namespace TSKT.Tests.Mahjongs
             var json1_1 = session1_2.ToJson();
             Assert.AreEqual(json1_0, json1_1);
         }
+        [Test]
+        public void Process()
+        {
+            IController controller = Game.Create(0, new RuleSetting());
+            for (int i = 0; i < 1000; ++i)
+            {
+                var jsonString = controller.SerializeSession().ToJson();
+                controller = TSKT.Mahjongs.Serializables.Session.FromJson(jsonString);
+                var jsonString2 = controller.SerializeSession().ToJson();
+                Assert.AreEqual(jsonString, jsonString2);
+
+                var selector = new CommandSelector(controller);
+                var commands = controller.ExecutableCommands;
+                if (commands.Length > 0)
+                {
+                    var command = commands[Random.Range(0, commands.Length)];
+                    selector.commands.Add(command);
+                }
+                var result = selector.Execute(out var _);
+                controller = result.nextController;
+
+                if (controller == null)
+                {
+                    break;
+                }
+            }
+        }
     }
 }
