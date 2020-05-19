@@ -306,5 +306,11 @@ namespace TSKT.Mahjongs
                 return result.ToArray();
             }
         }
+        public CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands)
+        {
+            var selector = new CommandSelector(this);
+            selector.commands.AddRange(commands);
+            return selector.Execute(out executedCommands);
+        }
     }
 }

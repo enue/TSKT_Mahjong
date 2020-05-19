@@ -44,14 +44,17 @@ namespace TSKT.Tests.Mahjongs
                 var jsonString2 = controller.SerializeSession().ToJson();
                 Assert.AreEqual(jsonString, jsonString2);
 
-                var selector = new CommandSelector(controller);
                 var commands = controller.ExecutableCommands;
+                CommandResult result;
                 if (commands.Length > 0)
                 {
                     var command = commands[Random.Range(0, commands.Length)];
-                    selector.commands.Add(command);
+                    result = controller.ExecuteCommands(out _, command);
                 }
-                var result = selector.Execute(out var _);
+                else
+                {
+                    result = controller.ExecuteCommands(out _);
+                }
                 controller = result.nextController;
 
                 if (controller == null)

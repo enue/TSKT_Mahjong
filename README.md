@@ -62,19 +62,18 @@ if (afterDraw.CanDiscard(tile))
 var allExecutableCommands = afterDraw.ExecutableCommands;
 ```
 
-### 4. CommandSelectorで実行
+### 4. Command実行
 
-　`Command`を`CommandSelector`に放り込んで`Execute`する。
+　`IController.ExecuteCommands`で実行する。
 
-+ このときポンとチーを両方希望されている場合は優先順位によりポンのみが実行される。
++ 例えばポンとチーを両方希望されている場合は優先順位によりポンのみが実行される。
 + またロンが複数希望されている場合は複数同時に処理されダブロンになる。
 
 ```cs
-var selector = new CommandSelector(afterDraw);
-selector.commands.Add(hoge);
-selector.commands.Add(fuga);
-selector.commands.Add(piyo);
-var commandResult = selector.Execute(out var executedCommands);
+var commandResult = afterDiscard.ExecuteCommands(out var executedCommands, pon, chi, ron);
+
+// 特にすることがない（切ったあと誰も鳴かないなど）場合はcommandを渡さずに実行。
+var commandResult = afterDiscard.ExecuteCommands(out var executedCommands);
 ```
 
 ### 5. 表示処理
