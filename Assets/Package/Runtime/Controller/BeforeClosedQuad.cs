@@ -50,6 +50,14 @@ namespace TSKT.Mahjongs
             }
         }
 
+        public Serializables.BeforeClosedQuad ToSerializable()
+        {
+            var result = new Serializables.BeforeClosedQuad();
+            result.declarePlayerIndex = DeclarePlayerIndex;
+            result.tile = tile;
+            return result;
+        }
+
         public bool CanRon(Player player)
         {
             return PlayerRons.ContainsKey(player);

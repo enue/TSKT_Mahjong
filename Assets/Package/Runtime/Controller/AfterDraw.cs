@@ -18,6 +18,8 @@ namespace TSKT.Mahjongs
         public readonly CompletedHand? tsumo;
 
         public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
+
+        public readonly bool 嶺上;
         public readonly bool openDoraAfterDiscard;
 
         bool 鳴きなし => Round.players.All(_ => _.hand.melds.Count == 0);
@@ -31,6 +33,7 @@ namespace TSKT.Mahjongs
             DrawPlayer = player;
             this.newTileInHand = newTileInHand;
             this.openDoraAfterDiscard = openDoraAfterDiscard;
+            this.嶺上 = 嶺上;
 
             if (newTileInHand != null)
             {
@@ -48,6 +51,15 @@ namespace TSKT.Mahjongs
                         槍槓: false);
                 }
             }
+        }
+
+        public Serializables.AfterDraw ToSerializable()
+        {
+            var result = new Serializables.AfterDraw();
+            result.drawPlayerIndex = DrawPlayerIndex;
+            result.newTileInHand = newTileInHand?.id ?? -1;
+            result.openDoraAfterDiscard = openDoraAfterDiscard;
+            return result;
         }
 
         public bool CanRiichi(Tile tile)

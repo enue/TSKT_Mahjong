@@ -61,6 +61,13 @@ namespace TSKT.Mahjongs
             }
         }
 
+        public Serializables.AfterDiscard ToSerializable()
+        {
+            var result = new Serializables.AfterDiscard();
+            result.discardPlayerIndex = DiscardPlayerIndex;
+            return result;
+        }
+
         bool CanRoundContinue
         {
             get
