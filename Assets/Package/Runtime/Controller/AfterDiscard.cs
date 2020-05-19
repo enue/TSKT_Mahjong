@@ -65,6 +65,10 @@ namespace TSKT.Mahjongs
         {
             return new Serializables.AfterDiscard(this);
         }
+        public Serializables.Mahjong SerializeGame()
+        {
+            return new Serializables.Mahjong(this);
+        }
 
         bool CanRoundContinue
         {

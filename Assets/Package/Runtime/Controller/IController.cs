@@ -12,6 +12,7 @@ namespace TSKT.Mahjongs
 
         IController DoDefaultAction(out RoundResult roundResult);
         ICommand[] ExecutableCommands { get; }
+        Serializables.Mahjong SerializeGame();
     }
 
     public interface IRonableController

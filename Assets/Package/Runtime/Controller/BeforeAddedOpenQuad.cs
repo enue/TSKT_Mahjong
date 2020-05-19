@@ -54,6 +54,10 @@ namespace TSKT.Mahjongs
         {
             return new Serializables.BeforeAddedOpenQuad(this);
         }
+        public Serializables.Mahjong SerializeGame()
+        {
+            return new Serializables.Mahjong(this);
+        }
 
         public bool CanRon(Player player)
         {

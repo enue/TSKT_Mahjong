@@ -10,16 +10,11 @@ namespace TSKT.Tests.Mahjongs
     public class Serialzie
     {
         [Test]
-        public void GetWinningTiles()
+        public void ToJson()
         {
-            var round = Game.Create(0, new RuleSetting()).Round;
-            var game = round.game;
-
-            var serializableGame = game.ToSerializable();
-            Debug.Log(JsonUtility.ToJson(serializableGame));
-
-            var serializableRound = round.ToSerializable();
-            Debug.Log(JsonUtility.ToJson(serializableRound));
+            var controller = Game.Create(0, new RuleSetting());
+            var serializable = controller.SerializeGame();
+            Debug.Log(JsonUtility.ToJson(serializable));
         }
     }
 }

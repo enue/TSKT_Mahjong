@@ -6,6 +6,71 @@ using System.Linq;
 namespace TSKT.Mahjongs.Serializables
 {
     [System.Serializable]
+    public struct Mahjong
+    {
+        public bool hasAfterDiscard;
+        public AfterDiscard afterDiscard;
+        public bool hasAfterDraw;
+        public AfterDraw afterDraw;
+        public bool hasBeforeClosedQuad;
+        public BeforeClosedQuad beforeClosedQuad;
+        public bool hasBeforeAddedOpenQuad;
+        public BeforeAddedOpenQuad beforeAddedOpenQuad;
+
+        public Mahjong(Mahjongs.AfterDiscard source)
+        {
+            hasAfterDiscard = true;
+            hasAfterDraw = false;
+            hasBeforeAddedOpenQuad = false;
+            hasBeforeClosedQuad = false;
+
+            afterDiscard = source.ToSerializable();
+            afterDraw = default;
+            beforeAddedOpenQuad = default;
+            beforeClosedQuad = default;
+        }
+
+        public Mahjong(Mahjongs.AfterDraw source)
+        {
+            hasAfterDiscard = false;
+            hasAfterDraw = true;
+            hasBeforeAddedOpenQuad = false;
+            hasBeforeClosedQuad = false;
+
+            afterDiscard = default;
+            afterDraw = source.ToSerializable();
+            beforeAddedOpenQuad = default;
+            beforeClosedQuad = default;
+        }
+
+        public Mahjong(Mahjongs.BeforeAddedOpenQuad source)
+        {
+            hasAfterDiscard = false;
+            hasAfterDraw = false;
+            hasBeforeAddedOpenQuad = true;
+            hasBeforeClosedQuad = false;
+
+            afterDiscard = default;
+            afterDraw = default;
+            beforeAddedOpenQuad = source.ToSerializable();
+            beforeClosedQuad = default;
+        }
+
+        public Mahjong(Mahjongs.BeforeClosedQuad source)
+        {
+            hasAfterDiscard = false;
+            hasAfterDraw = false;
+            hasBeforeAddedOpenQuad = false;
+            hasBeforeClosedQuad = true;
+
+            afterDiscard = default;
+            afterDraw = default;
+            beforeAddedOpenQuad = default;
+            beforeClosedQuad = source.ToSerializable();
+        }
+    }
+
+    [System.Serializable]
     public struct Tile
     {
         public int id;
@@ -48,6 +113,7 @@ namespace TSKT.Mahjongs.Serializables
     [System.Serializable]
     public struct Round
     {
+        public Game game;
         public WallTile wallTile;
         public DeadWallTile deadWallTile;
         public Player[] players;
@@ -57,6 +123,7 @@ namespace TSKT.Mahjongs.Serializables
 
         public Round(Mahjongs.Round source)
         {
+            game = source.game.ToSerializable();
             deadWallTile = source.deadWallTile.ToSerializable();
             dealer = source.dealer;
             players = source.players.Select(_ => _.ToSerializable()).ToArray();

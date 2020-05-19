@@ -57,6 +57,10 @@ namespace TSKT.Mahjongs
         {
             return new Serializables.AfterDraw(this);
         }
+        public Serializables.Mahjong SerializeGame()
+        {
+            return new Serializables.Mahjong(this);
+        }
 
         public bool CanRiichi(Tile tile)
         {
