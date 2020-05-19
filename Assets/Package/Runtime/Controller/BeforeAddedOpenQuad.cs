@@ -52,10 +52,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.BeforeAddedOpenQuad ToSerializable()
         {
-            var result = new Serializables.BeforeAddedOpenQuad();
-            result.declarePlayerIndex = DeclarePlayerIndex;
-            result.tile = tile.id;
-            return result;
+            return new Serializables.BeforeAddedOpenQuad(this);
         }
 
         public bool CanRon(Player player)

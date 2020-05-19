@@ -57,18 +57,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.Player ToSerializable()
         {
-            var result = new Serializables.Player();
-            result.discardedTiles = discardedTiles.Select(_ => _.id).ToArray();
-            result.discardPile = discardPile.Select(_ => _.id).ToArray();
-            result.doubleRiichi = DoubleRiichi;
-            result.hand = hand.ToSerializable();
-            result.openRiichi = OpenRiichi;
-            result.riichiIndexInDiscardPile = RiichiIndexInDiscardPile ?? -1;
-            result.riichiIndexInTotalDiscardTiles = RiichiIndexInTotalDiscardTiles ?? -1;
-            result.wind = wind;
-            result.フリテン = フリテン;
-            result.一発 = 一発;
-            return result;
+            return new Serializables.Player(this);
         }
 
         public AfterDraw Draw()

@@ -63,9 +63,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.AfterDiscard ToSerializable()
         {
-            var result = new Serializables.AfterDiscard();
-            result.discardPlayerIndex = DiscardPlayerIndex;
-            return result;
+            return new Serializables.AfterDiscard(this);
         }
 
         bool CanRoundContinue

@@ -55,11 +55,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.AfterDraw ToSerializable()
         {
-            var result = new Serializables.AfterDraw();
-            result.drawPlayerIndex = DrawPlayerIndex;
-            result.newTileInHand = newTileInHand?.id ?? -1;
-            result.openDoraAfterDiscard = openDoraAfterDiscard;
-            return result;
+            return new Serializables.AfterDraw(this);
         }
 
         public bool CanRiichi(Tile tile)

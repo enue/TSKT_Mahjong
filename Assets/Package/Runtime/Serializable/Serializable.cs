@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace TSKT.Mahjongs.Serializables
 {
@@ -10,6 +11,13 @@ namespace TSKT.Mahjongs.Serializables
         public int id;
         public TileType type;
         public bool red;
+
+        public Tile(Mahjongs.Tile source)
+        {
+            id = source.id;
+            red = source.red;
+            type = source.type;
+        }
     }
 
     [System.Serializable]
@@ -23,6 +31,18 @@ namespace TSKT.Mahjongs.Serializables
         public int firstDealer;
         public int[] scores;
         public RuleSetting rule;
+
+        public Game(Mahjongs.Game source)
+        {
+            displayRoundCount = source.DisplayRoundCount;
+            firstDealer = source.firstDealer;
+            riichiScore = source.riichiScore;
+            roundWindCount = source.RoundWindCount;
+            rule = source.rule;
+            scores = source.scoreOwners.Select(_ => _.score).ToArray();
+            本場 = source.本場;
+            連荘 = source.連荘;
+        }
     }
 
     [System.Serializable]
@@ -34,6 +54,16 @@ namespace TSKT.Mahjongs.Serializables
         public TileType roundWind;
         public int dealer;
         public int[] totalDiscardedTiles;
+
+        public Round(Mahjongs.Round source)
+        {
+            deadWallTile = source.deadWallTile.ToSerializable();
+            dealer = source.dealer;
+            players = source.players.Select(_ => _.ToSerializable()).ToArray();
+            roundWind = source.roundWind;
+            totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => _.id).ToArray();
+            wallTile = source.wallTile.ToSerializable();
+        }
     }
 
     [System.Serializable]
@@ -50,6 +80,20 @@ namespace TSKT.Mahjongs.Serializables
         public bool openRiichi;
         public bool 一発;
         public bool フリテン;
+
+        public Player(Mahjongs.Player source)
+        {
+            discardedTiles = source.discardedTiles.Select(_ => _.id).ToArray();
+            discardPile = source.discardPile.Select(_ => _.id).ToArray();
+            doubleRiichi = source.DoubleRiichi;
+            hand = source.hand.ToSerializable();
+            openRiichi = source.OpenRiichi;
+            riichiIndexInDiscardPile = source.RiichiIndexInDiscardPile ?? -1;
+            riichiIndexInTotalDiscardTiles = source.RiichiIndexInTotalDiscardTiles ?? -1;
+            wind = source.wind;
+            フリテン = source.フリテン;
+            一発 = source.一発;
+        }
     }
 
     [System.Serializable]
@@ -57,6 +101,12 @@ namespace TSKT.Mahjongs.Serializables
     {
         public int[] tiles;
         public Meld[] melds;
+
+        public Hand(Mahjongs.Hand source)
+        {
+            tiles = source.tiles.Select(_ => _.id).ToArray();
+            melds = source.melds.Select(_ => _.ToSerializable()).ToArray();
+        }
     }
 
     [System.Serializable]
@@ -69,6 +119,13 @@ namespace TSKT.Mahjongs.Serializables
             public int from;
         }
         public Pair[] tileFroms;
+
+        public Meld(Mahjongs.Meld source)
+        {
+            tileFroms = source.tileFroms
+                .Select(_ => new Pair() { tile = _.tile.id, from = _.from.index })
+                .ToArray();
+        }
     }
 
     [System.Serializable]
@@ -76,6 +133,12 @@ namespace TSKT.Mahjongs.Serializables
     {
         public int[] tiles;
         public Tile[] allTiles;
+
+        public WallTile(Mahjongs.WallTile source)
+        {
+            allTiles = source.allTiles.Select(_ => _.ToSerializable()).ToArray();
+            tiles = source.tiles.Select(_ => _.id).ToArray();
+        }
     }
 
     [System.Serializable]
@@ -85,5 +148,13 @@ namespace TSKT.Mahjongs.Serializables
         public int[] doraIndicatorTiles;
         public int[] uraDoraIndicatorTiles;
         public int drawnCount;
+
+        public DeadWallTile(Mahjongs.DeadWallTile source)
+        {
+            doraIndicatorTiles = source.doraIndicatorTiles.Select(_ => _.id).ToArray();
+            drawnCount = source.DrawnCount;
+            tiles = source.tiles.Select(_ => _.id).ToArray();
+            uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => _.id).ToArray();
+        }
     }
 }

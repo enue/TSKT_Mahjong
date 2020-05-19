@@ -65,12 +65,8 @@ namespace TSKT.Mahjongs
 
         public Serializables.WallTile ToSerializable()
         {
-            var result = new Serializables.WallTile();
-            result.allTiles = allTiles.Select(_ => _.ToSerializable()).ToArray();
-            result.tiles = tiles.Select(_ => _.id).ToArray();
-            return result;
+            return new Serializables.WallTile(this);
         }
-
     }
 
     public class DeadWallTile
@@ -84,12 +80,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.DeadWallTile ToSerializable()
         {
-            var result = new Serializables.DeadWallTile();
-            result.doraIndicatorTiles = doraIndicatorTiles.Select(_ => _.id).ToArray();
-            result.drawnCount = DrawnCount;
-            result.tiles = tiles.Select(_ => _.id).ToArray();
-            result.uraDoraIndicatorTiles = uraDoraIndicatorTiles.Select(_ => _.id).ToArray();
-            return result;
+            return new Serializables.DeadWallTile(this);
         }
 
         public void OpenDora()

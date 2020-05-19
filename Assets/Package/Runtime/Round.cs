@@ -75,14 +75,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.Round ToSerializable()
         {
-            var result = new Serializables.Round();
-            result.deadWallTile = deadWallTile.ToSerializable();
-            result.dealer = dealer;
-            result.players = players.Select(_ => _.ToSerializable()).ToArray();
-            result.roundWind = roundWind;
-            result.totalDiscardedTiles = totalDiscardedTiles.Select(_ => _.id).ToArray();
-            result.wallTile = wallTile.ToSerializable();
-            return result;
+            return new Serializables.Round(this);
         }
 
         public AfterDraw Start()

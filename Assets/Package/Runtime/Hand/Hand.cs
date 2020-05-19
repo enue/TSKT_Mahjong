@@ -18,10 +18,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.Hand ToSerializable()
         {
-            var result = new Serializables.Hand();
-            result.tiles = tiles.Select(_ => _.id).ToArray();
-            result.melds = melds.Select(_ => _.ToSerializable()).ToArray();
-            return result;
+            return new Serializables.Hand(this);
         }
 
         public void Sort()
@@ -137,11 +134,7 @@ namespace TSKT.Mahjongs
         }
         public Serializables.Meld ToSerializable()
         {
-            var result = new Serializables.Meld();
-            result.tileFroms = tileFroms
-                .Select(_ => new Serializables.Meld.Pair() { tile = _.tile.id, from = _.from.index })
-                .ToArray();
-            return result;
+            return new Serializables.Meld(this);
         }
     }
 }

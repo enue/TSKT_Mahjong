@@ -37,16 +37,7 @@ namespace TSKT.Mahjongs
 
         public Serializables.Game ToSerializable()
         {
-            var result = new Serializables.Game();
-            result.displayRoundCount = DisplayRoundCount;
-            result.firstDealer = firstDealer;
-            result.riichiScore = riichiScore;
-            result.roundWindCount = RoundWindCount;
-            result.rule = rule;
-            result.scores = scoreOwners.Select(_ => _.score).ToArray();
-            result.本場 = 本場;
-            result.連荘 = 連荘;
-            return result;
+            return new Serializables.Game(this);
         }
 
         public AfterDraw StartRound(params TileType[][] initialPlayerTilesByCheat)
