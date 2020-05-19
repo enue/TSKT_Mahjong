@@ -24,7 +24,7 @@ namespace TSKT.Mahjongs
 
         bool 鳴きなし => Round.players.All(_ => _.hand.melds.Count == 0);
         bool 一巡目 => DrawPlayer.discardedTiles.Count == 0;
-        bool DrewFromOtherPlayer => newTileInHand == null;
+        bool BuiltMeld => newTileInHand == null;
 
         public AfterDraw(Player player, Tile newTileInHand,
             bool 嶺上,
@@ -107,6 +107,42 @@ namespace TSKT.Mahjongs
             {
                 return tile == newTileInHand;
             }
+            if (DrawPlayer.round.game.rule.喰い替え == Rules.喰い替え.なし)
+            {
+                if (BuiltMeld)
+                {
+                    var meld = DrawPlayer.hand.melds.Last();
+
+                    // 鳴いた牌と同じ牌は切れない
+                    var tileFromOtherPlayer = meld.tileFroms.First(_ => _.fromPlayerIndex != DrawPlayerIndex).tile;
+                    if (tile.type == tileFromOtherPlayer.type)
+                    {
+                        return false;
+                    }
+
+                    if (meld.順子)
+                    {
+                        if (tile.type.IsSuited())
+                        {
+                            if (meld.tileFroms[0].tile.type.Suit() == tile.type.Suit())
+                            {
+                                var numbers = meld.tileFroms
+                                    .Where(_ => _.fromPlayerIndex == DrawPlayerIndex)
+                                    .Select(_ => _.tile.type.Number())
+                                    .Concat(new[] { tile.type.Number() })
+                                    .Distinct()
+                                    .OrderBy(_ => _)
+                                    .ToArray();
+                                if (numbers.Length == 3
+                                    && numbers[2] - numbers[0] == 2)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             return true;
         }
 
@@ -163,7 +199,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
             // 鳴いた直後にカンはできない
-            if (DrewFromOtherPlayer)
+            if (BuiltMeld)
             {
                 return false;
             }
@@ -189,7 +225,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
             // 鳴いた直後にカンはできない
-            if (DrewFromOtherPlayer)
+            if (BuiltMeld)
             {
                 return false;
             }

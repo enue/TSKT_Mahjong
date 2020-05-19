@@ -33,4 +33,9 @@ namespace TSKT.Mahjongs.Rules
         続行,
         流局,
     }
+    public enum 喰い替え
+    {
+        なし,
+        あり,
+    }
 }
