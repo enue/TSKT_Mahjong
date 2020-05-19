@@ -476,7 +476,7 @@ namespace TSKT.Mahjongs
                     {
                         foreach (var pair in pairs)
                         {
-                            result.Add(new Commands.Chi(player, this, pair));
+                            result.Add(new Commands.Pon(player, this, pair));
                         }
                     }
                     if (CanOpenQuad(player))
