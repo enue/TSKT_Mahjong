@@ -143,7 +143,7 @@ namespace TSKT.Mahjongs
                     }
                 }
             }
-            return true;
+            return DrawPlayer.hand.tiles.Contains(tile);
         }
 
         public AfterDiscard Discard(Tile tile, bool riichi, bool openRiichi = false)
