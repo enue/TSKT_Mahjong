@@ -35,6 +35,22 @@ namespace TSKT.Mahjongs
             }
         }
 
+        static public Game FromSerializable(Serializables.Game source)
+        {
+            var result = new Game(source.firstDealer, source.rule);
+            result.DisplayRoundCount = source.displayRoundCount;
+            result.riichiScore = source.riichiScore;
+            result.RoundWindCount = source.roundWindCount;
+            for (int i = 0; i < source.scores.Length; ++i)
+            {
+                result.scoreOwners[i].score = source.scores[i];
+            }
+            result.本場 = source.本場;
+            result.連荘 = source.連荘;
+
+            return result;
+        }
+
         public Serializables.Game ToSerializable()
         {
             return new Serializables.Game(this);

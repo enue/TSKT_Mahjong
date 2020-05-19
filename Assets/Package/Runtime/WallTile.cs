@@ -36,33 +36,48 @@ namespace TSKT.Mahjongs
                     throw new System.ArgumentException(redTile.ToString());
             }
 
+            var sortedTiles = new List<Tile>();
             foreach (var it in TileTypeUtil.CreateSet(花牌: false, 季節牌: false))
             {
                 if (it == TileType.M5 && m5rCount > 0)
                 {
                     --m5rCount;
-                    tiles.Add(new Tile(tiles.Count, it, true));
+                    sortedTiles.Add(new Tile(sortedTiles.Count, it, true));
                 }
                 else if (it == TileType.P5 && p5rCount > 0)
                 {
                     --p5rCount;
-                    tiles.Add(new Tile(tiles.Count, it, true));
+                    sortedTiles.Add(new Tile(sortedTiles.Count, it, true));
                 }
                 else if (it == TileType.S5 && s5rCount > 0)
                 {
                     --s5rCount;
-                    tiles.Add(new Tile(tiles.Count, it, true));
+                    sortedTiles.Add(new Tile(sortedTiles.Count, it, true));
                 }
                 else
                 {
-                    tiles.Add(new Tile(tiles.Count, it, false));
+                    sortedTiles.Add(new Tile(sortedTiles.Count, it, false));
                 }
             }
+            allTiles = sortedTiles.ToArray();
+            tiles = sortedTiles.ToList();
             RandomUtil.Shuffle(ref tiles);
-
-            allTiles = tiles.ToArray();
         }
 
+        WallTile(Serializables.WallTile source)
+        {
+            allTiles = source.allTiles
+                .Select(_ => _.Deserialzie())
+                .ToArray();
+            tiles = source.tiles
+                .Select(_ => allTiles[_])
+                .ToList();
+        }
+
+        static public WallTile FromSerializable(Serializables.WallTile source)
+        {
+            return new WallTile(source);
+        }
         public Serializables.WallTile ToSerializable()
         {
             return new Serializables.WallTile(this);
@@ -77,6 +92,23 @@ namespace TSKT.Mahjongs
         readonly public List<Tile> uraDoraIndicatorTiles = new List<Tile>();
         public int DrawnCount { get; private set; }
         public int RemainingReplacementTileCount => 4 - DrawnCount;
+
+        public DeadWallTile()
+        {
+        }
+
+        DeadWallTile(Serializables.DeadWallTile source, WallTile wallTile)
+        {
+            tiles = source.tiles.Select(_ => wallTile.allTiles[_]).ToList();
+            doraIndicatorTiles = source.doraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
+            uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
+            DrawnCount = source.drawnCount;
+        }
+
+        public static DeadWallTile FromSerializable(Serializables.DeadWallTile source, WallTile wallTile)
+        {
+            return new DeadWallTile(source, wallTile);
+        }
 
         public Serializables.DeadWallTile ToSerializable()
         {

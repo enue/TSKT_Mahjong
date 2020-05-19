@@ -6,7 +6,7 @@ using System.Linq;
 namespace TSKT.Mahjongs.Serializables
 {
     [System.Serializable]
-    public struct Mahjong
+    public struct Session
     {
         public bool hasAfterDiscard;
         public AfterDiscard afterDiscard;
@@ -17,7 +17,7 @@ namespace TSKT.Mahjongs.Serializables
         public bool hasBeforeAddedOpenQuad;
         public BeforeAddedOpenQuad beforeAddedOpenQuad;
 
-        public Mahjong(Mahjongs.AfterDiscard source)
+        public Session(Mahjongs.AfterDiscard source)
         {
             hasAfterDiscard = true;
             hasAfterDraw = false;
@@ -30,7 +30,7 @@ namespace TSKT.Mahjongs.Serializables
             beforeClosedQuad = default;
         }
 
-        public Mahjong(Mahjongs.AfterDraw source)
+        public Session(Mahjongs.AfterDraw source)
         {
             hasAfterDiscard = false;
             hasAfterDraw = true;
@@ -43,7 +43,7 @@ namespace TSKT.Mahjongs.Serializables
             beforeClosedQuad = default;
         }
 
-        public Mahjong(Mahjongs.BeforeAddedOpenQuad source)
+        public Session(Mahjongs.BeforeAddedOpenQuad source)
         {
             hasAfterDiscard = false;
             hasAfterDraw = false;
@@ -56,7 +56,7 @@ namespace TSKT.Mahjongs.Serializables
             beforeClosedQuad = default;
         }
 
-        public Mahjong(Mahjongs.BeforeClosedQuad source)
+        public Session(Mahjongs.BeforeClosedQuad source)
         {
             hasAfterDiscard = false;
             hasAfterDraw = false;
@@ -67,6 +67,36 @@ namespace TSKT.Mahjongs.Serializables
             afterDraw = default;
             beforeAddedOpenQuad = default;
             beforeClosedQuad = source.ToSerializable();
+        }
+
+        public IController Deserialize()
+        {
+            if (hasAfterDiscard)
+            {
+                return afterDiscard.Deserialzie();
+            }
+            if (hasAfterDraw)
+            {
+                return afterDraw.Deserialzie();
+            }
+            if (hasBeforeAddedOpenQuad)
+            {
+                return beforeAddedOpenQuad.Deserialzie();
+            }
+            if (hasBeforeClosedQuad)
+            {
+                return beforeClosedQuad.Deserialzie();
+            }
+            throw new System.Exception("no controller");
+        }
+
+        public string ToJson(bool prettyPrint = false)
+        {
+            return JsonUtility.ToJson(this, prettyPrint);
+        }
+        public static IController FromJson(string json)
+        {
+            return JsonUtility.FromJson<Session>(json).Deserialize();
         }
     }
 
@@ -82,6 +112,10 @@ namespace TSKT.Mahjongs.Serializables
             index = source.index;
             red = source.red;
             type = source.type;
+        }
+        public Mahjongs.Tile Deserialzie()
+        {
+            return Mahjongs.Tile.FromSerializable(this);
         }
     }
 
@@ -108,6 +142,11 @@ namespace TSKT.Mahjongs.Serializables
             本場 = source.本場;
             連荘 = source.連荘;
         }
+
+        public Mahjongs.Game Deserialzie()
+        {
+            return Mahjongs.Game.FromSerializable(this);
+        }
     }
 
     [System.Serializable]
@@ -131,11 +170,17 @@ namespace TSKT.Mahjongs.Serializables
             totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => _.index).ToArray();
             wallTile = source.wallTile.ToSerializable();
         }
+
+        public Mahjongs.Round Deserialzie()
+        {
+            return Mahjongs.Round.FromSerializable(this);
+        }
     }
 
     [System.Serializable]
     public struct Player
     {
+        public int index;
         public Hand hand;
         public int[] discardPile;
         public int[] discardedTiles;
@@ -150,6 +195,7 @@ namespace TSKT.Mahjongs.Serializables
 
         public Player(Mahjongs.Player source)
         {
+            index = source.index;
             discardedTiles = source.discardedTiles.Select(_ => _.index).ToArray();
             discardPile = source.discardPile.Select(_ => _.index).ToArray();
             doubleRiichi = source.DoubleRiichi;
@@ -160,6 +206,11 @@ namespace TSKT.Mahjongs.Serializables
             wind = source.wind;
             フリテン = source.フリテン;
             一発 = source.一発;
+        }
+
+        public Mahjongs.Player Deserialzie(Mahjongs.Round round)
+        {
+            return Mahjongs.Player.FromSerializable(this, round);
         }
     }
 
@@ -174,6 +225,11 @@ namespace TSKT.Mahjongs.Serializables
             tiles = source.tiles.Select(_ => _.index).ToArray();
             melds = source.melds.Select(_ => _.ToSerializable()).ToArray();
         }
+
+        public Mahjongs.Hand Deserialzie(Mahjongs.Player owner)
+        {
+            return Mahjongs.Hand.FromSerializable(this, owner);
+        }
     }
 
     [System.Serializable]
@@ -183,15 +239,20 @@ namespace TSKT.Mahjongs.Serializables
         public struct Pair
         {
             public int tile;
-            public int from;
+            public int fromPlayerIndex;
         }
         public Pair[] tileFroms;
 
         public Meld(Mahjongs.Meld source)
         {
             tileFroms = source.tileFroms
-                .Select(_ => new Pair() { tile = _.tile.index, from = _.from.index })
+                .Select(_ => new Pair() { tile = _.tile.index, fromPlayerIndex = _.fromPlayerIndex })
                 .ToArray();
+        }
+
+        public Mahjongs.Meld Deserialzie(Mahjongs.WallTile wallTile)
+        {
+            return Mahjongs.Meld.FromSerializable(this, wallTile);
         }
     }
 
@@ -206,6 +267,10 @@ namespace TSKT.Mahjongs.Serializables
             allTiles = source.allTiles.Select(_ => _.ToSerializable()).ToArray();
             tiles = source.tiles.Select(_ => _.index).ToArray();
         }
+
+        public Mahjongs.WallTile Deserialzie()
+        {
+            return Mahjongs.WallTile.FromSerializable(this);
         }
     }
 
@@ -223,6 +288,11 @@ namespace TSKT.Mahjongs.Serializables
             drawnCount = source.DrawnCount;
             tiles = source.tiles.Select(_ => _.index).ToArray();
             uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => _.index).ToArray();
+        }
+
+        public Mahjongs.DeadWallTile Deserialzie(Mahjongs.WallTile wallTile)
+        {
+            return Mahjongs.DeadWallTile.FromSerializable(this, wallTile);
         }
     }
 }

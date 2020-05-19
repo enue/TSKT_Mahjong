@@ -50,13 +50,20 @@ namespace TSKT.Mahjongs
             }
         }
 
+        public static BeforeAddedOpenQuad FromSerializable(Serializables.BeforeAddedOpenQuad source)
+        {
+            var round = source.round.Deserialzie();
+            var player = round.players[source.declarePlayerIndex];
+            var tile = round.wallTile.allTiles[source.tile];
+            return new BeforeAddedOpenQuad(player, tile);
+        }
         public Serializables.BeforeAddedOpenQuad ToSerializable()
         {
             return new Serializables.BeforeAddedOpenQuad(this);
         }
-        public Serializables.Mahjong SerializeGame()
+        public Serializables.Session SerializeSession()
         {
-            return new Serializables.Mahjong(this);
+            return new Serializables.Session(this);
         }
 
         public bool CanRon(Player player)

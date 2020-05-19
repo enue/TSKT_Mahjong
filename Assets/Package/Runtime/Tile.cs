@@ -17,6 +17,11 @@ namespace TSKT.Mahjongs
             this.red = red;
         }
 
+        static public Tile FromSerializable(Serializables.Tile source)
+        {
+            return new Tile(source.index, source.type, source.red);
+        }
+
         public int CompareTo(Tile other)
         {
             if (type > other.type)

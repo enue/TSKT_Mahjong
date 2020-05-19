@@ -61,13 +61,20 @@ namespace TSKT.Mahjongs
             }
         }
 
+        static public AfterDiscard FromSerializable(Serializables.AfterDiscard source)
+        {
+            var round = source.round.Deserialzie();
+            var player = round.players[source.discardPlayerIndex];
+            return new AfterDiscard(player);
+        }
+
         public Serializables.AfterDiscard ToSerializable()
         {
             return new Serializables.AfterDiscard(this);
         }
-        public Serializables.Mahjong SerializeGame()
+        public Serializables.Session SerializeSession()
         {
-            return new Serializables.Mahjong(this);
+            return new Serializables.Session(this);
         }
 
         bool CanRoundContinue
@@ -382,12 +389,12 @@ namespace TSKT.Mahjongs
 
             var meld = new Meld();
             player.hand.melds.Add(meld);
-            meld.tileFroms.Add((tile, DiscardPlayer));
+            meld.tileFroms.Add((tile, DiscardPlayer.index));
 
             player.hand.tiles.Remove(対子.Item1);
-            meld.tileFroms.Add((対子.Item1, player));
+            meld.tileFroms.Add((対子.Item1, player.index));
             player.hand.tiles.Remove(対子.Item2);
-            meld.tileFroms.Add((対子.Item2, player));
+            meld.tileFroms.Add((対子.Item2, player.index));
 
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }
@@ -432,12 +439,12 @@ namespace TSKT.Mahjongs
 
             var meld = new Meld();
             player.hand.melds.Add(meld);
-            meld.tileFroms.Add((tile, DiscardPlayer));
+            meld.tileFroms.Add((tile, DiscardPlayer.index));
 
             player.hand.tiles.Remove(塔子.Item1);
-            meld.tileFroms.Add((塔子.Item1, player));
+            meld.tileFroms.Add((塔子.Item1, player.index));
             player.hand.tiles.Remove(塔子.Item2);
-            meld.tileFroms.Add((塔子.Item2, player));
+            meld.tileFroms.Add((塔子.Item2, player.index));
 
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }

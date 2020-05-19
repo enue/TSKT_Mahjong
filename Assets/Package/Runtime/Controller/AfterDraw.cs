@@ -53,13 +53,21 @@ namespace TSKT.Mahjongs
             }
         }
 
+        static public AfterDraw FromSerializable(Serializables.AfterDraw source)
+        {
+            var round = source.round.Deserialzie();
+            var player = round.players[source.drawPlayerIndex];
+            var newTileInHand = source.newTileInHand >= 0 ? round.wallTile.allTiles[source.newTileInHand] : null;
+            return new AfterDraw(player, newTileInHand, 嶺上: source.嶺上, openDoraAfterDiscard: source.openDoraAfterDiscard);
+        }
+
         public Serializables.AfterDraw ToSerializable()
         {
             return new Serializables.AfterDraw(this);
         }
-        public Serializables.Mahjong SerializeGame()
+        public Serializables.Session SerializeSession()
         {
-            return new Serializables.Mahjong(this);
+            return new Serializables.Session(this);
         }
 
         public bool CanRiichi(Tile tile)

@@ -73,6 +73,21 @@ namespace TSKT.Mahjongs
             deadWallTile.OpenDora();
         }
 
+        Round(Serializables.Round source)
+        {
+            wallTile = source.wallTile.Deserialzie();
+            deadWallTile = source.deadWallTile.Deserialzie(wallTile);
+            dealer = source.dealer;
+            game = source.game.Deserialzie();
+            players = source.players.Select(_ => _.Deserialzie(this)).ToArray();
+            roundWind = source.roundWind;
+            totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => wallTile.allTiles[_]).ToList();
+        }
+        static public Round FromSerializable(Serializables.Round source)
+        {
+            return new Round(source);
+        }
+
         public Serializables.Round ToSerializable()
         {
             return new Serializables.Round(this);
@@ -109,7 +124,7 @@ namespace TSKT.Mahjongs
         public AfterDraw ExecuteAddedOpenQuad(Player player, Tile tile)
         {
             var meld = player.hand.melds.Find(_ => _.tileFroms.All(x => x.tile.type == tile.type));
-            meld.tileFroms.Add((tile, player));
+            meld.tileFroms.Add((tile, player.index));
 
             player.hand.tiles.Remove(tile);
 
@@ -125,12 +140,12 @@ namespace TSKT.Mahjongs
 
             var meld = new Meld();
             player.hand.melds.Add(meld);
-            meld.tileFroms.Add((discardTile, discardPlayer));
+            meld.tileFroms.Add((discardTile, discardPlayer.index));
             for (int i = 0; i < 3; ++i)
             {
                 var tile = player.hand.tiles.First(_ => _.type == discardTile.type);
                 player.hand.tiles.Remove(tile);
-                meld.tileFroms.Add((tile, player));
+                meld.tileFroms.Add((tile, player.index));
             }
             var drawTile = DrawFromDeadWallTile(player);
             return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);

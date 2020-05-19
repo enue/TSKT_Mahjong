@@ -16,6 +16,17 @@ namespace TSKT.Mahjongs
             this.owner = owner;
         }
 
+        Hand(Serializables.Hand source, Player owner)
+        {
+            this.owner = owner;
+            melds = source.melds.Select(_ => _.Deserialzie(owner.round.wallTile)).ToList();
+            tiles = source.tiles.Select(_ => owner.round.wallTile.allTiles[_]).ToList();
+        }
+
+        static public Hand FromSerializable(Serializables.Hand source, Player owner)
+        {
+            return new Hand(source, owner);
+        }
         public Serializables.Hand ToSerializable()
         {
             return new Serializables.Hand(this);
@@ -67,7 +78,7 @@ namespace TSKT.Mahjongs
             {
                 var tile = tiles.First(_ => _.type == tileType);
                 tiles.Remove(tile);
-                meld.tileFroms.Add((tile, owner));
+                meld.tileFroms.Add((tile, owner.index));
             }
         }
 
@@ -109,11 +120,11 @@ namespace TSKT.Mahjongs
 
     public class Meld
     {
-        public readonly List<(Tile tile, Player from)> tileFroms = new List<(Tile tile, Player from)>();
+        public readonly List<(Tile tile, int fromPlayerIndex)> tileFroms = new List<(Tile, int)>();
 
         public bool 順子 => tileFroms[0].tile != tileFroms[1].tile;
         public bool 槓子 => tileFroms.Count == 4;
-        public bool 暗槓 => 槓子 && tileFroms.All(_ => _.from == tileFroms[0].from);
+        public bool 暗槓 => 槓子 && tileFroms.All(_ => _.fromPlayerIndex == tileFroms[0].fromPlayerIndex);
 
         public Tile[] Sorted => tileFroms.Select(_ => _.tile).OrderBy(_ => _.type).ToArray();
 
@@ -132,6 +143,21 @@ namespace TSKT.Mahjongs
                 return result;
             }
         }
+
+        public Meld()
+        {
+        }
+        
+        Meld(Serializables.Meld source, WallTile wallTile)
+        {
+            tileFroms = source.tileFroms.Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex)).ToList();
+        }
+
+        static public Meld FromSerializable(Serializables.Meld source, WallTile wallTile)
+        {
+            return new Meld(source, wallTile);
+        }
+
         public Serializables.Meld ToSerializable()
         {
             return new Serializables.Meld(this);

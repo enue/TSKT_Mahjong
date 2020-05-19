@@ -55,6 +55,30 @@ namespace TSKT.Mahjongs
             hand = new Hand(this);
         }
 
+        Player(Serializables.Player source, Round round)
+        {
+            this.round = round;
+
+            discardedTiles = source.discardedTiles.Select(_ => round.wallTile.allTiles[_]).ToList();
+            discardPile = source.discardPile.Select(_ => round.wallTile.allTiles[_]).ToList();
+            DoubleRiichi = source.doubleRiichi;
+            hand = source.hand.Deserialzie(this);
+            index = source.index;
+            OpenRiichi = source.openRiichi;
+            RiichiIndexInDiscardPile = (source.riichiIndexInDiscardPile >= 0) ? source.riichiIndexInDiscardPile : (int?)null;
+            RiichiIndexInTotalDiscardTiles = (source.riichiIndexInTotalDiscardTiles >= 0) ? source.riichiIndexInTotalDiscardTiles : (int?)null;
+            wind = source.wind;
+            フリテン = source.フリテン;
+            一発 = source.一発;
+
+            scoreOwner = round.game.scoreOwners[source.index];
+        }
+
+        public static Player FromSerializable(Serializables.Player source, Round round)
+        {
+            return new Player(source, round);
+        }
+
         public Serializables.Player ToSerializable()
         {
             return new Serializables.Player(this);
