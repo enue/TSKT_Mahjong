@@ -419,7 +419,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            return player.CanChi(DiscardedTile.type, out combinations);
+            return player.CanChi(DiscardedTile, out combinations);
         }
         public AfterDraw Chi(Player player, (Tile, Tile) 塔子)
         {

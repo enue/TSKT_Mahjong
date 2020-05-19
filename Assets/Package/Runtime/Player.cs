@@ -148,14 +148,14 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public bool CanChi(TileType discarded, out List<(Tile left, Tile right)> combinations)
+        public bool CanChi(Tile discarded, out List<(Tile left, Tile right)> combinations)
         {
             if (Riichi)
             {
                 combinations = null;
                 return false;
             }
-            if (!discarded.IsSuited())
+            if (!discarded.type.IsSuited())
             {
                 combinations = null;
                 return false;
@@ -172,11 +172,11 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                if (it.type.Suit() != discarded.Suit())
+                if (it.type.Suit() != discarded.type.Suit())
                 {
                     continue;
                 }
-                var diff = it.type.Number() - discarded.Number();
+                var diff = it.type.Number() - discarded.type.Number();
                 if (diff == -2)
                 {
                     minus2 = it;
@@ -198,18 +198,43 @@ namespace TSKT.Mahjongs
             combinations = new List<(Tile left, Tile right)>();
             if (minus2 != null && minus1 != null)
             {
-                combinations.Add((minus2, minus1));
+                if (CanDiscardAfterChi(discarded, minus1, minus2))
+                {
+                    combinations.Add((minus2, minus1));
+                }
             }
             if (minus1 != null && plus1 != null)
             {
-                combinations.Add((minus1, plus1));
+                if (CanDiscardAfterChi(discarded, minus1, plus1))
+                {
+                    combinations.Add((minus1, plus1));
+                }
             }
             if (plus1 != null && plus2 != null)
             {
-                combinations.Add((plus1, plus2));
+                if (CanDiscardAfterChi(discarded, plus1, plus2))
+                {
+                    combinations.Add((plus1, plus2));
+                }
             }
 
             return combinations.Count > 0;
+        }
+
+        bool CanDiscardAfterChi(Tile tileFromOtherPlayer, Tile left, Tile right)
+        {
+            if (round.game.rule.喰い替え == Rules.喰い替え.あり)
+            {
+                return true;
+            }
+
+            var meld = new Meld();
+            meld.tileFroms.Add((left, index));
+            meld.tileFroms.Add((right, index));
+            meld.tileFroms.Add((tileFromOtherPlayer, -1));
+            return hand.tiles
+                .Where(_ => _ != left && _ != right)
+                .Any(_ => !meld.Is喰い替え(_, index));
         }
 
         public bool CanClosedQuad(TileType tile)

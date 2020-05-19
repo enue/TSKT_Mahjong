@@ -112,34 +112,9 @@ namespace TSKT.Mahjongs
                 if (BuiltMeld)
                 {
                     var meld = DrawPlayer.hand.melds.Last();
-
-                    // 鳴いた牌と同じ牌は切れない
-                    var tileFromOtherPlayer = meld.tileFroms.First(_ => _.fromPlayerIndex != DrawPlayerIndex).tile;
-                    if (tile.type == tileFromOtherPlayer.type)
+                    if (meld.Is喰い替え(tile, DrawPlayerIndex))
                     {
                         return false;
-                    }
-
-                    if (meld.順子)
-                    {
-                        if (tile.type.IsSuited())
-                        {
-                            if (meld.tileFroms[0].tile.type.Suit() == tile.type.Suit())
-                            {
-                                var numbers = meld.tileFroms
-                                    .Where(_ => _.fromPlayerIndex == DrawPlayerIndex)
-                                    .Select(_ => _.tile.type.Number())
-                                    .Concat(new[] { tile.type.Number() })
-                                    .Distinct()
-                                    .OrderBy(_ => _)
-                                    .ToArray();
-                                if (numbers.Length == 3
-                                    && numbers[2] - numbers[0] == 2)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
                     }
                 }
             }

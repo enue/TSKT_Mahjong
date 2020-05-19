@@ -162,5 +162,37 @@ namespace TSKT.Mahjongs
         {
             return new Serializables.Meld(this);
         }
+
+        public bool Is喰い替え(Tile discardTile, int discardPlayerIndex)
+        {
+            var tileFromOtherPlayer = tileFroms.First(_ => _.fromPlayerIndex != discardPlayerIndex).tile;
+            if (discardTile.type == tileFromOtherPlayer.type)
+            {
+                return true;
+            }
+
+            if (順子)
+            {
+                if (discardTile.type.IsSuited())
+                {
+                    if (tileFroms[0].tile.type.Suit() == discardTile.type.Suit())
+                    {
+                        var numbers = tileFroms
+                            .Where(_ => _.fromPlayerIndex == discardPlayerIndex)
+                            .Select(_ => _.tile.type.Number())
+                            .Concat(new[] { discardTile.type.Number() })
+                            .Distinct()
+                            .OrderBy(_ => _)
+                            .ToArray();
+                        if (numbers.Length == 3
+                            && numbers[2] - numbers[0] == 2)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
