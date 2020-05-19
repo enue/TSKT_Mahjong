@@ -66,14 +66,26 @@ var allExecutableCommands = afterDraw.ExecutableCommands;
 
 　`IController.ExecuteCommands`で実行する。
 
-+ 例えばポンとチーを両方希望されている場合は優先順位によりポンのみが実行される。
-+ またロンが複数希望されている場合は複数同時に処理されダブロンになる。
+```cs
+// 切った牌に対してポン
+var commandResult = afterDiscard.ExecuteCommands(out var executeds, pon);
+```
 
 ```cs
-var commandResult = afterDiscard.ExecuteCommands(out var executedCommands, pon, chi, ron);
+// ポンとチーが両方かかる場合。優先順位によりポンのみが実行される。
+// executedsには{pon}が返される
+var commandResult = afterDiscard.ExecuteCommands(out var executeds, pon, chi);
+```
 
-// 特にすることがない（切ったあと誰も鳴かないなど）場合はcommandを渡さずに実行。
-var commandResult = afterDiscard.ExecuteCommands(out var executedCommands);
+```cs
+// ロンが複数希望されている場合は複数同時に処理されダブロンになる。
+// executedsには{ron1, ron2}が返される
+var commandResult = afterDiscard.ExecuteCommands(out var executeds, ron1, ron2);
+```
+
+```cs
+// 特にすることがない（切ったあと誰も鳴かないなど）場合はcommandを渡さずに実行する。
+var commandResult = afterDiscard.ExecuteCommands(out _);
 ```
 
 ### 5. 表示処理
