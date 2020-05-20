@@ -107,6 +107,22 @@ namespace TSKT.Mahjongs.Hands
             }
         }
 
+        int LackCount
+        {
+            get
+            {
+                if (Pairs.Length > 0)
+                {
+                    return Pairs.Length - 1 + 塔子.Length + IsolatedTiles.Length * 2;
+                }
+                if (IsolatedTiles.Length > 0)
+                {
+                    return 塔子.Length + IsolatedTiles.Length * 2 - 1;
+                }
+                return 塔子.Length;
+            }
+        }
+
         static public (int 向聴数, List<Structure>) Build(Hand hand)
         {
             var 向聴数 = int.MaxValue;
@@ -132,7 +148,7 @@ namespace TSKT.Mahjongs.Hands
 
         static public bool 向聴数IsLessThanOrEqual(Hand hand, int value)
         {
-            foreach(var it in CollectStructures(hand))
+            foreach(var it in CollectStructures(hand, allowLackCount: value + 1))
             {
                 if (it.向聴数 <= value)
                 {
@@ -142,7 +158,7 @@ namespace TSKT.Mahjongs.Hands
             return false;
         }
 
-        static IEnumerable<Structure> CollectStructures(Hand hand)
+        static IEnumerable<Structure> CollectStructures(Hand hand, int allowLackCount = int.MaxValue)
         {
             var queue = new Queue<Structure>();
             queue.Enqueue(new Structure(hand));
@@ -154,69 +170,82 @@ namespace TSKT.Mahjongs.Hands
                 if (task.unsolvedTiles.Count == 0)
                 {
                     yield return task;
+
+                    allowLackCount = Mathf.Min(allowLackCount, task.向聴数 + 1);
                     continue;
                 }
 
                 var tile = task.unsolvedTiles[0];
-                // 刻子
-                if (task.unsolvedTiles.Count(_ => _ == tile) >= 3)
+                if (task.LackCount <= allowLackCount)
                 {
-                    var structure = new Structure(task);
-                    for (int i = 0; i < 3; ++i)
-                    {
-                        structure.unsolvedTiles.Remove(tile);
-                    }
-                    var sets = structure.Sets.ToList();
-                    sets.Add(new Set(tile, tile, tile));
-                    structure.Sets = sets.ToArray();
-                    queue.Enqueue(structure);
-                }
-                if (tile.IsSuited()
-                    && tile.Number() <= 8)
-                {
-                    var plusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() + 1);
-                    if (tile.Number() <= 7)
-                    {
-                        var plusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() + 2);
-
-                        // 順子
-                        if (task.unsolvedTiles.Contains(plusOne)
-                            && task.unsolvedTiles.Contains(plusTwo))
-                        {
-                            var structure = new Structure(task);
-                            structure.unsolvedTiles.Remove(tile);
-                            structure.unsolvedTiles.Remove(plusOne);
-                            structure.unsolvedTiles.Remove(plusTwo);
-                            var sets = structure.Sets.ToList();
-                            sets.Add(new Set(tile, plusOne, plusTwo));
-                            structure.Sets = sets.ToArray();
-                            queue.Enqueue(structure);
-                        }
-                        // 塔子
-                        if (task.unsolvedTiles.Contains(plusTwo))
-                        {
-                            var structure = new Structure(task);
-                            structure.unsolvedTiles.Remove(tile);
-                            structure.unsolvedTiles.Remove(plusTwo);
-                            var tou = structure.塔子.ToList();
-                            tou.Add((tile, plusTwo));
-                            structure.塔子 = tou.ToArray();
-                            queue.Enqueue(structure);
-                        }
-                    }
-                    // 塔子
-                    if (task.unsolvedTiles.Contains(plusOne))
+                    // 刻子
+                    if (task.unsolvedTiles.Count(_ => _ == tile) >= 3)
                     {
                         var structure = new Structure(task);
-                        structure.unsolvedTiles.Remove(tile);
-                        structure.unsolvedTiles.Remove(plusOne);
-                        var tou = structure.塔子.ToList();
-                        tou.Add((tile, plusOne));
-                        structure.塔子 = tou.ToArray();
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            structure.unsolvedTiles.Remove(tile);
+                        }
+                        var sets = structure.Sets.ToList();
+                        sets.Add(new Set(tile, tile, tile));
+                        structure.Sets = sets.ToArray();
                         queue.Enqueue(structure);
+                    }
+
+                    if (tile.IsSuited()
+                        && tile.Number() <= 8)
+                    {
+                        var plusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() + 1);
+                        if (tile.Number() <= 7)
+                        {
+                            var plusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() + 2);
+
+                            // 順子
+                            if (task.unsolvedTiles.Contains(plusOne)
+                                && task.unsolvedTiles.Contains(plusTwo))
+                            {
+                                var structure = new Structure(task);
+                                structure.unsolvedTiles.Remove(tile);
+                                structure.unsolvedTiles.Remove(plusOne);
+                                structure.unsolvedTiles.Remove(plusTwo);
+                                var sets = structure.Sets.ToList();
+                                sets.Add(new Set(tile, plusOne, plusTwo));
+                                structure.Sets = sets.ToArray();
+                                queue.Enqueue(structure);
+                            }
+                            // 塔子
+                            if (task.LackCount < allowLackCount)
+                            {
+                                if (task.unsolvedTiles.Contains(plusTwo))
+                                {
+                                    var structure = new Structure(task);
+                                    structure.unsolvedTiles.Remove(tile);
+                                    structure.unsolvedTiles.Remove(plusTwo);
+                                    var tou = structure.塔子.ToList();
+                                    tou.Add((tile, plusTwo));
+                                    structure.塔子 = tou.ToArray();
+                                    queue.Enqueue(structure);
+                                }
+                            }
+                        }
+                        // 塔子
+                        if (task.LackCount < allowLackCount)
+                        {
+                            if (task.unsolvedTiles.Contains(plusOne))
+                            {
+                                var structure = new Structure(task);
+                                structure.unsolvedTiles.Remove(tile);
+                                structure.unsolvedTiles.Remove(plusOne);
+                                var tou = structure.塔子.ToList();
+                                tou.Add((tile, plusOne));
+                                structure.塔子 = tou.ToArray();
+                                queue.Enqueue(structure);
+                            }
+                        }
                     }
                 }
                 // 頭
+                // 七対子があるのでLackCount判定はせず頭を増やす
                 if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
                 {
                     // 同じ対子が二組あるのは許可しない。
@@ -234,8 +263,9 @@ namespace TSKT.Mahjongs.Hands
                     }
                 }
                 // 浮き牌
-                // ただし浮き牌内で塔子、対子ができないようにする
+                // 国士無双があるのでallowLackCount判定はせず浮き牌を増やす
                 {
+                    // ただし浮き牌内で塔子、対子ができないようにする
                     bool canAddIsolatedTile = true;
                     if (System.Array.IndexOf(task.IsolatedTiles, tile) >= 0)
                     {
