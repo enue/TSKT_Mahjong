@@ -43,35 +43,61 @@ namespace TSKT.Mahjongs.Commands
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
         public override Player Executor => afterDraw.DrawPlayer;
-        readonly Tile tile;
+        public readonly Tile tile;
+        public readonly bool riichi;
 
-        public Discard(AfterDraw afterDraw, Tile tile) : base(afterDraw)
+        TileType[] winningTiles;
+        public TileType[] WinningTiles
+        {
+            get
+            {
+                if (winningTiles == null)
+                {
+                    var hand = afterDraw.DrawPlayer.hand.Clone();
+                    hand.tiles.Remove(tile);
+                    winningTiles = hand.GetWinningTiles();
+                }
+                return winningTiles;
+            }
+        }
+
+        public Discard(AfterDraw afterDraw, Tile tile, bool riichi) : base(afterDraw)
         {
             this.tile = tile;
+            this.riichi = riichi;
+        }
+
+        public bool Furiten
+        {
+            get
+            {
+                if (WinningTiles.Length == 0)
+                {
+                    return false;
+                }
+
+                if (WinningTiles.Contains(tile.type))
+                {
+                    return true;
+                }
+                var discardedTiles = Executor.discardedTiles.Select(_ => _.type).Distinct();
+                foreach (var it in discardedTiles)
+                {
+                    if (WinningTiles.Contains(it))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
 
         public override CommandResult TryExecute()
         {
-            return new CommandResult(afterDraw.Discard(tile, false));
+            return new CommandResult(afterDraw.Discard(tile, riichi));
         }
     }
-    public class Riichi : CommandAfterDraw
-    {
-        public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor => afterDraw.DrawPlayer;
-        readonly Tile tile;
 
-        public Riichi(AfterDraw afterDraw, Tile tile) : base(afterDraw)
-        {
-            this.tile = tile;
-        }
-
-        public override CommandResult TryExecute()
-        {
-            return new CommandResult(afterDraw.Discard(tile, true));
-        }
-    }
     public class DeclareClosedQuad : CommandAfterDraw
     {
         public static CommandPriority GetPriority => CommandPriority.Lowest;

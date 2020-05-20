@@ -70,43 +70,63 @@ namespace TSKT.Mahjongs
             return new Serializables.Session(this);
         }
 
-        public bool CanRiichi(Tile tile)
+        public bool CanRiichi(Tile tile, out Commands.Discard command)
         {
             if (DrawPlayer.Riichi)
             {
+                command = null;
                 return false;
             }
             if (Round.game.rule.end.endWhenScoreUnderZero)
             {
                 if (DrawPlayer.scoreOwner.score < 1000)
                 {
+                    command = null;
                     return false;
                 }
             }
             if (!DrawPlayer.hand.tiles.Contains(tile))
             {
+                command = null;
                 return false;
             }
             if (DrawPlayer.hand.melds.Count > 0 && DrawPlayer.hand.melds.Any(_ => !_.暗槓))
             {
+                command = null;
                 return false;
             }
             if (Round.wallTile.tiles.Count == 0)
             {
+                command = null;
                 return false;
             }
             var solution = DrawPlayer.hand.Clone();
             solution.tiles.Remove(tile);
             var score = solution.Solve();
-            return score.向聴数 == 0;
+            if (score.向聴数 != 0)
+            {
+                command = null;
+                return false;
+            }
+
+            command = new Commands.Discard(this, tile, riichi: true);
+            return true;
         }
 
-        public bool CanDiscard(Tile tile)
+        public bool CanDiscard(Tile tile, out Commands.Discard command)
         {
+            if (tile == newTileInHand)
+            {
+                command = new Commands.Discard(this, tile, riichi: false);
+                return true;
+            }
+
             if (DrawPlayer.Riichi)
             {
-                return tile == newTileInHand;
+                command = null;
+                return false;
             }
+
             if (DrawPlayer.round.game.rule.喰い替え == Rules.喰い替え.なし)
             {
                 if (BuiltMeld)
@@ -114,11 +134,19 @@ namespace TSKT.Mahjongs
                     var meld = DrawPlayer.hand.melds.Last();
                     if (meld.Is喰い替え(tile, DrawPlayerIndex))
                     {
+                        command = null;
                         return false;
                     }
                 }
             }
-            return DrawPlayer.hand.tiles.Contains(tile);
+            if (!DrawPlayer.hand.tiles.Contains(tile))
+            {
+                command = null;
+                return false;
+            }
+
+            command = new Commands.Discard(this, tile, riichi: false);
+            return true;
         }
 
         public AfterDiscard Discard(Tile tile, bool riichi, bool openRiichi = false)
@@ -285,13 +313,13 @@ namespace TSKT.Mahjongs
                     {
                         result.Add(new Commands.DeclareAddedOpenQuad(this, tile));
                     }
-                    if (CanDiscard(tile))
+                    if (CanDiscard(tile, out var discard))
                     {
-                        result.Add(new Commands.Discard(this, tile));
+                        result.Add(discard);
                     }
-                    if (CanRiichi(tile))
+                    if (CanRiichi(tile, out var riichi))
                     {
-                        result.Add(new Commands.Riichi(this, tile));
+                        result.Add(riichi);
                     }
                 }
                 if (CanTsumo())
