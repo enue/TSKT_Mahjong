@@ -41,7 +41,7 @@ namespace TSKT.Mahjongs
         {
             var result = new Hand(owner);
             result.tiles.AddRange(tiles);
-            result.melds.AddRange(melds);
+            result.melds.AddRange(melds.Select(_ => _.Clone()));
             return result;
         }
 
@@ -155,6 +155,13 @@ namespace TSKT.Mahjongs
         Meld(Serializables.Meld source, WallTile wallTile)
         {
             tileFroms = source.tileFroms.Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex)).ToList();
+        }
+
+        public Meld Clone()
+        {
+            var result = new Meld();
+            result.tileFroms.AddRange(tileFroms);
+            return result;
         }
 
         static public Meld FromSerializable(Serializables.Meld source, WallTile wallTile)
