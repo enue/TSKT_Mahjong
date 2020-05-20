@@ -8,9 +8,9 @@ namespace TSKT.Mahjongs
     public readonly struct CompletedHand
     {
         public readonly Hands.Structure structure;
-        public List<TileType> IsolatedTiles => structure.isolatedTiles;
-        public List<Hands.Structure.Set> Sets => structure.sets;
-        public List<TileType> Pairs => structure.pairs;
+        public TileType[] IsolatedTiles => structure.IsolatedTiles;
+        public Hands.Structure.Set[] Sets => structure.Sets;
+        public TileType[] Pairs => structure.Pairs;
         public Hands.Structure.Meld[] Melds => structure.melds;
         public int RedTile => structure.redTileCount;
 
@@ -644,7 +644,7 @@ namespace TSKT.Mahjongs
                 {
                     return false;
                 }
-                if (Pairs.Count > 1)
+                if (Pairs.Length > 1)
                 {
                     return false;
                 }
@@ -780,7 +780,7 @@ namespace TSKT.Mahjongs
         int 自風牌 => Has刻子槓子(ownWind) ? 1 : 0;
         int 場風牌 => Has刻子槓子(roundWind) ? 1 : 0;
 
-        int 七対子 => (Pairs.Count == 7) ? 2 : 0;
+        int 七対子 => (Pairs.Length == 7) ? 2 : 0;
 
         int 対々和
         {
@@ -1268,15 +1268,15 @@ namespace TSKT.Mahjongs
                 {
                     return false;
                 }
-                if (Sets.Count > 0)
+                if (Sets.Length > 0)
                 {
                     return false;
                 }
-                if (IsolatedTiles.Count != 12)
+                if (IsolatedTiles.Length != 12)
                 {
                     return false;
                 }
-                if (Pairs.Count != 1)
+                if (Pairs.Length != 1)
                 {
                     return false;
                 }

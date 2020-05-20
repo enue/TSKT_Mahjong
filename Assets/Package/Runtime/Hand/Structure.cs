@@ -37,10 +37,10 @@ namespace TSKT.Mahjongs.Hands
         }
 
         public readonly List<TileType> unsolvedTiles;
-        public readonly List<TileType> isolatedTiles = new List<TileType>();
-        public readonly List<Set> sets = new List<Set>();
-        public readonly List<TileType> pairs = new List<TileType>();
-        public readonly List<(TileType left, TileType right)> 塔子 = new List<(TileType, TileType)>();
+        public TileType[] IsolatedTiles { get; private set; } = System.Array.Empty<TileType>();
+        public Set[] Sets { get; private set; } = System.Array.Empty<Set>();
+        public TileType[] Pairs { get; private set; } = System.Array.Empty<TileType>();
+        public (TileType left, TileType right)[] 塔子 { get; private set; } = System.Array.Empty<(TileType, TileType)>();
         public readonly Meld[] melds;
         public readonly int 国士無双向聴数;
         public readonly int redTileCount;
@@ -48,10 +48,10 @@ namespace TSKT.Mahjongs.Hands
         public Structure(Structure source)
         {
             unsolvedTiles = source.unsolvedTiles.ToList();
-            isolatedTiles.AddRange(source.isolatedTiles);
-            sets.AddRange(source.sets);
-            pairs.AddRange(source.pairs);
-            塔子.AddRange(source.塔子);
+            IsolatedTiles = source.IsolatedTiles;
+            Sets = source.Sets;
+            Pairs = source.Pairs;
+            塔子 = source.塔子;
             melds = source.melds;
             国士無双向聴数 = source.国士無双向聴数;
             redTileCount = source.redTileCount;
@@ -94,17 +94,17 @@ namespace TSKT.Mahjongs.Hands
                 var result = 8;
 
                 result -= melds.Length * 2;
-                result -= sets.Count * 2;
+                result -= Sets.Length * 2;
 
-                var lackSetsCount = 4 - melds.Length - sets.Count;
-                var use塔子Count = Mathf.Min(塔子.Count, lackSetsCount);
+                var lackSetsCount = 4 - melds.Length - Sets.Length;
+                var use塔子Count = Mathf.Min(塔子.Length, lackSetsCount);
                 result -= use塔子Count;
                 lackSetsCount -= use塔子Count;
 
-                var usePairCount = Mathf.Min(pairs.Count, lackSetsCount);
+                var usePairCount = Mathf.Min(Pairs.Length, lackSetsCount);
                 result -= usePairCount;
 
-                if (pairs.Count > usePairCount)
+                if (Pairs.Length > usePairCount)
                 {
                     result -= 1;
                 }
@@ -112,7 +112,7 @@ namespace TSKT.Mahjongs.Hands
                 if (melds.Length == 0)
                 {
                     // 七対子の場合
-                    result = Mathf.Min(result, 6 - pairs.Count);
+                    result = Mathf.Min(result, 6 - Pairs.Length);
                 }
                 result = Mathf.Min(result, 国士無双向聴数);
 
@@ -179,7 +179,9 @@ namespace TSKT.Mahjongs.Hands
                     {
                         structure.unsolvedTiles.Remove(tile);
                     }
-                    structure.sets.Add(new Set(tile, tile, tile));
+                    var sets = structure.Sets.ToList();
+                    sets.Add(new Set(tile, tile, tile));
+                    structure.Sets = sets.ToArray();
                     queue.Enqueue(structure);
                 }
                 if (tile.IsSuited()
@@ -198,7 +200,9 @@ namespace TSKT.Mahjongs.Hands
                             structure.unsolvedTiles.Remove(tile);
                             structure.unsolvedTiles.Remove(plusOne);
                             structure.unsolvedTiles.Remove(plusTwo);
-                            structure.sets.Add(new Set(tile, plusOne, plusTwo));
+                            var sets = structure.Sets.ToList();
+                            sets.Add(new Set(tile, plusOne, plusTwo));
+                            structure.Sets = sets.ToArray();
                             queue.Enqueue(structure);
                         }
                         // 塔子
@@ -207,7 +211,9 @@ namespace TSKT.Mahjongs.Hands
                             var structure = new Structure(task);
                             structure.unsolvedTiles.Remove(tile);
                             structure.unsolvedTiles.Remove(plusTwo);
-                            structure.塔子.Add((tile, plusTwo));
+                            var tou = structure.塔子.ToList();
+                            tou.Add((tile, plusTwo));
+                            structure.塔子 = tou.ToArray();
                             queue.Enqueue(structure);
                         }
                     }
@@ -217,7 +223,9 @@ namespace TSKT.Mahjongs.Hands
                         var structure = new Structure(task);
                         structure.unsolvedTiles.Remove(tile);
                         structure.unsolvedTiles.Remove(plusOne);
-                        structure.塔子.Add((tile, plusOne));
+                        var tou = structure.塔子.ToList();
+                        tou.Add((tile, plusOne));
+                        structure.塔子 = tou.ToArray();
                         queue.Enqueue(structure);
                     }
                 }
@@ -225,14 +233,16 @@ namespace TSKT.Mahjongs.Hands
                 if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
                 {
                     // 同じ対子が二組あるのは許可しない。
-                    if (!task.pairs.Contains(tile))
+                    if (System.Array.IndexOf(task.Pairs, tile) == -1)
                     {
                         var structure = new Structure(task);
                         for (int i = 0; i < 2; ++i)
                         {
                             structure.unsolvedTiles.Remove(tile);
                         }
-                        structure.pairs.Add(tile);
+                        var pairs = structure.Pairs.ToList();
+                        pairs.Add(tile);
+                        structure.Pairs = pairs.ToArray();
                         queue.Enqueue(structure);
                     }
                 }
@@ -240,7 +250,7 @@ namespace TSKT.Mahjongs.Hands
                 // ただし浮き牌内で塔子、対子ができないようにする
                 {
                     bool canAddIsolatedTile = true;
-                    if (task.isolatedTiles.Contains(tile))
+                    if (System.Array.IndexOf(task.IsolatedTiles, tile) >= 0)
                     {
                         canAddIsolatedTile = false;
                     }
@@ -249,15 +259,15 @@ namespace TSKT.Mahjongs.Hands
                         if (tile.Number() > 1)
                         {
                             var minusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() - 1);
-                            if (task.isolatedTiles.Contains(minusOne))
+                            if (System.Array.IndexOf(task.IsolatedTiles, minusOne) >= 0)
                             {
-                                canAddIsolatedTile = false;
+                                    canAddIsolatedTile = false;
                             }
                         }
                         if (tile.Number() > 2)
                         {
                             var minusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() - 2);
-                            if (task.isolatedTiles.Contains(minusTwo))
+                            if (System.Array.IndexOf(task.IsolatedTiles, minusTwo) >= 0)
                             {
                                 canAddIsolatedTile = false;
                             }
@@ -267,7 +277,9 @@ namespace TSKT.Mahjongs.Hands
                     {
                         var structure = new Structure(task);
                         structure.unsolvedTiles.Remove(tile);
-                        structure.isolatedTiles.Add(tile);
+                        var isolatedTiles = structure.IsolatedTiles.ToList();
+                        isolatedTiles.Add(tile);
+                        structure.IsolatedTiles = isolatedTiles.ToArray();
                         queue.Enqueue(structure);
                     }
                 }
@@ -282,17 +294,17 @@ namespace TSKT.Mahjongs.Hands
                 {
                     yield return it;
                 }
-                foreach (var it in isolatedTiles)
+                foreach (var it in IsolatedTiles)
                 {
                     yield return it;
                 }
-                foreach (var set in sets)
+                foreach (var set in Sets)
                 {
                     yield return set.first;
                     yield return set.second;
                     yield return set.third;
                 }
-                foreach (var it in pairs)
+                foreach (var it in Pairs)
                 {
                     yield return it;
                     yield return it;
