@@ -205,7 +205,14 @@ namespace TSKT.Mahjongs
             {
                 return false;
             }
-            // 暗槓は立直後でもできる
+            // 暗槓は立直後でもできるが、ツモ牌でのみ
+            if (DrawPlayer.Riichi)
+            {
+                if (newTileInHand?.type != tile)
+                {
+                    return false;
+                }
+            }
             return DrawPlayer.CanClosedQuad(tile);
         }
         public BeforeClosedQuad DeclareClosedQuad(TileType tile)
