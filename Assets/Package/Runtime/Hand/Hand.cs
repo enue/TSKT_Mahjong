@@ -127,12 +127,13 @@ namespace TSKT.Mahjongs
                 }
             }
 
+            var allTilesInHand = AllTiles.ToArray();
             var result = new List<TileType>();
             foreach (var tile in tilesToCheck.Distinct())
             {
                 // 手牌内で4枚使っている場合は待ち牌扱いにしない
                 // e.g. P1が4枚あるときにP1のシャンポンや単騎にはならない
-                if (AllTiles.Count(_ => _.type == tile) == 4)
+                if (allTilesInHand.Count(_ => _.type == tile) == 4)
                 {
                     continue;
                 }
