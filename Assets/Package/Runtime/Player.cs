@@ -189,21 +189,21 @@ namespace TSKT.Mahjongs
             if (discarded.type.Number() > 1)
             {
                 var minus1 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() - 1);
-                minus2Tiles = hand.tiles.Where(_ => _.type == minus1).ToArray();
+                minus1Tiles = hand.tiles.Where(_ => _.type == minus1).ToArray();
             }
 
             var plus1Tiles = System.Array.Empty<Tile>();
             if (discarded.type.Number() < 9)
             {
                 var plus1 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() + 1);
-                minus2Tiles = hand.tiles.Where(_ => _.type == plus1).ToArray();
+                plus1Tiles = hand.tiles.Where(_ => _.type == plus1).ToArray();
             }
 
             var plus2Tiles = System.Array.Empty<Tile>();
             if (discarded.type.Number() < 8)
             {
                 var plus2 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() + 2);
-                minus2Tiles = hand.tiles.Where(_ => _.type == plus2).ToArray();
+                plus2Tiles = hand.tiles.Where(_ => _.type == plus2).ToArray();
             }
 
             var tilePairs = new[]
