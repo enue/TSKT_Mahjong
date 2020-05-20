@@ -368,14 +368,14 @@ namespace TSKT.Mahjongs
             var tile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            var meld = new Meld();
-            player.hand.melds.Add(meld);
-            meld.tileFroms.Add((tile, DiscardPlayer.index));
-
             player.hand.tiles.Remove(対子.Item1);
-            meld.tileFroms.Add((対子.Item1, player.index));
             player.hand.tiles.Remove(対子.Item2);
-            meld.tileFroms.Add((対子.Item2, player.index));
+
+            var meld = new Meld(
+                (tile, DiscardPlayer.index),
+                (対子.Item1, player.index),
+                (対子.Item2, player.index));
+            player.hand.melds.Add(meld);
 
             player.OnTurnStart();
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
@@ -419,14 +419,14 @@ namespace TSKT.Mahjongs
             var tile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            var meld = new Meld();
-            player.hand.melds.Add(meld);
-            meld.tileFroms.Add((tile, DiscardPlayer.index));
-
             player.hand.tiles.Remove(塔子.Item1);
-            meld.tileFroms.Add((塔子.Item1, player.index));
             player.hand.tiles.Remove(塔子.Item2);
-            meld.tileFroms.Add((塔子.Item2, player.index));
+
+            var meld = new Meld(
+                (tile, DiscardPlayer.index),
+                (塔子.Item1, player.index),
+                (塔子.Item2, player.index));
+            player.hand.melds.Add(meld);
 
             player.OnTurnStart();
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);

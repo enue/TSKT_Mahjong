@@ -244,10 +244,10 @@ namespace TSKT.Mahjongs
                 return true;
             }
 
-            var meld = new Meld();
-            meld.tileFroms.Add((left, index));
-            meld.tileFroms.Add((right, index));
-            meld.tileFroms.Add((tileFromOtherPlayer, -1));
+            var meld = new Meld(
+                (left, index),
+                (right, index),
+                (tileFromOtherPlayer, -1));
             return hand.tiles
                 .Where(_ => _ != left && _ != right)
                 .Any(_ => !meld.Is喰い替え(_));

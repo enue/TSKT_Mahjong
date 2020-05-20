@@ -134,8 +134,10 @@ namespace TSKT.Mahjongs
 
         public AfterDraw ExecuteAddedOpenQuad(Player player, Tile tile)
         {
-            var meld = player.hand.melds.Find(_ => _.tileFroms.All(x => x.tile.type == tile.type));
-            meld.tileFroms.Add((tile, player.index));
+            var meldIndex = player.hand.melds.FindIndex(_ => _.tileFroms.All(x => x.tile.type == tile.type));
+            var tiles = player.hand.melds[meldIndex].tileFroms.ToList();
+            tiles.Add((tile, player.index));
+            player.hand.melds[meldIndex] = new Meld(tiles.ToArray());
 
             player.hand.tiles.Remove(tile);
 
@@ -160,15 +162,17 @@ namespace TSKT.Mahjongs
             var discardTile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            var meld = new Meld();
-            player.hand.melds.Add(meld);
-            meld.tileFroms.Add((discardTile, discardPlayer.index));
+            var meldTiles = new List<(Tile, int playerIndex)>();
+            meldTiles.Add((discardTile, discardPlayer.index));
             for (int i = 0; i < 3; ++i)
             {
                 var tile = player.hand.tiles.First(_ => _.type == discardTile.type);
                 player.hand.tiles.Remove(tile);
-                meld.tileFroms.Add((tile, player.index));
+                meldTiles.Add((tile, player.index));
             }
+            var meld = new Meld(meldTiles.ToArray());
+            player.hand.melds.Add(meld);
+
             var drawTile = DrawFromDeadWallTile(player);
 
             player.OnTurnStart();

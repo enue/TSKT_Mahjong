@@ -41,7 +41,7 @@ namespace TSKT.Mahjongs
         {
             var result = new Hand(owner);
             result.tiles.AddRange(tiles);
-            result.melds.AddRange(melds.Select(_ => _.Clone()));
+            result.melds.AddRange(melds);
             return result;
         }
 
@@ -77,14 +77,15 @@ namespace TSKT.Mahjongs
 
         public void BuildClosedQuad(TileType tileType)
         {
-            var meld = new Meld();
-            melds.Add(meld);
+            var quadTiles = new (Tile, int)[4];
             for (int i = 0; i < 4; ++i)
             {
                 var tile = tiles.First(_ => _.type == tileType);
                 tiles.Remove(tile);
-                meld.tileFroms.Add((tile, owner.index));
+                quadTiles[i] = (tile, owner.index);
             }
+            var meld = new Meld(quadTiles);
+            melds.Add(meld);
         }
 
         public TileType[] GetWinningTiles()
@@ -122,46 +123,43 @@ namespace TSKT.Mahjongs
         }
     }
 
-    public class Meld
+    public readonly struct Meld
     {
-        public readonly List<(Tile tile, int fromPlayerIndex)> tileFroms = new List<(Tile, int)>();
+        public readonly (Tile tile, int fromPlayerIndex)[] tileFroms;
 
         public bool 順子 => tileFroms[0].tile.type != tileFroms[1].tile.type;
-        public bool 槓子 => tileFroms.Count == 4;
-        public bool 暗槓 => 槓子 && tileFroms.All(_ => _.fromPlayerIndex == tileFroms[0].fromPlayerIndex);
-
-        public Tile[] Sorted => tileFroms.Select(_ => _.tile).OrderBy(_ => _.type).ToArray();
-
-        public Tile Min
+        public bool 槓子 => tileFroms.Length == 4;
+        public bool 暗槓
         {
             get
             {
-                var result = tileFroms[0].tile;
-                foreach (var (tile, from) in tileFroms)
+                if (槓子)
                 {
-                    if (result.type > tile.type)
+                    return false;
+                }
+                foreach (var (_, fromPlayerIndex) in tileFroms)
+                {
+                    if (fromPlayerIndex != tileFroms[0].fromPlayerIndex)
                     {
-                        result = tile;
+                        return false;
                     }
                 }
-                return result;
+                return true;
             }
         }
 
-        public Meld()
+        public Tile Min => tileFroms[0].tile;
+
+        public Meld(params (Tile tile, int fromPlayerIndex)[] tileFroms)
         {
+            this.tileFroms = tileFroms.OrderBy(_ => _.tile.type).ToArray();
         }
         
         Meld(Serializables.Meld source, WallTile wallTile)
         {
-            tileFroms = source.tileFroms.Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex)).ToList();
-        }
-
-        public Meld Clone()
-        {
-            var result = new Meld();
-            result.tileFroms.AddRange(tileFroms);
-            return result;
+            tileFroms = source.tileFroms
+                .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex))
+                .ToArray();
         }
 
         static public Meld FromSerializable(Serializables.Meld source, WallTile wallTile)
