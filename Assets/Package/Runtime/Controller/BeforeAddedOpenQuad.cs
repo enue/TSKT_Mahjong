@@ -27,6 +27,10 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
+                if (ronPlayer.フリテン)
+                {
+                    continue;
+                }
                 var hand = ronPlayer.hand.Clone();
                 hand.tiles.Add(tile);
                 var solution = hand.Solve();

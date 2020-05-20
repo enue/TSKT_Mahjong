@@ -20,7 +20,8 @@ namespace TSKT.Mahjongs
         public bool DoubleRiichi { get; private set; }
         public bool OpenRiichi { get; private set; }
         public bool 一発;
-        public bool フリテン;
+        public bool 他家によるフリテン { get; private set; }
+        public bool フリテン => 他家によるフリテン || 自分によるフリテン;
 
         public bool Riichi
         {
@@ -68,7 +69,7 @@ namespace TSKT.Mahjongs
             RiichiIndexInDiscardPile = (source.riichiIndexInDiscardPile >= 0) ? source.riichiIndexInDiscardPile : (int?)null;
             RiichiIndexInTotalDiscardTiles = (source.riichiIndexInTotalDiscardTiles >= 0) ? source.riichiIndexInTotalDiscardTiles : (int?)null;
             wind = source.wind;
-            フリテン = source.フリテン;
+            他家によるフリテン = source.他家によるフリテン;
             一発 = source.一発;
 
             scoreOwner = round.game.scoreOwners[source.index];
@@ -86,14 +87,20 @@ namespace TSKT.Mahjongs
 
         public AfterDraw Draw()
         {
-            if (!Riichi)
-            {
-                フリテン = false;
-            }
             var t = round.wallTile.tiles[0];
             round.wallTile.tiles.RemoveAt(0);
             hand.tiles.Add(t);
+
+            OnTurnStart();
             return new AfterDraw(this, t, 嶺上: false, openDoraAfterDiscard: false);
+        }
+
+        public void OnTurnStart()
+        {
+            if (!Riichi)
+            {
+                他家によるフリテン = false;
+            }
         }
 
         public void Discard(Tile tile, bool riichi, bool openRiichi)
@@ -118,6 +125,15 @@ namespace TSKT.Mahjongs
             discardPile.Add(tile);
             discardedTiles.Add(tile);
             round.totalDiscardedTiles.Add(tile);
+
+            foreach (var player in round.players)
+            {
+                if (player == this)
+                {
+                    continue;
+                }
+                player.Judge他家によるフリテン(tile);
+            }
         }
 
         // 赤牌ルールだと、どの牌で鳴くか選択肢があるケースがある
@@ -294,6 +310,40 @@ namespace TSKT.Mahjongs
         {
             return RelativePlayerUtil.GetByPlayerIndex(index, target.index);
         }
-    }
 
+        public void Judge他家によるフリテン(Tile tile)
+        {
+            if (他家によるフリテン)
+            {
+                return;
+            }
+
+            var hand = this.hand.Clone();
+            hand.tiles.Add(tile);
+            if (hand.Solve().向聴数 == -1)
+            {
+                他家によるフリテン = true;
+            }
+        }
+
+        bool 自分によるフリテン
+        {
+            get
+            {
+                var discardedTiles = this.discardedTiles
+                    .Select(_ => _.type)
+                    .Distinct();
+                foreach(var it in discardedTiles)
+                {
+                    var h = hand.Clone();
+                    h.tiles.Add(new Tile(0, it, false));
+                    if (h.Solve().向聴数 == -1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
 }

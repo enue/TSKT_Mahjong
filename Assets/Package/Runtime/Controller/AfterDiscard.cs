@@ -32,31 +32,27 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                if (ronPlayer.discardedTiles.Any(_ => _.type == DiscardedTile.type))
-                {
-                    // フリテン
-                    continue;
-                }
                 var hand = ronPlayer.hand.Clone();
                 hand.tiles.Add(DiscardedTile);
                 var solution = hand.Solve();
-                if (solution.向聴数 == -1)
+                if (solution.向聴数 > -1)
                 {
-                    var 一巡目 = ronPlayer.discardedTiles.Count == 0;
-                    var completed = solution.ChoiceCompletedHand(ronPlayer, DiscardedTile.type,
-                        ronTarget: DiscardPlayer,
-                        嶺上: false,
-                        海底: false,
-                        河底: Round.wallTile.tiles.Count == 0,
+                    continue;
+                }
+                var 一巡目 = ronPlayer.discardedTiles.Count == 0;
+                var completed = solution.ChoiceCompletedHand(ronPlayer, DiscardedTile.type,
+                    ronTarget: DiscardPlayer,
+                    嶺上: false,
+                    海底: false,
+                    河底: Round.wallTile.tiles.Count == 0,
 
-                        天和: false,
-                        地和: false,
-                        人和: 鳴きなし && 一巡目,
-                        槍槓: false);
-                    if (!completed.役無し)
-                    {
-                        PlayerRons.Add(ronPlayer, completed);
-                    }
+                    天和: false,
+                    地和: false,
+                    人和: 鳴きなし && 一巡目,
+                    槍槓: false);
+                if (!completed.役無し)
+                {
+                    PlayerRons.Add(ronPlayer, completed);
                 }
             }
         }
@@ -99,21 +95,6 @@ namespace TSKT.Mahjongs
 
             if (CanRoundContinue)
             {
-                // フリテン判定
-                foreach (var player in Round.players)
-                {
-                    if (player.フリテン)
-                    {
-                        continue;
-                    }
-                    var hand = player.hand.Clone();
-                    hand.tiles.Add(DiscardedTile);
-                    if (hand.Solve().向聴数 == -1)
-                    {
-                        player.フリテン = true;
-                    }
-                }
-
                 var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
                 roundResult = null;
                 return Round.players[playerIndex].Draw();
@@ -396,6 +377,7 @@ namespace TSKT.Mahjongs
             player.hand.tiles.Remove(対子.Item2);
             meld.tileFroms.Add((対子.Item2, player.index));
 
+            player.OnTurnStart();
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }
 
@@ -446,6 +428,7 @@ namespace TSKT.Mahjongs
             player.hand.tiles.Remove(塔子.Item2);
             meld.tileFroms.Add((塔子.Item2, player.index));
 
+            player.OnTurnStart();
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }
 

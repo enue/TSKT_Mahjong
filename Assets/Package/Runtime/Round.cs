@@ -118,6 +118,17 @@ namespace TSKT.Mahjongs
 
             var t = DrawFromDeadWallTile(player);
             deadWallTile.OpenDora();
+
+            foreach (var it in players)
+            {
+                if (it == player)
+                {
+                    continue;
+                }
+                player.Judge他家によるフリテン(new Tile(0, tileType, false));
+            }
+
+            player.OnTurnStart();
             return new AfterDraw(player, t, 嶺上: true, openDoraAfterDiscard: false);
         }
 
@@ -129,6 +140,17 @@ namespace TSKT.Mahjongs
             player.hand.tiles.Remove(tile);
 
             var drawTile = DrawFromDeadWallTile(player);
+
+            foreach (var it in players)
+            {
+                if (it == player)
+                {
+                    continue;
+                }
+                player.Judge他家によるフリテン(tile);
+            }
+
+            player.OnTurnStart();
             return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
         }
 
@@ -148,6 +170,8 @@ namespace TSKT.Mahjongs
                 meld.tileFroms.Add((tile, player.index));
             }
             var drawTile = DrawFromDeadWallTile(player);
+
+            player.OnTurnStart();
             return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
         }
     }
