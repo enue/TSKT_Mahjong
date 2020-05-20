@@ -34,15 +34,20 @@ namespace TSKT.Tests.Mahjongs
             Assert.AreEqual(json1_0, json1_1);
         }
         [Test]
-        public void MonkeyTest()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void MonkeyTest(bool serialize)
         {
             IController controller = Game.Create(0, new RuleSetting());
             for (int i = 0; i < 1000; ++i)
             {
-                var jsonString = controller.SerializeSession().ToJson();
-                controller = TSKT.Mahjongs.Serializables.Session.FromJson(jsonString);
-                var jsonString2 = controller.SerializeSession().ToJson();
-                Assert.AreEqual(jsonString, jsonString2);
+                if (serialize)
+                {
+                    var jsonString = controller.SerializeSession().ToJson();
+                    controller = TSKT.Mahjongs.Serializables.Session.FromJson(jsonString);
+                    var jsonString2 = controller.SerializeSession().ToJson();
+                    Assert.AreEqual(jsonString, jsonString2);
+                }
 
                 var commands = controller.ExecutableCommands;
                 CommandResult result;
