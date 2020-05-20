@@ -177,63 +177,59 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            Tile minus2 = null;
-            Tile minus1 = null;
-            Tile plus1 = null;
-            Tile plus2 = null;
 
-            foreach(var it in hand.tiles)
+            var minus2Tiles = System.Array.Empty<Tile>();
+            if (discarded.type.Number() > 2)
             {
-                if (!it.type.IsSuited())
-                {
-                    continue;
-                }
-                if (it.type.Suit() != discarded.type.Suit())
-                {
-                    continue;
-                }
-                var diff = it.type.Number() - discarded.type.Number();
-                if (diff == -2)
-                {
-                    minus2 = it;
-                }
-                if (diff == -1)
-                {
-                    minus1 = it;
-                }
-                if (diff == 1)
-                {
-                    plus1 = it;
-                }
-                if (diff == 2)
-                {
-                    plus2 = it;
-                }
+                var minus2 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() - 2);
+                minus2Tiles = hand.tiles.Where(_ => _.type == minus2).ToArray();
             }
+
+            var minus1Tiles = System.Array.Empty<Tile>();
+            if (discarded.type.Number() > 1)
+            {
+                var minus1 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() - 1);
+                minus2Tiles = hand.tiles.Where(_ => _.type == minus1).ToArray();
+            }
+
+            var plus1Tiles = System.Array.Empty<Tile>();
+            if (discarded.type.Number() < 9)
+            {
+                var plus1 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() + 1);
+                minus2Tiles = hand.tiles.Where(_ => _.type == plus1).ToArray();
+            }
+
+            var plus2Tiles = System.Array.Empty<Tile>();
+            if (discarded.type.Number() < 8)
+            {
+                var plus2 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() + 2);
+                minus2Tiles = hand.tiles.Where(_ => _.type == plus2).ToArray();
+            }
+
+            var tilePairs = new[]
+            {
+                (leftTiles: minus1Tiles, rightTiles: minus2Tiles),
+                (leftTiles: minus1Tiles, rightTiles: plus1Tiles),
+                (leftTiles: plus1Tiles, rightTiles: plus2Tiles),
+            };
 
             combinations = new List<(Tile left, Tile right)>();
-            if (minus2 != null && minus1 != null)
+            foreach (var (leftTiles, rightTiles) in tilePairs)
             {
-                if (CanDiscardAfterChi(discarded, minus1, minus2))
+                if (leftTiles.Length > 0 && rightTiles.Length > 0)
                 {
-                    combinations.Add((minus2, minus1));
+                    if (CanDiscardAfterChi(discarded, leftTiles[0], rightTiles[0]))
+                    {
+                        foreach(var left in leftTiles)
+                        {
+                            foreach(var right in rightTiles)
+                            {
+                                combinations.Add((left, right));
+                            }
+                        }
+                    }
                 }
             }
-            if (minus1 != null && plus1 != null)
-            {
-                if (CanDiscardAfterChi(discarded, minus1, plus1))
-                {
-                    combinations.Add((minus1, plus1));
-                }
-            }
-            if (plus1 != null && plus2 != null)
-            {
-                if (CanDiscardAfterChi(discarded, plus1, plus2))
-                {
-                    combinations.Add((plus1, plus2));
-                }
-            }
-
             return combinations.Count > 0;
         }
 
