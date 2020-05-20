@@ -174,24 +174,53 @@ namespace TSKT.Mahjongs
             return new Serializables.Meld(this);
         }
 
-        public bool Is喰い替え(Tile discardTile, int discardPlayerIndex)
+        public (Tile tile, int fromPlayerIndex) TileFromOtherPlayer
         {
-            var tileFromOtherPlayer = tileFroms.First(_ => _.fromPlayerIndex != discardPlayerIndex).tile;
-            if (discardTile.type == tileFromOtherPlayer.type)
+            get
+            {
+                int ownerPlayerIndex;
+                if (tileFroms[0].fromPlayerIndex == tileFroms[1].fromPlayerIndex)
+                {
+                    ownerPlayerIndex = tileFroms[0].fromPlayerIndex;
+                }
+                else if (tileFroms[0].fromPlayerIndex == tileFroms[2].fromPlayerIndex)
+                {
+                    ownerPlayerIndex = tileFroms[0].fromPlayerIndex;
+                }
+                else
+                {
+                    ownerPlayerIndex = tileFroms[1].fromPlayerIndex;
+                }
+
+                foreach (var it in tileFroms)
+                {
+                    if (it.fromPlayerIndex != ownerPlayerIndex)
+                    {
+                        return it;
+                    }
+                }
+                return default;
+            }
+        }
+
+        public bool Is喰い替え(Tile tileToDiscard)
+        {
+            var tileFromOtherPlayer = TileFromOtherPlayer;
+            if (tileToDiscard.type == tileFromOtherPlayer.tile.type)
             {
                 return true;
             }
 
             if (順子)
             {
-                if (discardTile.type.IsSuited())
+                if (tileToDiscard.type.IsSuited())
                 {
-                    if (tileFroms[0].tile.type.Suit() == discardTile.type.Suit())
+                    if (tileFroms[0].tile.type.Suit() == tileToDiscard.type.Suit())
                     {
                         var numbers = tileFroms
-                            .Where(_ => _.fromPlayerIndex == discardPlayerIndex)
+                            .Where(_ => _.fromPlayerIndex != tileFromOtherPlayer.fromPlayerIndex)
                             .Select(_ => _.tile.type.Number())
-                            .Concat(new[] { discardTile.type.Number() })
+                            .Concat(new[] { tileToDiscard.type.Number() })
                             .Distinct()
                             .OrderBy(_ => _)
                             .ToArray();

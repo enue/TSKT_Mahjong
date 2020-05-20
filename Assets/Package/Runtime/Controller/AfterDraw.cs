@@ -131,7 +131,7 @@ namespace TSKT.Mahjongs
                 if (BuiltMeld)
                 {
                     var meld = DrawPlayer.hand.melds.Last();
-                    if (meld.Is喰い替え(tile, DrawPlayerIndex))
+                    if (meld.Is喰い替え(tile))
                     {
                         command = null;
                         return false;

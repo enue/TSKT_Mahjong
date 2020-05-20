@@ -250,7 +250,7 @@ namespace TSKT.Mahjongs
             meld.tileFroms.Add((tileFromOtherPlayer, -1));
             return hand.tiles
                 .Where(_ => _ != left && _ != right)
-                .Any(_ => !meld.Is喰い替え(_, index));
+                .Any(_ => !meld.Is喰い替え(_));
         }
 
         public bool CanClosedQuad(TileType tile)
