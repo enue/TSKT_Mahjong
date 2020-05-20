@@ -36,7 +36,7 @@ namespace TSKT.Mahjongs.Hands
             }
         }
 
-        public readonly List<TileType> unsolvedTiles;
+        readonly List<TileType> unsolvedTiles;
         public TileType[] IsolatedTiles { get; private set; } = System.Array.Empty<TileType>();
         public Set[] Sets { get; private set; } = System.Array.Empty<Set>();
         public TileType[] Pairs { get; private set; } = System.Array.Empty<TileType>();
