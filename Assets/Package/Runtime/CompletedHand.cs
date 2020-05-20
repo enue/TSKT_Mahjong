@@ -11,7 +11,7 @@ namespace TSKT.Mahjongs
         public TileType[] IsolatedTiles => structure.IsolatedTiles;
         public Hands.Structure.Set[] Sets => structure.Sets;
         public TileType[] Pairs => structure.Pairs;
-        public Hands.Structure.Meld[] Melds => structure.melds;
+        public Meld[] Melds => structure.melds;
         public int RedTile => structure.redTileCount;
 
         public readonly Player ronTarget;
@@ -390,7 +390,7 @@ namespace TSKT.Mahjongs
                     {
                         if (it.暗槓)
                         {
-                            if (it.sortedTiles[0].么九牌())
+                            if (it.tileFroms[0].tile.type.么九牌())
                             {
                                 fu += 32;
                             }
@@ -402,7 +402,7 @@ namespace TSKT.Mahjongs
                         else if (it.槓子)
                         {
                             // 明槓
-                            if (it.sortedTiles[0].么九牌())
+                            if (it.tileFroms[0].tile.type.么九牌())
                             {
                                 fu += 16;
                             }
@@ -414,7 +414,7 @@ namespace TSKT.Mahjongs
                         else if (!it.順子)
                         {
                             // 明刻
-                            if (it.sortedTiles[0].么九牌())
+                            if (it.tileFroms[0].tile.type.么九牌())
                             {
                                 fu += 4;
                             }
@@ -610,7 +610,7 @@ namespace TSKT.Mahjongs
                 {
                     if (!it.順子)
                     {
-                        yield return it.sortedTiles[0];
+                        yield return it.tileFroms[0].tile.type;
                     }
                 }
             }
@@ -630,7 +630,7 @@ namespace TSKT.Mahjongs
                 {
                     if (it.順子)
                     {
-                        yield return it.sortedTiles[0];
+                        yield return it.tileFroms[0].tile.type;
                     }
                 }
             }

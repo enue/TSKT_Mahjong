@@ -22,19 +22,6 @@ namespace TSKT.Mahjongs.Hands
             public bool 刻子 => first == second;
             public bool 順子 => !刻子;
         }
-        public readonly struct Meld
-        {
-            public readonly TileType[] sortedTiles;
-            public bool 暗槓 { get; }
-            public bool 槓子 => sortedTiles.Length == 4;
-            public bool 順子 => sortedTiles[0] != sortedTiles[1];
-
-            public Meld(Mahjongs.Meld source)
-            {
-                sortedTiles = source.tileFroms.Select(_ => _.tile.type).ToArray();
-                暗槓 = source.暗槓;
-            }
-        }
 
         readonly List<TileType> unsolvedTiles;
         public TileType[] IsolatedTiles { get; private set; } = System.Array.Empty<TileType>();
@@ -61,7 +48,7 @@ namespace TSKT.Mahjongs.Hands
         {
             unsolvedTiles = hand.tiles.Select(_ => _.type).ToList();
             unsolvedTiles.Sort();
-            melds = hand.melds.Select(_ => new Meld(_)).ToArray();
+            melds = hand.melds.ToArray();
 
             if (melds.Length > 0)
             {
@@ -316,9 +303,9 @@ namespace TSKT.Mahjongs.Hands
                 }
                 foreach (var meld in melds)
                 {
-                    foreach (var tile in meld.sortedTiles)
+                    foreach (var (tile, _) in meld.tileFroms)
                     {
-                        yield return tile;
+                        yield return tile.type;
                     }
                 }
             }
