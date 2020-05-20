@@ -191,7 +191,7 @@ namespace TSKT.Mahjongs.Serializables
         public bool doubleRiichi;
         public bool openRiichi;
         public bool 一発;
-        public bool 他家によるフリテン;
+        public bool furitenByOtherPlayers;
 
         public Player(Mahjongs.Player source)
         {
@@ -204,7 +204,7 @@ namespace TSKT.Mahjongs.Serializables
             riichiIndexInDiscardPile = source.RiichiIndexInDiscardPile ?? -1;
             riichiIndexInTotalDiscardTiles = source.RiichiIndexInTotalDiscardTiles ?? -1;
             wind = source.wind;
-            他家によるフリテン = source.他家によるフリテン;
+            furitenByOtherPlayers = source.FuritenByOtherPlayers;
             一発 = source.一発;
         }
 

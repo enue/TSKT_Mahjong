@@ -20,8 +20,8 @@ namespace TSKT.Mahjongs
         public bool DoubleRiichi { get; private set; }
         public bool OpenRiichi { get; private set; }
         public bool 一発;
-        public bool 他家によるフリテン { get; private set; }
-        public bool フリテン => 他家によるフリテン || 自分によるフリテン;
+        public bool FuritenByOtherPlayers { get; private set; }
+        public bool Furiten => FuritenByOtherPlayers || FuritenByMyself;
 
         public bool Riichi
         {
@@ -69,7 +69,7 @@ namespace TSKT.Mahjongs
             RiichiIndexInDiscardPile = (source.riichiIndexInDiscardPile >= 0) ? source.riichiIndexInDiscardPile : (int?)null;
             RiichiIndexInTotalDiscardTiles = (source.riichiIndexInTotalDiscardTiles >= 0) ? source.riichiIndexInTotalDiscardTiles : (int?)null;
             wind = source.wind;
-            他家によるフリテン = source.他家によるフリテン;
+            FuritenByOtherPlayers = source.furitenByOtherPlayers;
             一発 = source.一発;
 
             scoreOwner = round.game.scoreOwners[source.index];
@@ -99,7 +99,7 @@ namespace TSKT.Mahjongs
         {
             if (!Riichi)
             {
-                他家によるフリテン = false;
+                FuritenByOtherPlayers = false;
             }
         }
 
@@ -132,7 +132,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                player.Judge他家によるフリテン(tile);
+                player.JudgeFuritenByOtherPlayers(tile);
             }
         }
 
@@ -311,9 +311,9 @@ namespace TSKT.Mahjongs
             return RelativePlayerUtil.GetByPlayerIndex(index, target.index);
         }
 
-        public void Judge他家によるフリテン(Tile tile)
+        public void JudgeFuritenByOtherPlayers(Tile tile)
         {
-            if (他家によるフリテン)
+            if (FuritenByOtherPlayers)
             {
                 return;
             }
@@ -322,11 +322,11 @@ namespace TSKT.Mahjongs
             hand.tiles.Add(tile);
             if (hand.Solve().向聴数 == -1)
             {
-                他家によるフリテン = true;
+                FuritenByOtherPlayers = true;
             }
         }
 
-        bool 自分によるフリテン
+        bool FuritenByMyself
         {
             get
             {

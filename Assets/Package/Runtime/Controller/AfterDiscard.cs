@@ -28,7 +28,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                if (ronPlayer.フリテン)
+                if (ronPlayer.Furiten)
                 {
                     continue;
                 }

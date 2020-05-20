@@ -125,7 +125,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                player.Judge他家によるフリテン(new Tile(0, tileType, false));
+                player.JudgeFuritenByOtherPlayers(new Tile(0, tileType, false));
             }
 
             player.OnTurnStart();
@@ -147,7 +147,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                player.Judge他家によるフリテン(tile);
+                player.JudgeFuritenByOtherPlayers(tile);
             }
 
             player.OnTurnStart();
