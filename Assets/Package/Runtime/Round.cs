@@ -174,5 +174,44 @@ namespace TSKT.Mahjongs
             player.OnTurnStart();
             return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
         }
+
+        public Dictionary<TileType, int> HiddenTileCountFrom(Player observer)
+        {
+            var result = wallTile.allTiles
+                .Select(_ => _.type)
+                .Distinct()
+                .ToDictionary(_ => _, _ => 4);
+
+            // 自分の手牌
+            foreach (var it in observer.hand.tiles)
+            {
+                --result[it.type];
+            }
+            foreach (var player in players)
+            {
+                // 副露
+                foreach (var meld in player.hand.melds)
+                {
+                    foreach (var (tile, _) in meld.tileFroms)
+                    {
+                        --result[tile.type];
+                    }
+                }
+                // 河
+                foreach (var tile in player.discardPile)
+                {
+                    --result[tile.type];
+                }
+            }
+            // ドラ表示
+            foreach (var it in deadWallTile.doraIndicatorTiles)
+            {
+                --result[it.type];
+            }
+
+            return result;
+        }
+
+
     }
 }
