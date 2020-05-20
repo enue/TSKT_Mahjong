@@ -95,17 +95,43 @@ namespace TSKT.Mahjongs
                 return System.Array.Empty<TileType>();
             }
 
-            var result = new List<TileType>();
+            // 待ち牌候補
+            // 　一九字牌 : 国士無双
+            // 　手牌と同じ牌 : シャンポン・単騎
+            // 　手牌の隣牌 : リャンメン、ペンチャン、カンチャン
+
+            var tilesToCheck = new List<TileType>();
+
+            foreach (var it in tiles)
+            {
+                tilesToCheck.Add(it.type);
+
+                if (it.type.IsSuited())
+                {
+                    var number = it.type.Number();
+                    if (number > 1)
+                    {
+                        tilesToCheck.Add(TileTypeUtil.Get(it.type.Suit(), number - 1));
+                    }
+                    if (number < 9)
+                    {
+                        tilesToCheck.Add(TileTypeUtil.Get(it.type.Suit(), number + 1));
+                    }
+                }
+            }
             foreach (TileType tile in System.Enum.GetValues(typeof(TileType)))
             {
-                if (tile.季節牌())
+                if (tile.么九牌())
                 {
-                    continue;
+                    tilesToCheck.Add(tile);
                 }
-                if (tile.花牌())
-                {
-                    continue;
-                }
+            }
+
+            var result = new List<TileType>();
+            foreach (var tile in tilesToCheck.Distinct())
+            {
+                // 手牌内で4枚使っている場合は待ち牌扱いにしない
+                // e.g. P1が4枚あるときにP1のシャンポンや単騎にはならない
                 if (AllTiles.Count(_ => _.type == tile) == 4)
                 {
                     continue;
