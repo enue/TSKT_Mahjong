@@ -50,6 +50,11 @@ namespace TSKT.Mahjongs
             return new Hands.Solution(this);
         }
 
+        public bool 向聴数IsLessThanOrEqual(int value)
+        {
+            return Hands.Structure.向聴数IsLessThanOrEqual(this, value);
+        }
+
         public bool 九種九牌 => tiles.Where(_ => _.type.么九牌()).Distinct().Count() >= 9;
 
         public IEnumerable<Tile> AllTiles
@@ -84,8 +89,7 @@ namespace TSKT.Mahjongs
 
         public TileType[] GetWinningTiles()
         {
-            var solution = Solve();
-            if (solution.向聴数 != 0)
+            if (!向聴数IsLessThanOrEqual(0))
             {
                 return System.Array.Empty<TileType>();
             }
@@ -108,7 +112,7 @@ namespace TSKT.Mahjongs
 
                 var clone = Clone();
                 clone.tiles.Add(new Tile(0, tile, false));
-                if (clone.Solve().向聴数 == -1)
+                if (clone.向聴数IsLessThanOrEqual(-1))
                 {
                     result.Add(tile);
                 }

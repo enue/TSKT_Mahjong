@@ -122,7 +122,41 @@ namespace TSKT.Mahjongs.Hands
 
         static public (int 向聴数, List<Structure>) Build(Hand hand)
         {
-            var result = (向聴数: int.MaxValue, structures: new List<Structure>());
+            var 向聴数 = int.MaxValue;
+            var structures = new List<Structure>();
+
+            foreach (var it in CollectStructures(hand))
+            {
+                var score = it.向聴数;
+                if (向聴数 > score)
+                {
+                    向聴数 = score;
+                    structures.Clear();
+                    structures.Add(it);
+                }
+                else if (向聴数 == score)
+                {
+                    structures.Add(it);
+                }
+            }
+
+            return (向聴数, structures);
+        }
+
+        static public bool 向聴数IsLessThanOrEqual(Hand hand, int value)
+        {
+            foreach(var it in CollectStructures(hand))
+            {
+                if (it.向聴数 <= value)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static IEnumerable<Structure> CollectStructures(Hand hand)
+        {
             var queue = new Queue<Structure>();
             queue.Enqueue(new Structure(hand));
 
@@ -132,18 +166,7 @@ namespace TSKT.Mahjongs.Hands
 
                 if (task.unsolvedTiles.Count == 0)
                 {
-                    var score = task.向聴数;
-                    if (result.向聴数 > score)
-                    {
-                        result.向聴数 = score;
-                        result.structures.Clear();
-                        result.structures.Add(task);
-                    }
-                    else if (result.向聴数 == score)
-                    {
-                        result.向聴数 = score;
-                        result.structures.Add(task);
-                    }
+                    yield return task;
                     continue;
                 }
 
@@ -249,8 +272,6 @@ namespace TSKT.Mahjongs.Hands
                     }
                 }
             }
-
-            return result;
         }
 
         public IEnumerable<TileType> AllUsedTiles

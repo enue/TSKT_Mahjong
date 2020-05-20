@@ -33,6 +33,7 @@ namespace TSKT.Tests.Mahjongs
                 hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
                 var solution = hand.Solve();
                 Assert.AreEqual(expected, solution.向聴数);
+                Assert.IsTrue(hand.向聴数IsLessThanOrEqual(expected));
 
                 if (expected == -1)
                 {
@@ -75,6 +76,7 @@ namespace TSKT.Tests.Mahjongs
                     h.tiles.Remove(it);
                     var solution = h.Solve();
                     Assert.AreEqual(expected + 1, solution.向聴数);
+                    Assert.IsTrue(h.向聴数IsLessThanOrEqual(expected + 1));
                 }
             }
         }

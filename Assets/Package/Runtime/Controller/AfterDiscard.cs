@@ -222,7 +222,7 @@ namespace TSKT.Mahjongs
             {
                 foreach (var it in Round.players)
                 {
-                    states.Add(it, (it.hand.Solve().向聴数 == 0)
+                    states.Add(it, (it.hand.向聴数IsLessThanOrEqual(0))
                         ? ExhausiveDrawType.テンパイ
                         : ExhausiveDrawType.ノーテン);
                 }

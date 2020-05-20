@@ -318,9 +318,9 @@ namespace TSKT.Mahjongs
                 return;
             }
 
-            var hand = this.hand.Clone();
-            hand.tiles.Add(tile);
-            if (hand.Solve().向聴数 == -1)
+            var cloneHand = hand.Clone();
+            cloneHand.tiles.Add(tile);
+            if (cloneHand.向聴数IsLessThanOrEqual(-1))
             {
                 FuritenByOtherPlayers = true;
             }
@@ -335,9 +335,9 @@ namespace TSKT.Mahjongs
                     .Distinct();
                 foreach(var it in discardedTiles)
                 {
-                    var h = hand.Clone();
-                    h.tiles.Add(new Tile(0, it, false));
-                    if (h.Solve().向聴数 == -1)
+                    var cloneHand = hand.Clone();
+                    cloneHand.tiles.Add(new Tile(0, it, false));
+                    if (cloneHand.向聴数IsLessThanOrEqual(-1))
                     {
                         return true;
                     }

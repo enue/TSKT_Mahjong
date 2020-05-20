@@ -100,10 +100,9 @@ namespace TSKT.Mahjongs
                 command = null;
                 return false;
             }
-            var solution = DrawPlayer.hand.Clone();
-            solution.tiles.Remove(tile);
-            var score = solution.Solve();
-            if (score.向聴数 != 0)
+            var cloneHand = DrawPlayer.hand.Clone();
+            cloneHand.tiles.Remove(tile);
+            if (!cloneHand.向聴数IsLessThanOrEqual(0))
             {
                 command = null;
                 return false;
