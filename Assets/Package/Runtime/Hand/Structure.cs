@@ -32,7 +32,7 @@ namespace TSKT.Mahjongs.Hands
             public Meld(Mahjongs.Meld source)
             {
                 sortedTiles = source.Sorted.Select(_ => _.type).ToArray();
-                暗槓 = source.tileFroms.Select(_ => _.fromPlayerIndex).Distinct().Count() == 1;
+                暗槓 = source.暗槓;
             }
         }
 
