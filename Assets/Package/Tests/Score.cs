@@ -181,5 +181,37 @@ namespace TSKT.Tests.Mahjongs
             Assert.AreEqual(expected, result.ronPenalty);
             Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
         }
+        [Test]
+        public void HandWithMeld()
+        {
+            var tiles = new[]
+            {
+                TileType.M2, TileType.M3, TileType.M4,
+                TileType.P5, TileType.P6,
+                TileType.S8, TileType.S8,
+            };
+            var meld0 = new Meld(
+                (new Tile(0, TileType.S3, false), 0),
+                (new Tile(0, TileType.S4, false), 0),
+                (new Tile(0, TileType.S5, false), 1));
+            var meld1 = new Meld(
+                (new Tile(0, TileType.P3, false), 0),
+                (new Tile(0, TileType.P3, false), 1),
+                (new Tile(0, TileType.P3, false), 0));
+
+            var round = Game.Create(0, new RuleSetting()).Round;
+            var hand = round.players[0].hand;
+            hand.tiles.Clear();
+            hand.tiles.AddRange(tiles.Select(_ => new Tile(0, _, false)));
+            hand.melds.Add(meld0);
+            hand.melds.Add(meld1);
+            var solution = hand.Solve();
+            Assert.AreEqual(0, solution.向聴数);
+            Assert.IsTrue(hand.向聴数IsLessThanOrEqual(0));
+
+            var winningTiles = hand.GetWinningTiles();
+            Assert.AreEqual(new[] { TileType.P4, TileType.P7 }, winningTiles);
+
+        }
     }
 }
