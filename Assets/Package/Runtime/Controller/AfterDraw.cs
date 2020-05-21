@@ -346,6 +346,8 @@ namespace TSKT.Mahjongs
             }
             if (!一巡目)
             {
+                command = default;
+                return false;
             }
 
             if (DrawPlayer.hand.tiles
