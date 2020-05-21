@@ -45,10 +45,10 @@ namespace TSKT.Mahjongs.Commands
     {
         public static CommandPriority GetPriority => CommandPriority.Chi;
         public override CommandPriority Priority => GetPriority;
-        public readonly (Tile, Tile) 塔子;
+        public readonly (Tile left, Tile right) 塔子;
         public override Player Executor { get; }
 
-        public Chi(Player player, AfterDiscard afterDiscard, (Tile, Tile) 塔子) : base(afterDiscard)
+        public Chi(Player player, AfterDiscard afterDiscard, (Tile left, Tile right) 塔子) : base(afterDiscard)
         {
             Executor = player;
             this.塔子 = 塔子;
