@@ -44,7 +44,12 @@ namespace TSKT.Tests.Mahjongs
             TileType.P2, TileType.P3, TileType.P4,
             TileType.P5, TileType.P5, TileType.P5,
             TileType.P5)]
-
+        [TestCase(new[] { TileType.P1 },
+            TileType.P1, TileType.P2, TileType.P2,
+            TileType.白, TileType.白, TileType.中,
+            TileType.中, TileType.發, TileType.發,
+            TileType.東, TileType.東, TileType.西,
+            TileType.西)]
         public void GetWinningTiles(TileType[] expecteds, params TileType[] handTiles)
         {
             var round = Game.Create(0, new RuleSetting()).Round;

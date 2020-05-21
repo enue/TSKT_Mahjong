@@ -245,25 +245,33 @@ namespace TSKT.Mahjongs.Hands
                     }
                 }
                 // 頭
-                // 七対子があるのでLackCount判定はせず頭を増やす
-                if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
+                // 基本的に二つ（シャンポン）まで。七対子の目がある場合は制限なし。
+                if ((task.melds.Length == 0 && task.Sets.Length == 0 && task.塔子.Length == 0)
+                    || (task.Pairs.Length < 2)
+                    || (task.LackCount < allowLackCount))
                 {
-                    // 同じ対子が二組あるのは許可しない。
-                    if (System.Array.IndexOf(task.Pairs, tile) == -1)
+                    if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
                     {
-                        var structure = new Structure(task);
-                        for (int i = 0; i < 2; ++i)
+                        // 同じ対子が二組あるのは許可しない。
+                        if (System.Array.IndexOf(task.Pairs, tile) == -1)
                         {
-                            structure.unsolvedTiles.Remove(tile);
+                            var structure = new Structure(task);
+                            for (int i = 0; i < 2; ++i)
+                            {
+                                structure.unsolvedTiles.Remove(tile);
+                            }
+                            var pairs = structure.Pairs.ToList();
+                            pairs.Add(tile);
+                            structure.Pairs = pairs.ToArray();
+                            queue.Enqueue(structure);
                         }
-                        var pairs = structure.Pairs.ToList();
-                        pairs.Add(tile);
-                        structure.Pairs = pairs.ToArray();
-                        queue.Enqueue(structure);
                     }
                 }
                 // 浮き牌
-                // 国士無双があるのでallowLackCount判定はせず浮き牌を増やす
+                // 基本的に一つ（単騎）まで。国士無双の目がある場合は制限なし。
+                if ((task.melds.Length == 0 && task.Sets.Length <= 1 && task.塔子.Length == 0)
+                    || (task.Pairs.Length <= 1)
+                    || (task.LackCount < allowLackCount))
                 {
                     // ただし浮き牌内で塔子、対子ができないようにする
                     bool canAddIsolatedTile = true;
