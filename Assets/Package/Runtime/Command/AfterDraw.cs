@@ -103,7 +103,7 @@ namespace TSKT.Mahjongs.Commands
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
         public override Player Executor => afterDraw.DrawPlayer;
-        readonly TileType tile;
+        public readonly TileType tile;
 
         public DeclareClosedQuad(AfterDraw afterDraw, TileType tile) : base(afterDraw)
         {
@@ -121,7 +121,7 @@ namespace TSKT.Mahjongs.Commands
         public static CommandPriority GetPriority => CommandPriority.Lowest;
         public override CommandPriority Priority => GetPriority;
         public override Player Executor => afterDraw.DrawPlayer;
-        readonly Tile tile;
+        public readonly Tile tile;
 
         public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile) : base(afterDraw)
         {
