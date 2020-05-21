@@ -125,7 +125,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                player.JudgeFuritenByOtherPlayers(new Tile(0, tileType, false));
+                player.TryAttachFuritenByOtherPlayers(new Tile(0, tileType, false));
             }
 
             player.OnTurnStart();
@@ -149,7 +149,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                player.JudgeFuritenByOtherPlayers(tile);
+                player.TryAttachFuritenByOtherPlayers(tile);
             }
 
             player.OnTurnStart();

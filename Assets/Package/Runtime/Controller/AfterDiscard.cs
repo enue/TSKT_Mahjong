@@ -85,6 +85,18 @@ namespace TSKT.Mahjongs
             }
         }
 
+        void TryAttachFuriten()
+        {
+            foreach (var player in Round.players)
+            {
+                if (player == DiscardPlayer)
+                {
+                    continue;
+                }
+                player.TryAttachFuritenByOtherPlayers(DiscardedTile);
+            }
+        }
+
         public AfterDraw AdvanceTurn(out RoundResult roundResult)
         {
             if (Consumed)
@@ -92,6 +104,8 @@ namespace TSKT.Mahjongs
                 throw new System.Exception("consumed controller");
             }
             Consumed = true;
+
+            TryAttachFuriten();
 
             if (CanRoundContinue)
             {
@@ -333,6 +347,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            TryAttachFuriten();
             foreach (var it in Round.players)
             {
                 it.一発 = false;
@@ -364,6 +379,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            TryAttachFuriten();
             foreach (var it in Round.players)
             {
                 it.一発 = false;
@@ -416,10 +432,12 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            TryAttachFuriten();
             foreach (var it in Round.players)
             {
                 it.一発 = false;
             }
+
             var discardPile = DiscardPlayer.discardPile;
             var tile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);

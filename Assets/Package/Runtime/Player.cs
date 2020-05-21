@@ -125,15 +125,6 @@ namespace TSKT.Mahjongs
             discardPile.Add(tile);
             discardedTiles.Add(tile);
             round.totalDiscardedTiles.Add(tile);
-
-            foreach (var player in round.players)
-            {
-                if (player == this)
-                {
-                    continue;
-                }
-                player.JudgeFuritenByOtherPlayers(tile);
-            }
         }
 
         // 赤牌ルールだと、どの牌で鳴くか選択肢があるケースがある
@@ -307,7 +298,7 @@ namespace TSKT.Mahjongs
             return RelativePlayerUtil.GetByPlayerIndex(index, target.index);
         }
 
-        public void JudgeFuritenByOtherPlayers(Tile tile)
+        public void TryAttachFuritenByOtherPlayers(Tile tile)
         {
             if (FuritenByOtherPlayers)
             {
