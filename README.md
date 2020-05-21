@@ -53,9 +53,8 @@ var afterDraw = Game.Create(Random.Range(0, 4),
 
 ```cs
 // 例えば牌を切る行動はDiscardクラスで表現される。
-if (afterDraw.CanDiscard(tile))
+if (afterDraw.CanDiscard(tile, out var discardCommand))
 {
-    var discardCommand = new Discard(afterDraw, tile);
 }
 
 // 実行可能な全行動はExecutableCommandsで取得できる
