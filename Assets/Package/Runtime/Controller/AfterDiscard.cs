@@ -333,6 +333,11 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            foreach (var it in Round.players)
+            {
+                it.一発 = false;
+            }
+
             return Round.ExecuteOpenQuad(player, DiscardPlayer);
         }
 
