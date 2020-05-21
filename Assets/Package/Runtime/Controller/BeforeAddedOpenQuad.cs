@@ -70,10 +70,23 @@ namespace TSKT.Mahjongs
             return new Serializables.Session(this);
         }
 
-        public bool CanRon(Player player)
+        public bool CanRon(out Commands.Ron[] commands)
         {
-            return PlayerRons.ContainsKey(player);
+            commands = PlayerRons.Select(_ => new Commands.Ron(_.Key, this)).ToArray();
+            return commands.Length > 0;
         }
+
+        public bool CanRon(Player player, out Commands.Ron command)
+        {
+            if (!PlayerRons.ContainsKey(player))
+            {
+                command = null;
+                return false;
+            }
+            command = new Commands.Ron(player, this);
+            return true;
+        }
+
         public AfterDraw Ron(
             out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result,
@@ -112,12 +125,10 @@ namespace TSKT.Mahjongs
             get
             {
                 var result = new List<ICommand>();
-                foreach (var player in Round.players)
+
+                if (CanRon(out var rons))
                 {
-                    if (CanRon(player))
-                    {
-                        result.Add(new Commands.槍槓(player, this));
-                    }
+                    result.AddRange(rons);
                 }
                 return result.ToArray();
             }

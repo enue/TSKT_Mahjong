@@ -18,7 +18,8 @@ namespace TSKT.Mahjongs
 
     public interface IRonableController
     {
-        bool CanRon(Player player);
+        bool CanRon(out Commands.Ron[] command);
+        bool CanRon(Player player, out Commands.Ron command);
         AfterDraw Ron(out RoundResult roundResult, out Dictionary<Player, CompletedResult> result, params Player[] players);
         Dictionary<Player, CompletedHand> PlayerRons { get; }
     }

@@ -23,30 +23,12 @@ namespace TSKT.Mahjongs.Commands
         public abstract Player Executor { get; }
     }
 
-    public class Ron : CommandAfterDiscard
-    {
-        public static CommandPriority GetPriority => CommandPriority.Ron;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor { get; }
-
-        public Ron(Player player, AfterDiscard afterDiscard) : base(afterDiscard)
-        {
-            Executor = player;
-        }
-        public override CommandResult TryExecute()
-        {
-            return null;
-        }
-        public CompletedHand RonResult => afterDiscard.PlayerRons[Executor];
-    }
-
     public class Pon : CommandAfterDiscard
     {
         public static CommandPriority GetPriority => CommandPriority.Pon;
         public override CommandPriority Priority => GetPriority;
         public override Player Executor { get; }
-
-        readonly (Tile, Tile) pair;
+        public readonly (Tile, Tile) pair;
 
         public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) pair) : base(afterDiscard)
         {
@@ -63,7 +45,7 @@ namespace TSKT.Mahjongs.Commands
     {
         public static CommandPriority GetPriority => CommandPriority.Chi;
         public override CommandPriority Priority => GetPriority;
-        readonly (Tile, Tile) 塔子;
+        public readonly (Tile, Tile) 塔子;
         public override Player Executor { get; }
 
         public Chi(Player player, AfterDiscard afterDiscard, (Tile, Tile) 塔子) : base(afterDiscard)

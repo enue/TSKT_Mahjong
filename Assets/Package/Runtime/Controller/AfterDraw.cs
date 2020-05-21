@@ -70,6 +70,20 @@ namespace TSKT.Mahjongs
             return new Serializables.Session(this);
         }
 
+        public bool CanRiichi(out Commands.Discard[] commands)
+        {
+            var result = new List<Commands.Discard>();
+            foreach (var it in DrawPlayer.hand.tiles)
+            {
+                if (CanRiichi(it, out var command))
+                {
+                    result.Add(command);
+                }
+            }
+            commands = result.ToArray();
+            return commands.Length > 0;
+        }
+
         public bool CanRiichi(Tile tile, out Commands.Discard command)
         {
             if (DrawPlayer.Riichi)
@@ -110,6 +124,20 @@ namespace TSKT.Mahjongs
 
             command = new Commands.Discard(this, tile, riichi: true);
             return true;
+        }
+
+        public bool CanDiscard(out Commands.Discard[] commands)
+        {
+            var result = new List<Commands.Discard>();
+            foreach (var it in DrawPlayer.hand.tiles)
+            {
+                if (CanDiscard(it, out var command))
+                {
+                    result.Add(command);
+                }
+            }
+            commands = result.ToArray();
+            return commands.Length > 0;
         }
 
         public bool CanDiscard(Tile tile, out Commands.Discard command)
@@ -164,17 +192,26 @@ namespace TSKT.Mahjongs
             return new AfterDiscard(DrawPlayer);
         }
 
-        public bool CanTsumo()
+        public bool CanTsumo(out Commands.Tsumo command)
         {
             if (handSolution == null)
             {
+                command = null;
                 return false;
             }
             if (handSolution.向聴数 != -1)
             {
+                command = null;
                 return false;
             }
-            return !tsumo.Value.役無し;
+            if (tsumo.Value.役無し)
+            {
+                command = null;
+                return false;
+            }
+
+            command = new Commands.Tsumo(this);
+            return true;
         }
 
         public AfterDraw Tsumo(
@@ -193,16 +230,33 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
-        public bool CanDeclareClosedQuad(TileType tile)
+        public bool CanDeclareClosedQuad(out Commands.DeclareClosedQuad[] commands)
+        {
+            var result = new List<Commands.DeclareClosedQuad>();
+            foreach (var tile in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
+            {
+                if (CanDeclareClosedQuad(tile, out var command))
+                {
+                    result.Add(command);
+                }
+            }
+
+            commands = result.ToArray();
+            return commands.Length > 0;
+        }
+
+        public bool CanDeclareClosedQuad(TileType tile, out Commands.DeclareClosedQuad command)
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
             {
+                command = null;
                 return false;
             }
             // 鳴いた直後にカンはできない
             if (BuiltMeld)
             {
+                command = null;
                 return false;
             }
             // 暗槓は立直後でもできるが、ツモ牌でのみ
@@ -210,11 +264,20 @@ namespace TSKT.Mahjongs
             {
                 if (newTileInHand?.type != tile)
                 {
+                    command = null;
                     return false;
                 }
             }
-            return DrawPlayer.CanClosedQuad(tile);
+            if (!DrawPlayer.CanClosedQuad(tile))
+            {
+                command = null;
+                return false;
+            }
+
+            command = new Commands.DeclareClosedQuad(this, tile);
+            return true;
         }
+
         public BeforeClosedQuad DeclareClosedQuad(TileType tile)
         {
             if (Consumed)
@@ -226,19 +289,42 @@ namespace TSKT.Mahjongs
             return new BeforeClosedQuad(DrawPlayer, tile);
         }
 
-        public bool CanDeclareAddedOpenQuad(TileType tile)
+        public bool CanDeclareAddedOpenQuad(out Commands.DeclareAddedOpenQuad[] commands)
+        {
+            var result = new List<Commands.DeclareAddedOpenQuad>();
+            foreach (var it in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
+            {
+                if (CanDeclareAddedOpenQuad(it, out var command))
+                {
+                    result.Add(command);
+                }
+            }
+            commands = result.ToArray();
+            return commands.Length > 0;
+        }
+
+        public bool CanDeclareAddedOpenQuad(TileType tile, out Commands.DeclareAddedOpenQuad command)
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
             {
+                command = null;
                 return false;
             }
             // 鳴いた直後にカンはできない
             if (BuiltMeld)
             {
+                command = null;
                 return false;
             }
-            return DrawPlayer.CanAddedOpenQuad(tile);
+            if (!DrawPlayer.CanAddedOpenQuad(tile))
+            {
+                command = null;
+                return false;
+            }
+            var t = DrawPlayer.hand.tiles.First(_ => _.type == tile);
+            command = new Commands.DeclareAddedOpenQuad(this, t);
+            return true;
         }
         public BeforeAddedOpenQuad DeclareAddedOpenQuad(Tile tile)
         {
@@ -251,24 +337,29 @@ namespace TSKT.Mahjongs
             return new BeforeAddedOpenQuad(DrawPlayer, tile);
         }
 
-        public bool Can九種九牌
+        public bool Can九種九牌(out Commands.九種九牌 command)
         {
-            get
+            if (!鳴きなし)
             {
-                if (!鳴きなし)
-                {
-                    return false;
-                }
-                if (!一巡目)
-                {
-                    return false;
-                }
-                return DrawPlayer.hand.tiles
-                    .Select(_ => _.type)
-                    .Where(_ => _.么九牌())
-                    .Distinct()
-                    .Count() >= 9;
+                command = null;
+                return false;
             }
+            if (!一巡目)
+            {
+            }
+
+            if (DrawPlayer.hand.tiles
+                .Select(_ => _.type)
+                .Where(_ => _.么九牌())
+                .Distinct()
+                .Count() < 9)
+            {
+                command = null;
+                return false;
+            }
+
+            command = new Commands.九種九牌(this);
+            return true;
         }
 
         public AfterDraw 九種九牌(out RoundResult roundResult)
@@ -305,36 +396,30 @@ namespace TSKT.Mahjongs
             get
             {
                 var result = new List<ICommand>();
-                foreach (var tile in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
-                {
-                    if (CanDeclareClosedQuad(tile))
-                    {
-                        result.Add(new Commands.DeclareClosedQuad(this, tile));
-                    }
-                }
 
-                foreach (var tile in DrawPlayer.hand.tiles)
+                if (CanDeclareClosedQuad(out var closedQuads))
                 {
-                    if (CanDeclareAddedOpenQuad(tile.type))
-                    {
-                        result.Add(new Commands.DeclareAddedOpenQuad(this, tile));
-                    }
-                    if (CanDiscard(tile, out var discard))
-                    {
-                        result.Add(discard);
-                    }
-                    if (CanRiichi(tile, out var riichi))
-                    {
-                        result.Add(riichi);
-                    }
+                    result.AddRange(closedQuads);
                 }
-                if (CanTsumo())
+                if (CanDeclareAddedOpenQuad(out var addedOpenQuads))
                 {
-                    result.Add(new Commands.Tsumo(this));
+                    result.AddRange(addedOpenQuads);
                 }
-                if (Can九種九牌)
+                if (CanDiscard(out var discards))
                 {
-                    result.Add(new Commands.九種九牌(this));
+                    result.AddRange(discards);
+                }
+                if (CanRiichi(out var riichies))
+                {
+                    result.AddRange(riichies);
+                }
+                if (CanTsumo(out var tsumo))
+                {
+                    result.Add(tsumo);
+                }
+                if (Can九種九牌(out var nineTiles))
+                {
+                    result.Add(nineTiles);
                 }
 
                 return result.ToArray();

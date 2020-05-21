@@ -305,9 +305,21 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public bool CanRon(Player player)
+        public bool CanRon(out Commands.Ron[] commands)
         {
-            return PlayerRons.ContainsKey(player);
+            commands = PlayerRons.Select(_ => new Commands.Ron(_.Key, this)).ToArray();
+            return commands.Length > 0;
+        }
+
+        public bool CanRon(Player player, out Commands.Ron command)
+        {
+            if (PlayerRons.ContainsKey(player))
+            {
+                command = new Commands.Ron(player, this);
+                return true;
+            }
+            command = null;
+            return false;
         }
 
         public AfterDraw Ron(
@@ -326,18 +338,41 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
-        public bool CanOpenQuad(Player player)
+        public bool CanOpenQuad(out Commands.Kan[] commands)
+        {
+            var result = new List<Commands.Kan>();
+            foreach (var player in Round.players)
+            {
+                if (CanOpenQuad(player, out var command))
+                {
+                    result.Add(command);
+                }
+            }
+            commands = result.ToArray();
+            return commands.Length > 0;
+        }
+
+        public bool CanOpenQuad(Player player, out Commands.Kan command)
         {
             if (player == DiscardPlayer)
             {
+                command = null;
                 return false;
             }
             // 河底はカンできない
             if (Round.wallTile.tiles.Count == 0)
             {
+                command = null;
                 return false;
             }
-            return player.CanOpenQuad(DiscardedTile.type);
+            if (!player.CanOpenQuad(DiscardedTile.type))
+            {
+                command = null;
+                return false;
+            }
+
+            command = new Commands.Kan(player, this);
+            return true;
         }
         public AfterDraw OpenQuad(Player player)
         {
@@ -356,21 +391,42 @@ namespace TSKT.Mahjongs
             return Round.ExecuteOpenQuad(player, DiscardPlayer);
         }
 
-        public bool CanPon(Player player, out List<(Tile left, Tile right)> combinations)
+        public bool CanPon(out Commands.Pon[] commands)
+        {
+            var result = new List<Commands.Pon>();
+            foreach (var player in Round.players)
+            {
+                if (CanPon(player, out var command))
+                {
+                    result.AddRange(command);
+                }
+            }
+            commands = result.ToArray();
+            return commands.Length > 0;
+        }
+
+        public bool CanPon(Player player, out Commands.Pon[] commands)
         {
             if (player == DiscardPlayer)
             {
-                combinations = null;
+                commands = null;
                 return false;
             }
             // 河底はポンできない
             if (Round.wallTile.tiles.Count == 0)
             {
-                combinations = null;
+                commands = null;
                 return false;
             }
-            return player.CanPon(DiscardedTile.type, out combinations);
+            if (!player.CanPon(DiscardedTile.type, out var combinations))
+            {
+                commands = null;
+                return false;
+            }
+            commands = combinations.Select(_ => new Commands.Pon(player, this, _)).ToArray();
+            return true;
         }
+
         public AfterDraw Pon(Player player, (Tile, Tile) 対子)
         {
             if (Consumed)
@@ -402,27 +458,48 @@ namespace TSKT.Mahjongs
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }
 
-        public bool CanChi(Player player, out List<(Tile left, Tile right)> combinations)
+        public bool CanChi(out Commands.Chi[] commands)
+        {
+            var result = new List<Commands.Chi>();
+            foreach (var player in Round.players)
+            {
+                if (CanChi(player, out var command))
+                {
+                    result.AddRange(command);
+                }
+            }
+            commands = result.ToArray();
+            return commands.Length > 0;
+        }
+
+        public bool CanChi(Player player, out Commands.Chi[] commands)
         {
             if (player == DiscardPlayer)
             {
-                combinations = null;
+                commands = null;
                 return false;
             }
 
             // 河底はチーできない
             if (Round.wallTile.tiles.Count == 0)
             {
-                combinations = null;
+                commands = null;
                 return false;
             }
             if (player.GetRelativePlayer(DiscardPlayer) != RelativePlayer.上家)
             {
-                combinations = null;
+                commands = null;
                 return false;
             }
 
-            return player.CanChi(DiscardedTile, out combinations);
+            if (!player.CanChi(DiscardedTile, out var combinations))
+            {
+                commands = null;
+                return false;
+            }
+
+            commands = combinations.Select(_ => new Commands.Chi(player, this, _)).ToArray();
+            return true;
         }
         public AfterDraw Chi(Player player, (Tile, Tile) 塔子)
         {
@@ -465,31 +542,24 @@ namespace TSKT.Mahjongs
             get
             {
                 var result = new List<ICommand>();
-                foreach (var player in Round.players)
+
+                if (CanRon(out var rons))
                 {
-                    if (CanRon(player))
-                    {
-                        result.Add(new Commands.Ron(player, this));
-                    }
-                    if (CanChi(player, out var combinations))
-                    {
-                        foreach(var combination in combinations)
-                        {
-                            result.Add(new Commands.Chi(player, this, combination));
-                        }
-                    }
-                    if (CanPon(player, out var pairs))
-                    {
-                        foreach (var pair in pairs)
-                        {
-                            result.Add(new Commands.Pon(player, this, pair));
-                        }
-                    }
-                    if (CanOpenQuad(player))
-                    {
-                        result.Add(new Commands.Kan(player, this));
-                    }
+                    result.AddRange(rons);
                 }
+                if (CanChi(out var chies))
+                {
+                    result.AddRange(chies);
+                }
+                if (CanPon(out var pons))
+                {
+                    result.AddRange(pons);
+                }
+                if (CanOpenQuad(out var kans))
+                {
+                    result.AddRange(kans);
+                }
+
                 return result.ToArray();
             }
         }
