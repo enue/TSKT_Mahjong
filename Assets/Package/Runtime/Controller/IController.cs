@@ -16,7 +16,7 @@ namespace TSKT.Mahjongs
         Serializables.Session SerializeSession();
     }
 
-    public interface IRonableController
+    public interface IRonableController : IController
     {
         bool CanRon(out Commands.Ron[] command);
         bool CanRon(Player player, out Commands.Ron command);

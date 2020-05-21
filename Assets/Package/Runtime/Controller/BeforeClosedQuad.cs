@@ -80,7 +80,7 @@ namespace TSKT.Mahjongs
         {
             if (!PlayerRons.ContainsKey(player))
             {
-                command = null;
+                command = default;
                 return false;
             }
             command = new Commands.Ron(player, this);
@@ -132,7 +132,7 @@ namespace TSKT.Mahjongs
                 var result = new List<ICommand>();
                 if (CanRon(out var rons))
                 {
-                    result.AddRange(rons);
+                    result.AddRange(rons.Cast<ICommand>());
                 }
                 return result.ToArray();
             }

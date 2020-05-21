@@ -6,63 +6,38 @@ using System.Linq;
 
 namespace TSKT.Mahjongs.Commands
 {
-    public abstract class CommandAfterDraw : ICommand
+    public readonly struct 九種九牌 : ICommand<AfterDraw>
     {
-        public readonly AfterDraw afterDraw;
-
-        public CommandAfterDraw(AfterDraw afterDraw)
-        {
-            this.afterDraw = afterDraw;
-        }
-
-        public abstract CommandPriority Priority { get; }
-        public abstract CommandResult TryExecute();
-        public abstract Player Executor { get; }
-    }
-
-    public class 九種九牌 : CommandAfterDraw
-    {
+        public AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor => afterDraw.DrawPlayer;
+        public CommandPriority Priority => GetPriority;
+        public Player Executor => Controller.DrawPlayer;
 
-        public 九種九牌(AfterDraw afterDraw) : base(afterDraw)
+        public 九種九牌(AfterDraw afterDraw)
         {
+            Controller = afterDraw;
         }
 
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            var nextController = afterDraw.九種九牌(out var roundResult);
+            var nextController = Controller.九種九牌(out var roundResult);
             var result = new CommandResult(nextController, roundResult);
             return result;
         }
     }
 
-    public class Discard : CommandAfterDraw
+    public readonly struct Discard : ICommand<AfterDraw>
     {
+        public AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor => afterDraw.DrawPlayer;
+        public CommandPriority Priority => GetPriority;
+        public Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
         public readonly bool riichi;
 
-        TileType[] winningTiles;
-        public TileType[] WinningTiles
+        public Discard(AfterDraw afterDraw, Tile tile, bool riichi)
         {
-            get
-            {
-                if (winningTiles == null)
-                {
-                    var hand = afterDraw.DrawPlayer.hand.Clone();
-                    hand.tiles.Remove(tile);
-                    winningTiles = hand.GetWinningTiles();
-                }
-                return winningTiles;
-            }
-        }
-
-        public Discard(AfterDraw afterDraw, Tile tile, bool riichi) : base(afterDraw)
-        {
+            Controller = afterDraw;
             this.tile = tile;
             this.riichi = riichi;
         }
@@ -71,19 +46,20 @@ namespace TSKT.Mahjongs.Commands
         {
             get
             {
-                if (WinningTiles.Length == 0)
+                var winningTiles = WinningTiles;
+                if (winningTiles.Length == 0)
                 {
                     return false;
                 }
 
-                if (WinningTiles.Contains(tile.type))
+                if (winningTiles.Contains(tile.type))
                 {
                     return true;
                 }
                 var discardedTiles = Executor.discardedTiles.Select(_ => _.type).Distinct();
                 foreach (var it in discardedTiles)
                 {
-                    if (WinningTiles.Contains(it))
+                    if (winningTiles.Contains(it))
                     {
                         return true;
                     }
@@ -92,64 +68,80 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        public override CommandResult TryExecute()
+        public TileType[] WinningTiles
         {
-            return new CommandResult(afterDraw.Discard(tile, riichi));
+            get
+            {
+                var cloneHand = Controller.DrawPlayer.hand.Clone();
+                cloneHand.tiles.Remove(tile);
+                return cloneHand.GetWinningTiles();
+            }
+        }
+
+        public CommandResult TryExecute()
+        {
+            return new CommandResult(Controller.Discard(tile, riichi));
         }
     }
 
-    public class DeclareClosedQuad : CommandAfterDraw
+    public readonly struct DeclareClosedQuad : ICommand<AfterDraw>
     {
+        public AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor => afterDraw.DrawPlayer;
+        public CommandPriority Priority => GetPriority;
+        public Player Executor => Controller.DrawPlayer;
         public readonly TileType tile;
 
-        public DeclareClosedQuad(AfterDraw afterDraw, TileType tile) : base(afterDraw)
+        public DeclareClosedQuad(AfterDraw afterDraw, TileType tile)
         {
+            Controller = afterDraw;
             this.tile = tile;
         }
 
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            return new CommandResult(afterDraw.DeclareClosedQuad(tile));
+            return new CommandResult(Controller.DeclareClosedQuad(tile));
         }
     }
 
-    public class DeclareAddedOpenQuad : CommandAfterDraw
+    public readonly struct DeclareAddedOpenQuad : ICommand<AfterDraw>
     {
+        public AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor => afterDraw.DrawPlayer;
+        public CommandPriority Priority => GetPriority;
+        public Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
 
-        public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile) : base(afterDraw)
+        public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile)
         {
+            Controller =afterDraw;
             this.tile = tile;
         }
 
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            return new CommandResult(afterDraw.DeclareAddedOpenQuad(tile));
+            return new CommandResult(Controller.DeclareAddedOpenQuad(tile));
         }
     }
 
-    public class Tsumo : CommandAfterDraw
+    public readonly struct Tsumo : ICommand<AfterDraw>
     {
+        public AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Tsumo;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor => afterDraw.DrawPlayer;
+        public CommandPriority Priority => GetPriority;
+        public Player Executor => Controller.DrawPlayer;
 
-        public Tsumo(AfterDraw afterDraw) : base(afterDraw)
+        public Tsumo(AfterDraw afterDraw)
         {
+            Controller = afterDraw;
         }
 
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            var nextController = afterDraw.Tsumo(out var roundResult, out var completedResults);
+            var nextController = Controller.Tsumo(out var roundResult, out var completedResults);
             return new CommandResult(nextController, roundResult, completedResults);
         }
-        public CompletedHand TsumoResult => afterDraw.tsumo.Value;
+        public CompletedHand TsumoResult => Controller.tsumo.Value;
     }
 }
 

@@ -11,6 +11,12 @@ namespace TSKT.Mahjongs
         Player Executor { get; }
     }
 
+    public interface ICommand<T> : ICommand
+        where T : IController
+    {
+        T Controller { get; }
+    }
+
     public class CommandSelector
     {
         public readonly IController origin;

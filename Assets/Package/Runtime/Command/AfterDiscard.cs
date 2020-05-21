@@ -6,72 +6,61 @@ using System.Linq;
 
 namespace TSKT.Mahjongs.Commands
 {
-    public abstract class CommandAfterDiscard : ICommand
+    public readonly struct Pon : ICommand<AfterDiscard>
     {
-        public readonly AfterDiscard afterDiscard;
-
-        public CommandAfterDiscard(AfterDiscard afterDiscard)
-        {
-            this.afterDiscard = afterDiscard;
-        }
-
-        public abstract CommandResult TryExecute();
-        // ポンとカンが同時には発生しない
-        // チーが二つは同時には発生しない
-        // ので、優先順位比較はポンとチーだけ考えれば良い。
-        public abstract CommandPriority Priority { get; }
-        public abstract Player Executor { get; }
-    }
-
-    public class Pon : CommandAfterDiscard
-    {
+        public AfterDiscard Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Pon;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor { get; }
+        public CommandPriority Priority => GetPriority;
+        public Player Executor { get; }
         public readonly (Tile, Tile) pair;
 
-        public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) pair) : base(afterDiscard)
+        public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) pair)
         {
+            Controller = afterDiscard;
             Executor = player;
             this.pair = pair;
         }
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            return new CommandResult(afterDiscard.Pon(Executor, pair));
+            return new CommandResult(Controller.Pon(Executor, pair));
         }
     }
 
-    public class Chi : CommandAfterDiscard
+    public readonly struct Chi : ICommand<AfterDiscard>
     {
+        public AfterDiscard Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Chi;
-        public override CommandPriority Priority => GetPriority;
+        public CommandPriority Priority => GetPriority;
         public readonly (Tile left, Tile right) 塔子;
-        public override Player Executor { get; }
+        public Player Executor { get; }
 
-        public Chi(Player player, AfterDiscard afterDiscard, (Tile left, Tile right) 塔子) : base(afterDiscard)
+        public Chi(Player player, AfterDiscard afterDiscard, (Tile left, Tile right) 塔子)
         {
+            Controller = afterDiscard;
             Executor = player;
             this.塔子 = 塔子;
         }
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            return new CommandResult(afterDiscard.Chi(Executor, 塔子));
+            return new CommandResult(Controller.Chi(Executor, 塔子));
         }
     }
 
-    public class Kan : CommandAfterDiscard
+    public readonly struct Kan : ICommand<AfterDiscard>
     {
+        public AfterDiscard Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Pon;
-        public override CommandPriority Priority => GetPriority;
-        public override Player Executor { get; }
+        public CommandPriority Priority => GetPriority;
+        public Player Executor { get; }
 
-        public Kan(Player player, AfterDiscard afterDiscard) : base(afterDiscard)
+        public Kan(Player player, AfterDiscard afterDiscard)
         {
+            Controller = afterDiscard;
             Executor = player;
         }
-        public override CommandResult TryExecute()
+        public CommandResult TryExecute()
         {
-            return new CommandResult(afterDiscard.OpenQuad(Executor));
+            return new CommandResult(Controller.OpenQuad(Executor));
         }
     }
 }

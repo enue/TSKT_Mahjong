@@ -318,7 +318,7 @@ namespace TSKT.Mahjongs
                 command = new Commands.Ron(player, this);
                 return true;
             }
-            command = null;
+            command = default;
             return false;
         }
 
@@ -356,18 +356,18 @@ namespace TSKT.Mahjongs
         {
             if (player == DiscardPlayer)
             {
-                command = null;
+                command = default;
                 return false;
             }
             // 河底はカンできない
             if (Round.wallTile.tiles.Count == 0)
             {
-                command = null;
+                command = default;
                 return false;
             }
             if (!player.CanOpenQuad(DiscardedTile.type))
             {
-                command = null;
+                command = default;
                 return false;
             }
 
@@ -545,19 +545,19 @@ namespace TSKT.Mahjongs
 
                 if (CanRon(out var rons))
                 {
-                    result.AddRange(rons);
+                    result.AddRange(rons.Cast<ICommand>());
                 }
                 if (CanChi(out var chies))
                 {
-                    result.AddRange(chies);
+                    result.AddRange(chies.Cast<ICommand>());
                 }
                 if (CanPon(out var pons))
                 {
-                    result.AddRange(pons);
+                    result.AddRange(pons.Cast<ICommand>());
                 }
                 if (CanOpenQuad(out var kans))
                 {
-                    result.AddRange(kans);
+                    result.AddRange(kans.Cast<ICommand>());
                 }
 
                 return result.ToArray();
