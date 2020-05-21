@@ -111,6 +111,14 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            foreach (var player in Round.players)
+            {
+                if (player == DeclarePlayer)
+                {
+                    continue;
+                }
+                player.TryAttachFuritenByOtherPlayers(tile);
+            }
             foreach (var it in Round.players)
             {
                 it.一発 = false;

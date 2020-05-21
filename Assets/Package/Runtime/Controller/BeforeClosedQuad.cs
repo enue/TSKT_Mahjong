@@ -110,6 +110,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            // 国士無双の槍槓見逃しでフリテンになるが、どのみち上がれないので無視する
             foreach (var it in Round.players)
             {
                 it.一発 = false;
