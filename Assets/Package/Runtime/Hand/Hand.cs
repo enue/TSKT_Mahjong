@@ -160,7 +160,7 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                if (槓子)
+                if (!槓子)
                 {
                     return false;
                 }
