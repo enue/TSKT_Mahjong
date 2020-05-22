@@ -68,5 +68,46 @@ namespace TSKT.Tests.Mahjongs
                 }
             }
         }
+
+        [Test]
+        public void BetterMonkeyTest()
+        {
+            var executedCount = new Dictionary<System.Type, int>();
+
+            IController controller = Game.Create(0, new RuleSetting());
+            for (int i = 0; i < 1000; ++i)
+            {
+                var commands = controller.ExecutableCommands;
+                CommandResult result;
+                if (commands.Length > 0)
+                {
+                    RandomUtil.Shuffle(ref commands);
+                    var discards = commands.OfType<TSKT.Mahjongs.Commands.Discard>()
+                        .OrderBy(_ => _.HandAfterDiscard.Solve().向聴数);
+                    var c = discards.Cast<ICommand>().Concat(commands).ToArray();
+
+                    result = controller.ExecuteCommands(out var executeds, c);
+
+                    foreach (var it in executeds)
+                    {
+                        var type = it.GetType();
+                        executedCount.TryGetValue(type, out var count);
+                        executedCount[type] = count + 1;
+                    }
+                }
+                else
+                {
+                    result = controller.ExecuteCommands(out _);
+                }
+                controller = result.nextController;
+
+                if (controller == null)
+                {
+                    break;
+                }
+            }
+
+            Debug.Log(string.Join("\n", executedCount.Select(_ => _.Key.ToString() + ", " + _.Value.ToString())));
+        }
     }
 }

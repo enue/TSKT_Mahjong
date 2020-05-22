@@ -68,13 +68,15 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        public TileType[] WinningTiles
+        public TileType[] WinningTiles => HandAfterDiscard.GetWinningTiles();
+
+        public Hand HandAfterDiscard
         {
             get
             {
                 var cloneHand = Controller.DrawPlayer.hand.Clone();
                 cloneHand.tiles.Remove(tile);
-                return cloneHand.GetWinningTiles();
+                return cloneHand;
             }
         }
 
