@@ -160,12 +160,13 @@ namespace TSKT.Mahjongs.Hands
 
         static IEnumerable<Structure> CollectStructures(Hand hand, int allowLackCount = int.MaxValue)
         {
-            var queue = new Queue<Structure>();
-            queue.Enqueue(new Structure(hand));
+            // queueよりstackのほうが速い。足切り向聴数が早く出てくるからだ。
+            var tasks = new Stack<Structure>();
+            tasks.Push(new Structure(hand));
 
-            while (queue.Count > 0)
+            while (tasks.Count > 0)
             {
-                var task = queue.Dequeue();
+                var task = tasks.Pop();
 
                 if (task.unsolvedTiles.Count == 0)
                 {
@@ -189,7 +190,7 @@ namespace TSKT.Mahjongs.Hands
                         var sets = structure.Sets.ToList();
                         sets.Add(new Set(tile, tile, tile));
                         structure.Sets = sets.ToArray();
-                        queue.Enqueue(structure);
+                        tasks.Push(structure);
                     }
 
                     if (tile.IsSuited()
@@ -211,7 +212,7 @@ namespace TSKT.Mahjongs.Hands
                                 var sets = structure.Sets.ToList();
                                 sets.Add(new Set(tile, plusOne, plusTwo));
                                 structure.Sets = sets.ToArray();
-                                queue.Enqueue(structure);
+                                tasks.Push(structure);
                             }
                             // 塔子
                             if (task.LackCount < allowLackCount)
@@ -224,7 +225,7 @@ namespace TSKT.Mahjongs.Hands
                                     var tou = structure.塔子.ToList();
                                     tou.Add((tile, plusTwo));
                                     structure.塔子 = tou.ToArray();
-                                    queue.Enqueue(structure);
+                                    tasks.Push(structure);
                                 }
                             }
                         }
@@ -239,7 +240,7 @@ namespace TSKT.Mahjongs.Hands
                                 var tou = structure.塔子.ToList();
                                 tou.Add((tile, plusOne));
                                 structure.塔子 = tou.ToArray();
-                                queue.Enqueue(structure);
+                                tasks.Push(structure);
                             }
                         }
                     }
@@ -263,7 +264,7 @@ namespace TSKT.Mahjongs.Hands
                             var pairs = structure.Pairs.ToList();
                             pairs.Add(tile);
                             structure.Pairs = pairs.ToArray();
-                            queue.Enqueue(structure);
+                            tasks.Push(structure);
                         }
                     }
                 }
@@ -305,7 +306,7 @@ namespace TSKT.Mahjongs.Hands
                         var isolatedTiles = structure.IsolatedTiles.ToList();
                         isolatedTiles.Add(tile);
                         structure.IsolatedTiles = isolatedTiles.ToArray();
-                        queue.Enqueue(structure);
+                        tasks.Push(structure);
                     }
                 }
             }
