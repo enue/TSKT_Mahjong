@@ -38,4 +38,9 @@ namespace TSKT.Mahjongs.Rules
         なし,
         あり,
     }
+    public enum OpenRiichi
+    {
+        なし,
+        あり,
+    }
 }

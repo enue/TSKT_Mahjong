@@ -126,6 +126,40 @@ namespace TSKT.Mahjongs
             return true;
         }
 
+        public bool CanOpenRiichi(out Commands.Discard[] commands)
+        {
+            if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
+            {
+                commands = null;
+                return false;
+            }
+
+            if (CanRiichi(out var riichies))
+            {
+                commands = riichies.Select(_ => new Commands.Discard(_.Controller, _.tile, true, true)).ToArray();
+                return true;
+            }
+            commands = null;
+            return false;
+        }
+
+        public bool CanOpenRiichi(Tile tile, out Commands.Discard command)
+        {
+            if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
+            {
+                command = default;
+                return false;
+            }
+
+            if (CanRiichi(tile, out var riichi))
+            {
+                command = new Commands.Discard(riichi.Controller, riichi.tile, true, true);
+                return true;
+            }
+            command = default;
+            return false;
+        }
+
         public bool CanDiscard(out Commands.Discard[] commands)
         {
             var result = new List<Commands.Discard>();
@@ -414,6 +448,10 @@ namespace TSKT.Mahjongs
                 if (CanRiichi(out var riichies))
                 {
                     result.AddRange(riichies.Cast<ICommand>());
+                }
+                if (CanOpenRiichi(out var openRiichies))
+                {
+                    result.AddRange(openRiichies.Cast<ICommand>());
                 }
                 if (CanTsumo(out var tsumo))
                 {

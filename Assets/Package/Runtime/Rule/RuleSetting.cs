@@ -17,5 +17,6 @@ namespace TSKT.Mahjongs
         public HandCap handCap = HandCap.トリプル役満;
         public 四家立直 四家立直 = 四家立直.流局;
         public 喰い替え 喰い替え = 喰い替え.なし;
+        public OpenRiichi openRiichi = OpenRiichi.あり;
     }
 }
