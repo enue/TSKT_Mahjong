@@ -84,6 +84,20 @@ namespace TSKT.Tests.Mahjongs
                     RandomUtil.Shuffle(ref commands);
                     var discards = commands.OfType<TSKT.Mahjongs.Commands.Discard>()
                         .OrderBy(_ => _.HandAfterDiscard.Solve().向聴数);
+                    foreach(var discard in discards)
+                    {
+                        var winningTilesHiddenCount = discard.WinningTilesHiddenCount;
+                        var tilesToShow = discard.TilesToShowWhenOpenRiichi;
+                        if (tilesToShow.Length > 0)
+                        {
+                            var handTiles = discard.HandAfterDiscard.tiles.Select(_ => _.type).OrderBy(_ => _);
+                            Debug.Log(
+                                string.Join(", ", winningTilesHiddenCount)
+                                + ", hand : " + string.Join(", ", handTiles)
+                                + ", related : " + string.Join(", ", tilesToShow));
+                        }
+                    }
+
                     var c = discards.Cast<ICommand>().Concat(commands).ToArray();
 
                     result = controller.ExecuteCommands(out var executeds, c);

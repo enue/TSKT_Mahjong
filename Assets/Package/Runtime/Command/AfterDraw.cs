@@ -70,6 +70,68 @@ namespace TSKT.Mahjongs.Commands
 
         public TileType[] WinningTiles => HandAfterDiscard.GetWinningTiles();
 
+        public Dictionary<TileType, int> WinningTilesHiddenCount
+        {
+            get
+            {
+                var controller = Controller;
+                var executor = Executor;
+                return WinningTiles.ToDictionary(_ => _, _ => controller.Round.HiddenTileCountFrom(executor, _));
+            }
+        }
+
+        public TileType[] TilesToShowWhenOpenRiichi
+        {
+            get
+            {
+                var result = new List<TileType>();
+
+                var winningTiles = WinningTiles;
+                foreach (var winningTile in winningTiles)
+                {
+                    var cloneHand = HandAfterDiscard;
+                    cloneHand.tiles.Add(new Tile(-1, winningTile, false));
+                    var solution = cloneHand.Solve();
+                    foreach (var structure in solution.structures)
+                    {
+                        // IsolatedTilesがあるアガリは国士なので手牌全てが関係牌
+                        if (structure.IsolatedTiles.Length != 0)
+                        {
+                            return HandAfterDiscard.tiles.Select(_ => _.type).Distinct().ToArray();
+                        }
+
+                        foreach (var set in structure.Sets)
+                        {
+                            if (set.first == winningTile)
+                            {
+                                result.Add(set.second);
+                                result.Add(set.third);
+                            }
+                            else if (set.second == winningTile)
+                            {
+                                result.Add(set.first);
+                                result.Add(set.third);
+                            }
+                            else if (set.third == winningTile)
+                            {
+                                result.Add(set.first);
+                                result.Add(set.second);
+                            }
+                        }
+                        foreach (var pair in structure.Pairs)
+                        {
+                            if (pair == winningTile)
+                            {
+                                result.Add(winningTile);
+                            }
+                        }
+                    }
+                }
+
+                return result.Distinct().ToArray();
+            }
+        }
+
         public Hand HandAfterDiscard
         {
             get

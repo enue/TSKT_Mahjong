@@ -179,6 +179,20 @@ namespace TSKT.Mahjongs
             return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
         }
 
+        public int HiddenTileCountFrom(Player observer, TileType target)
+        {
+            var result = 4;
+            result -= observer.hand.tiles.Count(_ => _.type == target);
+            foreach (var player in players)
+            {
+                result -= player.hand.melds
+                    .SelectMany(_ => _.tileFroms)
+                    .Count(_ => _.tile.type == target);
+                result -= player.discardPile.Count(_ => _.type == target);
+            }
+            return result;
+        }
+
         public Dictionary<TileType, int> HiddenTileCountFrom(Player observer)
         {
             var result = wallTile.allTiles
