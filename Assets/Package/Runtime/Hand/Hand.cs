@@ -242,17 +242,16 @@ namespace TSKT.Mahjongs
                 {
                     if (tileFroms[0].tile.type.Suit() == tileToDiscard.type.Suit())
                     {
-                        var numbers = tileFroms
+                        var tilesNumbers = tileFroms
                             .Where(_ => _.fromPlayerIndex != tileFromOtherPlayer.fromPlayerIndex)
                             .Select(_ => _.tile.type.Number())
-                            .Concat(new[] { tileToDiscard.type.Number() })
-                            .Distinct()
-                            .OrderBy(_ => _)
-                            .ToArray();
-                        if (numbers.Length == 3
-                            && numbers[2] - numbers[0] == 2)
+                            .Append(tileToDiscard.type.Number());
+                        if (tilesNumbers.Sum() % 3 == 0)
                         {
-                            return true;
+                            if (tilesNumbers.Max() - tilesNumbers.Min() == 2)
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
