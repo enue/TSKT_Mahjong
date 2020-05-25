@@ -105,7 +105,7 @@ namespace TSKT.Mahjongs
 
         public void Discard(Tile tile, bool riichi, bool openRiichi)
         {
-            if (riichi)
+            if (riichi || openRiichi)
             {
                 if (round.players.All(_ => _.hand.melds.Count == 0)
                     && discardedTiles.Count == 0)

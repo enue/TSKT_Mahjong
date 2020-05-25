@@ -34,12 +34,14 @@ namespace TSKT.Mahjongs.Commands
         public Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
         public readonly bool riichi;
+        public readonly bool openRiichi;
 
-        public Discard(AfterDraw afterDraw, Tile tile, bool riichi)
+        public Discard(AfterDraw afterDraw, Tile tile, bool riichi, bool openRiichi)
         {
             Controller = afterDraw;
             this.tile = tile;
             this.riichi = riichi;
+            this.openRiichi = openRiichi;
         }
 
         public bool Furiten
@@ -144,7 +146,7 @@ namespace TSKT.Mahjongs.Commands
 
         public CommandResult TryExecute()
         {
-            return new CommandResult(Controller.Discard(tile, riichi));
+            return new CommandResult(Controller.Discard(tile, riichi, openRiichi));
         }
     }
 

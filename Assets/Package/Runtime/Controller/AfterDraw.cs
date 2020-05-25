@@ -122,7 +122,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            command = new Commands.Discard(this, tile, riichi: true);
+            command = new Commands.Discard(this, tile, riichi: true, openRiichi: false);
             return true;
         }
 
@@ -144,7 +144,7 @@ namespace TSKT.Mahjongs
         {
             if (tile == newTileInHand)
             {
-                command = new Commands.Discard(this, tile, riichi: false);
+                command = new Commands.Discard(this, tile, riichi: false, openRiichi: false);
                 return true;
             }
 
@@ -172,7 +172,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            command = new Commands.Discard(this, tile, riichi: false);
+            command = new Commands.Discard(this, tile, riichi: false, openRiichi: false);
             return true;
         }
 
