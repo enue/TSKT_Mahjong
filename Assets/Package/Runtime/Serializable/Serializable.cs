@@ -261,11 +261,13 @@ namespace TSKT.Mahjongs.Serializables
     {
         public int[] tiles;
         public Tile[] allTiles;
+        public uint randomSeed;
 
         public WallTile(Mahjongs.WallTile source)
         {
             allTiles = source.allTiles.Select(_ => _.ToSerializable()).ToArray();
             tiles = source.tiles.Select(_ => _.index).ToArray();
+            randomSeed = source.randomSeed;
         }
 
         public Mahjongs.WallTile Deserialzie()

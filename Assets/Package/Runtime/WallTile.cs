@@ -76,6 +76,7 @@ namespace TSKT.Mahjongs
             tiles = source.tiles
                 .Select(_ => allTiles[_])
                 .ToList();
+            randomSeed = source.randomSeed;
         }
 
         static public WallTile FromSerializable(Serializables.WallTile source)
