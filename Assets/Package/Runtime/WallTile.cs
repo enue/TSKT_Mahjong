@@ -7,6 +7,7 @@ namespace TSKT.Mahjongs
 {
     public class WallTile
     {
+        readonly public uint randomSeed;
         readonly public List<Tile> tiles = new List<Tile>();
         readonly public Tile[] allTiles;
 
@@ -62,6 +63,10 @@ namespace TSKT.Mahjongs
             allTiles = sortedTiles.ToArray();
             tiles = sortedTiles.ToList();
             RandomUtil.Shuffle(ref tiles);
+
+            var random = new RandomProvider.Core(System.Environment.TickCount);
+            randomSeed = random.seed;
+            random.Shuffle(ref tiles);
         }
 
         WallTile(Serializables.WallTile source)
