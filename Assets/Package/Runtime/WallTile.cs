@@ -64,7 +64,7 @@ namespace TSKT.Mahjongs
             tiles = sortedTiles.ToList();
             RandomUtil.Shuffle(ref tiles);
 
-            var random = new RandomProvider.Core(System.Environment.TickCount);
+            var random = RandomProvider.GetNewRandom();
             randomSeed = random.seed;
             random.Shuffle(ref tiles);
         }
