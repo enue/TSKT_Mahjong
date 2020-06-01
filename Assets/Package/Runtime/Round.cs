@@ -135,9 +135,10 @@ namespace TSKT.Mahjongs
         public AfterDraw ExecuteAddedOpenQuad(Player player, Tile tile)
         {
             var meldIndex = player.hand.melds.FindIndex(_ => _.tileFroms.All(x => x.tile.type == tile.type));
-            var tiles = player.hand.melds[meldIndex].tileFroms.ToList();
-            tiles.Add((tile, player.index));
-            player.hand.melds[meldIndex] = new Meld(tiles.ToArray());
+            var tiles = player.hand.melds[meldIndex].tileFroms
+                .Append((tile, player.index))
+                .ToArray();
+            player.hand.melds[meldIndex] = new Meld(tiles);
 
             player.hand.tiles.Remove(tile);
 
