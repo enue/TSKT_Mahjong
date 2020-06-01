@@ -52,7 +52,7 @@ namespace TSKT.Mahjongs
                 return handSolution.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
                     ronTarget: null,
                     嶺上: 嶺上,
-                    海底: Round.wallTile.tiles.Count == 0,
+                    海底: !嶺上 && (Round.wallTile.tiles.Count == 0),
                     河底: false,
                     天和: 鳴きなし && 一巡目 && DrawPlayer.IsDealer,
                     地和: 鳴きなし && 一巡目 && !DrawPlayer.IsDealer,
