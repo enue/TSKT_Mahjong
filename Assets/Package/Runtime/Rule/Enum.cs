@@ -43,4 +43,9 @@ namespace TSKT.Mahjongs.Rules
         なし,
         あり,
     }
+    public enum 明槓槓ドラ
+    {
+        打牌後,
+        即ノリ
+    }
 }

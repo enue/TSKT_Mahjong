@@ -18,5 +18,6 @@ namespace TSKT.Mahjongs
         public 四家立直 四家立直 = 四家立直.流局;
         public 喰い替え 喰い替え = 喰い替え.なし;
         public OpenRiichi openRiichi = OpenRiichi.あり;
+        public 明槓槓ドラ 明槓槓ドラ = 明槓槓ドラ.打牌後;
     }
 }

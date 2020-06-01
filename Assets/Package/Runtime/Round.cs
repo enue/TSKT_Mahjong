@@ -157,6 +157,10 @@ namespace TSKT.Mahjongs
 
             var drawTile = DrawFromDeadWallTile(player);
 
+            if (game.rule.明槓槓ドラ == Rules.明槓槓ドラ.即ノリ)
+            {
+                deadWallTile.OpenDora();
+            }
             foreach (var it in players)
             {
                 if (it == player)
@@ -167,7 +171,8 @@ namespace TSKT.Mahjongs
             }
 
             player.OnTurnStart();
-            return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
+            return new AfterDraw(player, drawTile, 嶺上: true,
+                openDoraAfterDiscard: game.rule.明槓槓ドラ == Rules.明槓槓ドラ.打牌後);
         }
 
         public AfterDraw ExecuteOpenQuad(Player player, Player discardPlayer)
@@ -189,8 +194,14 @@ namespace TSKT.Mahjongs
 
             var drawTile = DrawFromDeadWallTile(player);
 
+            if (game.rule.明槓槓ドラ == Rules.明槓槓ドラ.即ノリ)
+            {
+                deadWallTile.OpenDora();
+            }
+
             player.OnTurnStart();
-            return new AfterDraw(player, drawTile, 嶺上: true, openDoraAfterDiscard: true);
+            return new AfterDraw(player, drawTile, 嶺上: true,
+                openDoraAfterDiscard: game.rule.明槓槓ドラ == Rules.明槓槓ドラ.打牌後);
         }
 
         public int HiddenTileCountFrom(Player observer, TileType target)
