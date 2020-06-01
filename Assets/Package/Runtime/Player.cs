@@ -317,6 +317,11 @@ namespace TSKT.Mahjongs
         {
             get
             {
+                if (hand.tiles.Count % 3 != 1)
+                {
+                    return false;
+                }
+
                 var discardedTiles = this.discardedTiles
                     .Select(_ => _.type)
                     .Distinct();
