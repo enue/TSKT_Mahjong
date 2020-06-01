@@ -95,7 +95,20 @@ namespace TSKT.Mahjongs
 
         public AfterDraw Start()
         {
-            return Dealer.Draw();
+            if (Dealer.hand.tiles.Count == 13)
+            {
+                return Dealer.Draw();
+            }
+            else if (Dealer.hand.tiles.Count == 14)
+            {
+                // イカサマ機能によって配牌14枚が固定している場合があるので、手牌14枚を許容する。
+                Dealer.OnTurnStart();
+                return new AfterDraw(Dealer, null, 嶺上: false, openDoraAfterDiscard: false);
+            }
+            else
+            {
+                throw new System.Exception("wrong hand tile count : " + Dealer.hand.tiles.Count);
+            }
         }
 
         Tile DrawFromDeadWallTile(Player player)

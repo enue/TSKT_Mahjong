@@ -18,6 +18,7 @@ namespace TSKT.Mahjongs
 
         public AfterDiscard(Player discardPlayer)
         {
+            Debug.Assert(discardPlayer.hand.tiles.Count % 3 == 1, "wrong hand tile count after discard");
             DiscardPlayer = discardPlayer;
 
             var 鳴きなし = Round.players.All(_ => _.hand.melds.Count == 0);

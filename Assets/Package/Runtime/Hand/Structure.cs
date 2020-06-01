@@ -160,6 +160,8 @@ namespace TSKT.Mahjongs.Hands
 
         static IEnumerable<Structure> CollectStructures(Hand hand, int allowLackCount = int.MaxValue)
         {
+            Debug.Assert(hand.tiles.Count % 3 != 0, "wrong hand tile count : " + hand.tiles.Count.ToString());
+
             // queueよりstackのほうが速い。足切り向聴数が早く出てくるからだ。
             var tasks = new Stack<Structure>();
             tasks.Push(new Structure(hand));

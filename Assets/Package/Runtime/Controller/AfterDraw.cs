@@ -30,6 +30,7 @@ namespace TSKT.Mahjongs
             bool 嶺上,
             bool openDoraAfterDiscard)
         {
+            Debug.Assert(player.hand.tiles.Count % 3 == 2, "wrong hand tile count after draw");
             DrawPlayer = player;
             this.newTileInHand = newTileInHand;
             this.openDoraAfterDiscard = openDoraAfterDiscard;
