@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 using TSKT.Mahjongs;
+using TSKT.Mahjongs.Rules;
 using System.Linq;
 
 namespace TSKT.Tests.Mahjongs
@@ -34,11 +35,29 @@ namespace TSKT.Tests.Mahjongs
             Assert.AreEqual(json1_0, json1_1);
         }
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void MonkeyTest(bool serialize)
+        [TestCase(true, OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(false, OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(true, OpenRiichi.なし, HandCap.役満, RedTile.赤無し, 喰い替え.あり, 四家立直.続行, TripleRon.流局, 明槓槓ドラ.即ノリ)]
+        [TestCase(true, OpenRiichi.あり, HandCap.ダブル役満, RedTile.赤ドラ3, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        public void MonkeyTest(bool serialize,
+            OpenRiichi openRiichi,
+            HandCap handCap,
+            RedTile redTile,
+            喰い替え kuikae,
+            四家立直 allRiichi,
+            TripleRon tripleRon,
+            明槓槓ドラ 明槓槓ドラ)
         {
-            IController controller = Game.Create(0, new RuleSetting());
+            IController controller = Game.Create(0, new RuleSetting()
+            {
+                openRiichi = openRiichi,
+                handCap = handCap,
+                redTile = redTile,
+                喰い替え = kuikae,
+                四家立直 = allRiichi,
+                tripleRon = tripleRon,
+                明槓槓ドラ = 明槓槓ドラ
+            });
             for (int i = 0; i < 1000; ++i)
             {
                 if (serialize)
