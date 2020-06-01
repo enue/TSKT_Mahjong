@@ -207,7 +207,6 @@ namespace TSKT.Mahjongs.Commands
             var nextController = Controller.Tsumo(out var roundResult, out var completedResults);
             return new CommandResult(nextController, roundResult, completedResults);
         }
-        public CompletedHand TsumoResult => Controller.tsumo.Value;
     }
 }
 

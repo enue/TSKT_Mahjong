@@ -15,7 +15,7 @@ namespace TSKT.Mahjongs
 
         public readonly Tile newTileInHand;
         public readonly Hands.Solution handSolution;
-        public readonly CompletedHand? tsumo;
+        public readonly bool canTsumo;
 
         public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
 
@@ -40,16 +40,24 @@ namespace TSKT.Mahjongs
                 handSolution = DrawPlayer.hand.Solve();
                 if (handSolution.向聴数 == -1)
                 {
-                    tsumo = handSolution.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
-                        ronTarget: null,
-                        嶺上: 嶺上,
-                        海底: Round.wallTile.tiles.Count == 0,
-                        河底: false,
-                        天和: 鳴きなし && 一巡目 && player.IsDealer,
-                        地和: 鳴きなし && 一巡目 && !player.IsDealer,
-                        人和: false,
-                        槍槓: false);
+                    canTsumo = !CompletedHand.役無し;
                 }
+            }
+        }
+
+        CompletedHand CompletedHand
+        {
+            get
+            {
+                return handSolution.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
+                    ronTarget: null,
+                    嶺上: 嶺上,
+                    海底: Round.wallTile.tiles.Count == 0,
+                    河底: false,
+                    天和: 鳴きなし && 一巡目 && DrawPlayer.IsDealer,
+                    地和: 鳴きなし && 一巡目 && !DrawPlayer.IsDealer,
+                    人和: false,
+                    槍槓: false);
             }
         }
 
@@ -228,17 +236,7 @@ namespace TSKT.Mahjongs
 
         public bool CanTsumo(out Commands.Tsumo command)
         {
-            if (handSolution == null)
-            {
-                command = default;
-                return false;
-            }
-            if (handSolution.向聴数 != -1)
-            {
-                command = default;
-                return false;
-            }
-            if (tsumo.Value.役無し)
+            if (!canTsumo)
             {
                 command = default;
                 return false;
@@ -258,8 +256,15 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            // 明槓だとここでドラが増えるので点数の確定もここでおこなう
+            if (openDoraAfterDiscard)
+            {
+                Round.deadWallTile.OpenDora();
+            }
+            var completedHand = CompletedHand;
+
             return CompletedHand.Execute(
-                new Dictionary<Player, CompletedHand>() { { DrawPlayer, tsumo.Value } },
+                new Dictionary<Player, CompletedHand>() { { DrawPlayer, completedHand } },
                 out roundResult,
                 out result);
         }
