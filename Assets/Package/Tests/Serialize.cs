@@ -89,11 +89,31 @@ namespace TSKT.Tests.Mahjongs
         }
 
         [Test]
-        public void BetterMonkeyTest()
+        [TestCase(OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(OpenRiichi.なし, HandCap.役満, RedTile.赤無し, 喰い替え.あり, 四家立直.続行, TripleRon.流局, 明槓槓ドラ.即ノリ)]
+        [TestCase(OpenRiichi.あり, HandCap.ダブル役満, RedTile.赤ドラ3, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        public void BetterBetterMonkeyTest(
+            OpenRiichi openRiichi,
+            HandCap handCap,
+            RedTile redTile,
+            喰い替え kuikae,
+            四家立直 allRiichi,
+            TripleRon tripleRon,
+            明槓槓ドラ 明槓槓ドラ)
         {
             var executedCount = new Dictionary<System.Type, int>();
 
-            IController controller = Game.Create(0, new RuleSetting());
+            IController controller = Game.Create(0, new RuleSetting()
+            {
+                openRiichi = openRiichi,
+                handCap = handCap,
+                redTile = redTile,
+                喰い替え = kuikae,
+                四家立直 = allRiichi,
+                tripleRon = tripleRon,
+                明槓槓ドラ = 明槓槓ドラ
+            });
             for (int i = 0; i < 1000; ++i)
             {
                 var commands = controller.ExecutableCommands;
