@@ -320,6 +320,11 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
+            if (openDoraAfterDiscard)
+            {
+                DrawPlayer.round.deadWallTile.OpenDora();
+            }
+
             return new BeforeClosedQuad(DrawPlayer, tile);
         }
 
@@ -367,6 +372,11 @@ namespace TSKT.Mahjongs
                 throw new System.Exception("consumed controller");
             }
             Consumed = true;
+
+            if (openDoraAfterDiscard)
+            {
+                DrawPlayer.round.deadWallTile.OpenDora();
+            }
 
             return new BeforeAddedOpenQuad(DrawPlayer, tile);
         }
