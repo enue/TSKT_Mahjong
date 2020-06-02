@@ -10,5 +10,6 @@ namespace TSKT.Mahjongs.Rules
         public bool endWhenScoreUnderZero = true;
         public bool suddenDeathInExtraRound = true;
         public int extraRoundScoreThreshold = 30000;
+        public アガリ止め アガリ止め = アガリ止め.なし;
     }
 }

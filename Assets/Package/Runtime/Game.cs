@@ -18,6 +18,8 @@ namespace TSKT.Mahjongs
         public readonly ScoreOwner[] scoreOwners;
         public readonly RuleSetting rule;
 
+        public int Dealer => (firstDealer + DisplayRoundCount - 1) % 4;
+
         static public AfterDraw Create(int firstDealer, RuleSetting rule)
         {
             var game = new Game(firstDealer, rule);
@@ -58,8 +60,7 @@ namespace TSKT.Mahjongs
 
         public AfterDraw StartRound(params TileType[][] initialPlayerTilesByCheat)
         {
-            var dealer = (firstDealer + DisplayRoundCount - 1) % 4;
-            var round = new Round(this, Wind, dealer, initialPlayerTilesByCheat);
+            var round = new Round(this, Wind, Dealer, initialPlayerTilesByCheat);
             return round.Start();
         }
 
@@ -73,6 +74,19 @@ namespace TSKT.Mahjongs
                 gameResult = new GameResult(this);
                 return null;
             }
+
+            if (rule.end.アガリ止め == Rules.アガリ止め.あり)
+            {
+                if (IsFinalRound)
+                {
+                    gameResult = new GameResult(this);
+                    if (gameResult.playerRanks[Dealer].rank == 1)
+                    {
+                        return null;
+                    }
+                }
+            }
+
             gameResult = null;
             return StartRound();
         }
@@ -154,6 +168,21 @@ namespace TSKT.Mahjongs
                 }
 
                 return false;
+            }
+        }
+
+        public bool IsFinalRound
+        {
+            get
+            {
+                switch (rule.end.lengthType)
+                {
+                    case Rules.LengthType.東風戦: return (RoundWindCount == 0) && (DisplayRoundCount == 4);
+                    case Rules.LengthType.半荘戦: return (RoundWindCount == 1) && (DisplayRoundCount == 4);
+                    case Rules.LengthType.一荘戦: return (RoundWindCount == 3) && (DisplayRoundCount == 4);
+                    default:
+                        throw new System.ArgumentException(rule.end.lengthType.ToString());
+                }
             }
         }
 

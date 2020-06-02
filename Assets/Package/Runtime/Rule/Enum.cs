@@ -48,4 +48,9 @@ namespace TSKT.Mahjongs.Rules
         打牌後,
         即ノリ
     }
+    public enum アガリ止め
+    {
+        なし,
+        あり,
+    }
 }
