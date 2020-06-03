@@ -255,11 +255,20 @@ namespace TSKT.Mahjongs
             if (Riichi)
             {
                 // 待ち牌が変わる暗槓はできない
-                var winningTiles = hand.GetWinningTiles();
-                var clone = hand.Clone();
-                clone.BuildClosedQuad(tile);
-                var winningTileAfterClosedQuad = clone.GetWinningTiles();
-                if (!winningTiles.SequenceEqual(winningTileAfterClosedQuad))
+                TileType[] winningTilesBeforeDraw;
+                TileType[] winningTilesAfterClosedQuad;
+                {
+                    var clone = hand.Clone();
+                    var drewTileIndex = clone.tiles.FindIndex(_ => _.type == tile);
+                    clone.tiles.RemoveAt(drewTileIndex);
+                    winningTilesBeforeDraw = clone.GetWinningTiles();
+                }
+                {
+                    var clone = hand.Clone();
+                    clone.BuildClosedQuad(tile);
+                    winningTilesAfterClosedQuad = clone.GetWinningTiles();
+                }
+                if (!winningTilesBeforeDraw.SequenceEqual(winningTilesAfterClosedQuad))
                 {
                     return false;
                 }
