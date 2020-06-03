@@ -143,13 +143,16 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            if (CanRiichi(out var riichies))
+            var result = new List<Commands.Discard>();
+            foreach (var it in DrawPlayer.hand.tiles)
             {
-                commands = riichies.Select(_ => new Commands.Discard(_.Controller, _.tile, true, true)).ToArray();
-                return true;
+                if (CanOpenRiichi(it, out var command))
+                {
+                    result.Add(command);
+                }
             }
-            commands = null;
-            return false;
+            commands = result.ToArray();
+            return commands.Length > 0;
         }
 
         public bool CanOpenRiichi(Tile tile, out Commands.Discard command)
