@@ -158,6 +158,11 @@ namespace TSKT.Mahjongs.Hands
             return false;
         }
 
+        static public bool 向聴数IsLessThan(Hand hand, int value)
+        {
+            return 向聴数IsLessThanOrEqual(hand, value - 1);
+        }
+
         static IEnumerable<Structure> CollectStructures(Hand hand, int allowLackCount = int.MaxValue)
         {
             Debug.Assert(hand.tiles.Count % 3 != 0, "wrong hand tile count : " + hand.tiles.Count.ToString());

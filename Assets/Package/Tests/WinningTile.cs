@@ -61,7 +61,9 @@ namespace TSKT.Tests.Mahjongs
                 expecteds.OrderBy(_ => _).ToArray(),
                 hand.GetWinningTiles().OrderBy(_ => _).ToArray());
             Assert.IsTrue(hand.向聴数IsLessThanOrEqual(0));
+            Assert.IsTrue(hand.向聴数IsLessThan(1));
             Assert.IsFalse(hand.向聴数IsLessThanOrEqual(-1));
+            Assert.IsFalse(hand.向聴数IsLessThan(0));
         }
     }
 }

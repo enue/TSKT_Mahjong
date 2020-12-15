@@ -55,6 +55,11 @@ namespace TSKT.Mahjongs
             return Hands.Structure.向聴数IsLessThanOrEqual(this, value);
         }
 
+        public bool 向聴数IsLessThan(int value)
+        {
+            return Hands.Structure.向聴数IsLessThan(this, value);
+        }
+
         public bool 九種九牌 => tiles.Where(_ => _.type.么九牌()).Distinct().Count() >= 9;
 
         public IEnumerable<Tile> AllTiles
