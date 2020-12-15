@@ -2,12 +2,11 @@
   "dependencies": {
     "com.github.enue.tskt_container": "https://github.com/enue/Unity_TSKT_Container.git?path=Assets/Package",
     "com.github.enue.tskt_math": "https://github.com/enue/Unity_TSKT_Math.git?path=Assets/Package",
-    "com.unity.collab-proxy": "1.2.16",
-    "com.unity.ide.rider": "1.1.4",
-    "com.unity.ide.vscode": "1.2.0",
-    "com.unity.test-framework": "1.1.14",
-    "com.unity.textmeshpro": "2.0.1",
-    "com.unity.timeline": "1.2.14",
+    "com.unity.ide.rider": "1.2.1",
+    "com.unity.ide.vscode": "1.2.3",
+    "com.unity.test-framework": "1.1.20",
+    "com.unity.textmeshpro": "3.0.1",
+    "com.unity.timeline": "1.3.4",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
@@ -40,15 +39,5 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  },
-  "lock": {
-    "com.github.enue.tskt_container": {
-      "revision": "HEAD",
-      "hash": "a9d2ed44394584c3ab8bc4a0003d7912143eee9e"
-    },
-    "com.github.enue.tskt_math": {
-      "revision": "HEAD",
-      "hash": "bf8df5c7186cfe194991dd54b46d069b71688d9b"
-    }
   }
 }
