@@ -56,7 +56,7 @@ namespace TSKT.Mahjongs
             hand = new Hand(this);
         }
 
-        Player(Serializables.Player source, Round round)
+        Player(in Serializables.Player source, Round round)
         {
             this.round = round;
 
@@ -75,7 +75,7 @@ namespace TSKT.Mahjongs
             scoreOwner = round.game.scoreOwners[source.index];
         }
 
-        public static Player FromSerializable(Serializables.Player source, Round round)
+        public static Player FromSerializable(in Serializables.Player source, Round round)
         {
             return new Player(source, round);
         }

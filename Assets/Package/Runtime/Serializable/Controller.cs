@@ -17,7 +17,7 @@ namespace TSKT.Mahjongs.Serializables
 
             discardPlayerIndex = source.DiscardPlayerIndex;
         }
-        public Mahjongs.AfterDiscard Deserialzie()
+        readonly public Mahjongs.AfterDiscard Deserialzie()
         {
             return Mahjongs.AfterDiscard.FromSerializable(this);
         }
@@ -42,7 +42,7 @@ namespace TSKT.Mahjongs.Serializables
             openDoraAfterDiscard = source.openDoraAfterDiscard;
             嶺上 = source.嶺上;
         }
-        public Mahjongs.AfterDraw Deserialzie()
+        readonly public Mahjongs.AfterDraw Deserialzie()
         {
             return Mahjongs.AfterDraw.FromSerializable(this);
         }
@@ -63,7 +63,7 @@ namespace TSKT.Mahjongs.Serializables
             declarePlayerIndex = source.DeclarePlayerIndex;
             tile = source.tile.index;
         }
-        public Mahjongs.BeforeAddedOpenQuad Deserialzie()
+        readonly public Mahjongs.BeforeAddedOpenQuad Deserialzie()
         {
             return Mahjongs.BeforeAddedOpenQuad.FromSerializable(this);
         }
@@ -84,7 +84,7 @@ namespace TSKT.Mahjongs.Serializables
             declarePlayerIndex = source.DeclarePlayerIndex;
             tile = source.tile;
         }
-        public Mahjongs.BeforeClosedQuad Deserialzie()
+        readonly public Mahjongs.BeforeClosedQuad Deserialzie()
         {
             return Mahjongs.BeforeClosedQuad.FromSerializable(this);
         }

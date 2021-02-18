@@ -69,7 +69,7 @@ namespace TSKT.Mahjongs.Serializables
             beforeClosedQuad = source.ToSerializable();
         }
 
-        public IController Deserialize()
+        readonly public IController Deserialize()
         {
             if (hasAfterDiscard)
             {
@@ -90,7 +90,7 @@ namespace TSKT.Mahjongs.Serializables
             throw new System.Exception("no controller");
         }
 
-        public string ToJson(bool prettyPrint = false)
+        readonly public string ToJson(bool prettyPrint = false)
         {
             return JsonUtility.ToJson(this, prettyPrint);
         }
@@ -113,7 +113,7 @@ namespace TSKT.Mahjongs.Serializables
             red = source.red;
             type = source.type;
         }
-        public Mahjongs.Tile Deserialzie()
+        readonly public Mahjongs.Tile Deserialzie()
         {
             return Mahjongs.Tile.FromSerializable(this);
         }
@@ -143,7 +143,7 @@ namespace TSKT.Mahjongs.Serializables
             連荘 = source.連荘;
         }
 
-        public Mahjongs.Game Deserialzie()
+        readonly public Mahjongs.Game Deserialzie()
         {
             return Mahjongs.Game.FromSerializable(this);
         }
@@ -171,7 +171,7 @@ namespace TSKT.Mahjongs.Serializables
             wallTile = source.wallTile.ToSerializable();
         }
 
-        public Mahjongs.Round Deserialzie()
+        readonly public Mahjongs.Round Deserialzie()
         {
             return Mahjongs.Round.FromSerializable(this);
         }
@@ -208,7 +208,7 @@ namespace TSKT.Mahjongs.Serializables
             一発 = source.一発;
         }
 
-        public Mahjongs.Player Deserialzie(Mahjongs.Round round)
+        readonly public Mahjongs.Player Deserialzie(Mahjongs.Round round)
         {
             return Mahjongs.Player.FromSerializable(this, round);
         }
@@ -226,7 +226,7 @@ namespace TSKT.Mahjongs.Serializables
             melds = source.melds.Select(_ => _.ToSerializable()).ToArray();
         }
 
-        public Mahjongs.Hand Deserialzie(Mahjongs.Player owner)
+        readonly public Mahjongs.Hand Deserialzie(Mahjongs.Player owner)
         {
             return Mahjongs.Hand.FromSerializable(this, owner);
         }
@@ -270,7 +270,7 @@ namespace TSKT.Mahjongs.Serializables
             randomSeed = source.randomSeed;
         }
 
-        public Mahjongs.WallTile Deserialzie()
+        readonly public Mahjongs.WallTile Deserialzie()
         {
             return Mahjongs.WallTile.FromSerializable(this);
         }
@@ -292,7 +292,7 @@ namespace TSKT.Mahjongs.Serializables
             uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => _.index).ToArray();
         }
 
-        public Mahjongs.DeadWallTile Deserialzie(Mahjongs.WallTile wallTile)
+        readonly public Mahjongs.DeadWallTile Deserialzie(Mahjongs.WallTile wallTile)
         {
             return Mahjongs.DeadWallTile.FromSerializable(this, wallTile);
         }

@@ -8,17 +8,17 @@ namespace TSKT.Mahjongs.Commands
 {
     public readonly struct 九種九牌 : ICommand<AfterDraw>
     {
-        public AfterDraw Controller { get; }
+        public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public CommandPriority Priority => GetPriority;
-        public Player Executor => Controller.DrawPlayer;
+        public readonly CommandPriority Priority => GetPriority;
+        public readonly Player Executor => Controller.DrawPlayer;
 
         public 九種九牌(AfterDraw afterDraw)
         {
             Controller = afterDraw;
         }
 
-        public CommandResult TryExecute()
+        readonly public CommandResult TryExecute()
         {
             var nextController = Controller.九種九牌(out var roundResult);
             var result = new CommandResult(nextController, roundResult);
@@ -28,10 +28,10 @@ namespace TSKT.Mahjongs.Commands
 
     public readonly struct Discard : ICommand<AfterDraw>
     {
-        public AfterDraw Controller { get; }
+        public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public CommandPriority Priority => GetPriority;
-        public Player Executor => Controller.DrawPlayer;
+        public readonly CommandPriority Priority => GetPriority;
+        public readonly Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
         public readonly bool riichi;
         public readonly bool openRiichi;
@@ -44,7 +44,7 @@ namespace TSKT.Mahjongs.Commands
             this.openRiichi = openRiichi;
         }
 
-        public bool Furiten
+        readonly public bool Furiten
         {
             get
             {
@@ -70,9 +70,9 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        public TileType[] WinningTiles => HandAfterDiscard.GetWinningTiles();
+        readonly public TileType[] WinningTiles => HandAfterDiscard.GetWinningTiles();
 
-        public Dictionary<TileType, int> WinningTilesHiddenCount
+        readonly public Dictionary<TileType, int> WinningTilesHiddenCount
         {
             get
             {
@@ -82,7 +82,7 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        public TileType[] TilesToShowWhenOpenRiichi
+        readonly public TileType[] TilesToShowWhenOpenRiichi
         {
             get
             {
@@ -134,7 +134,7 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        public Hand HandAfterDiscard
+        readonly public Hand HandAfterDiscard
         {
             get
             {
@@ -144,7 +144,7 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        public CommandResult TryExecute()
+        readonly public CommandResult TryExecute()
         {
             return new CommandResult(Controller.Discard(tile, riichi, openRiichi));
         }
@@ -152,10 +152,10 @@ namespace TSKT.Mahjongs.Commands
 
     public readonly struct DeclareClosedQuad : ICommand<AfterDraw>
     {
-        public AfterDraw Controller { get; }
+        public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public CommandPriority Priority => GetPriority;
-        public Player Executor => Controller.DrawPlayer;
+        public readonly CommandPriority Priority => GetPriority;
+        public readonly Player Executor => Controller.DrawPlayer;
         public readonly TileType tile;
 
         public DeclareClosedQuad(AfterDraw afterDraw, TileType tile)
@@ -164,7 +164,7 @@ namespace TSKT.Mahjongs.Commands
             this.tile = tile;
         }
 
-        public CommandResult TryExecute()
+        readonly public CommandResult TryExecute()
         {
             return new CommandResult(Controller.DeclareClosedQuad(tile));
         }
@@ -172,10 +172,10 @@ namespace TSKT.Mahjongs.Commands
 
     public readonly struct DeclareAddedOpenQuad : ICommand<AfterDraw>
     {
-        public AfterDraw Controller { get; }
+        public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
-        public CommandPriority Priority => GetPriority;
-        public Player Executor => Controller.DrawPlayer;
+        public readonly CommandPriority Priority => GetPriority;
+        public readonly Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
 
         public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile)
@@ -184,7 +184,7 @@ namespace TSKT.Mahjongs.Commands
             this.tile = tile;
         }
 
-        public CommandResult TryExecute()
+        readonly public CommandResult TryExecute()
         {
             return new CommandResult(Controller.DeclareAddedOpenQuad(tile));
         }
@@ -192,17 +192,17 @@ namespace TSKT.Mahjongs.Commands
 
     public readonly struct Tsumo : ICommand<AfterDraw>
     {
-        public AfterDraw Controller { get; }
+        public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Tsumo;
-        public CommandPriority Priority => GetPriority;
-        public Player Executor => Controller.DrawPlayer;
+        public readonly CommandPriority Priority => GetPriority;
+        public readonly Player Executor => Controller.DrawPlayer;
 
         public Tsumo(AfterDraw afterDraw)
         {
             Controller = afterDraw;
         }
 
-        public CommandResult TryExecute()
+        readonly public CommandResult TryExecute()
         {
             var nextController = Controller.Tsumo(out var roundResult, out var completedResults);
             return new CommandResult(nextController, roundResult, completedResults);

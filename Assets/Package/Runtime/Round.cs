@@ -73,7 +73,7 @@ namespace TSKT.Mahjongs
             deadWallTile.OpenDora();
         }
 
-        Round(Serializables.Round source)
+        Round(in Serializables.Round source)
         {
             wallTile = source.wallTile.Deserialzie();
             deadWallTile = source.deadWallTile.Deserialzie(wallTile);
@@ -83,7 +83,7 @@ namespace TSKT.Mahjongs
             roundWind = source.roundWind;
             totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => wallTile.allTiles[_]).ToList();
         }
-        static public Round FromSerializable(Serializables.Round source)
+        static public Round FromSerializable(in Serializables.Round source)
         {
             return new Round(source);
         }

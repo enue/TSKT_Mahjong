@@ -54,7 +54,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public static BeforeAddedOpenQuad FromSerializable(Serializables.BeforeAddedOpenQuad source)
+        public static BeforeAddedOpenQuad FromSerializable(in Serializables.BeforeAddedOpenQuad source)
         {
             var round = source.round.Deserialzie();
             var player = round.players[source.declarePlayerIndex];

@@ -68,7 +68,7 @@ namespace TSKT.Mahjongs
             random.Shuffle(ref tiles);
         }
 
-        WallTile(Serializables.WallTile source)
+        WallTile(in Serializables.WallTile source)
         {
             allTiles = source.allTiles
                 .Select(_ => _.Deserialzie())
@@ -79,7 +79,7 @@ namespace TSKT.Mahjongs
             randomSeed = source.randomSeed;
         }
 
-        static public WallTile FromSerializable(Serializables.WallTile source)
+        static public WallTile FromSerializable(in Serializables.WallTile source)
         {
             return new WallTile(source);
         }
@@ -102,7 +102,7 @@ namespace TSKT.Mahjongs
         {
         }
 
-        DeadWallTile(Serializables.DeadWallTile source, WallTile wallTile)
+        DeadWallTile(in Serializables.DeadWallTile source, WallTile wallTile)
         {
             tiles = source.tiles.Select(_ => wallTile.allTiles[_]).ToList();
             doraIndicatorTiles = source.doraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
@@ -110,7 +110,7 @@ namespace TSKT.Mahjongs
             DrawnCount = source.drawnCount;
         }
 
-        public static DeadWallTile FromSerializable(Serializables.DeadWallTile source, WallTile wallTile)
+        public static DeadWallTile FromSerializable(in Serializables.DeadWallTile source, WallTile wallTile)
         {
             return new DeadWallTile(source, wallTile);
         }

@@ -17,7 +17,7 @@ namespace TSKT.Mahjongs
             this.red = red;
         }
 
-        static public Tile FromSerializable(Serializables.Tile source)
+        static public Tile FromSerializable(in Serializables.Tile source)
         {
             return new Tile(source.index, source.type, source.red);
         }

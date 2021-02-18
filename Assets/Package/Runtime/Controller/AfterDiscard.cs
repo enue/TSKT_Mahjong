@@ -58,7 +58,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        static public AfterDiscard FromSerializable(Serializables.AfterDiscard source)
+        static public AfterDiscard FromSerializable(in Serializables.AfterDiscard source)
         {
             var round = source.round.Deserialzie();
             var player = round.players[source.discardPlayerIndex];

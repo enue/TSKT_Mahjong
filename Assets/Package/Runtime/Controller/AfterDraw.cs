@@ -62,7 +62,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        static public AfterDraw FromSerializable(Serializables.AfterDraw source)
+        static public AfterDraw FromSerializable(in Serializables.AfterDraw source)
         {
             var round = source.round.Deserialzie();
             var player = round.players[source.drawPlayerIndex];

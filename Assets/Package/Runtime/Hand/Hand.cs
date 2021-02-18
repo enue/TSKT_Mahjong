@@ -16,14 +16,14 @@ namespace TSKT.Mahjongs
             this.owner = owner;
         }
 
-        Hand(Serializables.Hand source, Player owner)
+        Hand(in Serializables.Hand source, Player owner)
         {
             this.owner = owner;
             melds = source.melds.Select(_ => _.Deserialzie(owner.round.wallTile)).ToList();
             tiles = source.tiles.Select(_ => owner.round.wallTile.allTiles[_]).ToList();
         }
 
-        static public Hand FromSerializable(Serializables.Hand source, Player owner)
+        static public Hand FromSerializable(in Serializables.Hand source, Player owner)
         {
             return new Hand(source, owner);
         }
@@ -159,9 +159,9 @@ namespace TSKT.Mahjongs
     {
         public readonly (Tile tile, int fromPlayerIndex)[] tileFroms;
 
-        public bool 順子 => tileFroms[0].tile.type != tileFroms[1].tile.type;
-        public bool 槓子 => tileFroms.Length == 4;
-        public bool 暗槓
+        public readonly bool 順子 => tileFroms[0].tile.type != tileFroms[1].tile.type;
+        public readonly bool 槓子 => tileFroms.Length == 4;
+        public readonly bool 暗槓
         {
             get
             {
@@ -180,31 +180,31 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public Tile Min => tileFroms[0].tile;
+        public readonly Tile Min => tileFroms[0].tile;
 
         public Meld(params (Tile tile, int fromPlayerIndex)[] tileFroms)
         {
             this.tileFroms = tileFroms.OrderBy(_ => _.tile.type).ToArray();
         }
         
-        Meld(Serializables.Meld source, WallTile wallTile)
+        Meld(in Serializables.Meld source, WallTile wallTile)
         {
             tileFroms = source.tileFroms
                 .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex))
                 .ToArray();
         }
 
-        static public Meld FromSerializable(Serializables.Meld source, WallTile wallTile)
+        static public Meld FromSerializable(in Serializables.Meld source, WallTile wallTile)
         {
             return new Meld(source, wallTile);
         }
 
-        public Serializables.Meld ToSerializable()
+        public readonly Serializables.Meld ToSerializable()
         {
             return new Serializables.Meld(this);
         }
 
-        public (Tile tile, int fromPlayerIndex) TileFromOtherPlayer
+        public readonly (Tile tile, int fromPlayerIndex) TileFromOtherPlayer
         {
             get
             {
@@ -233,7 +233,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public bool Is喰い替え(Tile tileToDiscard)
+        public readonly bool Is喰い替え(Tile tileToDiscard)
         {
             var tileFromOtherPlayer = TileFromOtherPlayer;
             if (tileToDiscard.type == tileFromOtherPlayer.tile.type)

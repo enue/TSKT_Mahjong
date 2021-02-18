@@ -37,7 +37,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        static public Game FromSerializable(Serializables.Game source)
+        static public Game FromSerializable(in Serializables.Game source)
         {
             var result = new Game(source.firstDealer, source.rule);
             result.DisplayRoundCount = source.displayRoundCount;

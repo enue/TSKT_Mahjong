@@ -8,11 +8,11 @@ namespace TSKT.Mahjongs
     public readonly struct CompletedHand
     {
         public readonly Hands.Structure structure;
-        public TileType[] IsolatedTiles => structure.IsolatedTiles;
-        public Hands.Structure.Set[] Sets => structure.Sets;
-        public TileType[] Pairs => structure.Pairs;
-        public Meld[] Melds => structure.melds;
-        public int RedTile => structure.redTileCount;
+        public readonly TileType[] IsolatedTiles => structure.IsolatedTiles;
+        public readonly Hands.Structure.Set[] Sets => structure.Sets;
+        public readonly TileType[] Pairs => structure.Pairs;
+        public readonly Meld[] Melds => structure.melds;
+        public readonly int RedTile => structure.redTileCount;
 
         public readonly Player ronTarget;
 
@@ -22,13 +22,13 @@ namespace TSKT.Mahjongs
         public readonly Dictionary<役, int> Yakus;
         public readonly Dictionary<役, int> 役満;
 
-        public bool 役無し => Yakus.Count == 0 && 役満.Count == 0;
-        public int Han => Yakus.Values.Sum() + Dora + UraDora + RedTile;
+        public readonly bool 役無し => Yakus.Count == 0 && 役満.Count == 0;
+        public readonly int Han => Yakus.Values.Sum() + Dora + UraDora + RedTile;
         public readonly bool 面前;
-        public bool 自摸 => ronTarget == null;
+        public readonly bool 自摸 => ronTarget == null;
         public readonly TileType[] doraTiles;
         public readonly TileType[] uraDoraTiles;
-        IEnumerable<TileType> AllUsedTiles => structure.AllUsedTiles;
+        readonly IEnumerable<TileType> AllUsedTiles => structure.AllUsedTiles;
 
         public CompletedHand(Hands.Structure structure, TileType newTileInHand, TileType ownWind, TileType roundWind,
             Player ronTarget,
@@ -322,7 +322,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public int Fu
+        readonly public int Fu
         {
             get
             {
@@ -496,7 +496,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public int Dora
+        readonly public int Dora
         {
             get
             {
@@ -509,7 +509,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public int UraDora
+        readonly public int UraDora
         {
             get
             {
@@ -522,7 +522,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public (ScoreType? type, int score) 基本点(Rules.HandCap handCap)
+        readonly public (ScoreType? type, int score) 基本点(Rules.HandCap handCap)
         {
             int maxYakumanCount;
             switch(handCap)
@@ -590,12 +590,12 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public CompletedResult BuildResult(Player player)
+        readonly public CompletedResult BuildResult(Player player)
         {
             return new CompletedResult(this, player);
         }
 
-        IEnumerable<TileType> 刻子槓子
+        readonly IEnumerable<TileType> 刻子槓子
         {
             get
             {
@@ -615,7 +615,7 @@ namespace TSKT.Mahjongs
                 }
             }
         }
-        IEnumerable<TileType> 順子
+        readonly IEnumerable<TileType> 順子
         {
             get
             {
@@ -636,7 +636,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool 食い平和
+        readonly bool 食い平和
         {
             get
             {
@@ -689,7 +689,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 平和
+        readonly int 平和
         {
             get
             {
@@ -704,7 +704,7 @@ namespace TSKT.Mahjongs
                 return 1;
             }
         }
-        int タンヤオ
+        readonly int タンヤオ
         {
             get
             {
@@ -728,12 +728,12 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool Has刻子槓子(TileType tile)
+        readonly bool Has刻子槓子(TileType tile)
         {
             return 刻子槓子.Contains(tile);
         }
 
-        int 一盃口
+        readonly int 一盃口
         {
             get
             {
@@ -753,7 +753,7 @@ namespace TSKT.Mahjongs
                 return 0;
             }
         }
-        int 二盃口
+        readonly int 二盃口
         {
             get
             {
@@ -774,15 +774,15 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 白 => Has刻子槓子(TileType.白) ? 1 : 0;
-        int 發 => Has刻子槓子(TileType.發) ? 1 : 0;
-        int 中 => Has刻子槓子(TileType.中) ? 1 : 0;
-        int 自風牌 => Has刻子槓子(ownWind) ? 1 : 0;
-        int 場風牌 => Has刻子槓子(roundWind) ? 1 : 0;
+        readonly int 白 => Has刻子槓子(TileType.白) ? 1 : 0;
+        readonly int 發 => Has刻子槓子(TileType.發) ? 1 : 0;
+        readonly int 中 => Has刻子槓子(TileType.中) ? 1 : 0;
+        readonly int 自風牌 => Has刻子槓子(ownWind) ? 1 : 0;
+        readonly int 場風牌 => Has刻子槓子(roundWind) ? 1 : 0;
 
-        int 七対子 => (Pairs.Length == 7) ? 2 : 0;
+        readonly int 七対子 => (Pairs.Length == 7) ? 2 : 0;
 
-        int 対々和
+        readonly int 対々和
         {
             get
             {
@@ -794,7 +794,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool N暗刻(int n)
+        readonly bool N暗刻(int n)
         {
             var setCount = Sets.Count(_ => _.刻子) + Melds.Count(_ => _.暗槓);
             if (自摸)
@@ -814,9 +814,9 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 三暗刻 => N暗刻(3) ? 2 : 0;
+        readonly int 三暗刻 => N暗刻(3) ? 2 : 0;
 
-        int 三色同刻
+        readonly int 三色同刻
         {
             get
             {
@@ -842,7 +842,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 三色同順
+        readonly int 三色同順
         {
             get
             {
@@ -872,7 +872,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 混老頭
+        readonly int 混老頭
         {
             get
             {
@@ -891,7 +891,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 一気通貫
+        readonly int 一気通貫
         {
             get
             {
@@ -924,7 +924,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int チャンタ
+        readonly int チャンタ
         {
             get
             {
@@ -994,7 +994,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 小三元
+        readonly int 小三元
         {
             get
             {
@@ -1026,7 +1026,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 三槓子
+        readonly int 三槓子
         {
             get
             {
@@ -1038,7 +1038,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 混一色
+        readonly int 混一色
         {
             get
             {
@@ -1077,7 +1077,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 純チャン
+        readonly int 純チャン
         {
             get
             {
@@ -1112,7 +1112,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        int 清一色
+        readonly int 清一色
         {
             get
             {
@@ -1148,7 +1148,7 @@ namespace TSKT.Mahjongs
 
         static readonly TileType[] 緑一色牌 = new[] { TileType.S2, TileType.S3, TileType.S4, TileType.S6, TileType.S8, TileType.發 };
 
-        bool 緑一色
+        readonly bool 緑一色
         {
             get
             {
@@ -1163,7 +1163,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool 大三元
+        readonly bool 大三元
         {
             get
             {
@@ -1184,7 +1184,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool 小四喜
+        readonly bool 小四喜
         {
             get
             {
@@ -1203,7 +1203,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
         }
-        bool 大四喜
+        readonly bool 大四喜
         {
             get
             {
@@ -1216,9 +1216,9 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool 字一色 => AllUsedTiles.All(_ => _.字牌());
+        readonly bool 字一色 => AllUsedTiles.All(_ => _.字牌());
 
-        bool 九蓮宝燈
+        readonly bool 九蓮宝燈
         {
             get
             {
@@ -1256,11 +1256,11 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool 四暗刻 => N暗刻(4);
-        bool 清老頭 => AllUsedTiles.All(_ => _.IsSuited() && (_.Number() == 1 || _.Number() == 9));
-        bool 四槓子 => Melds.Count(_ => _.槓子) == 4;
+        readonly bool 四暗刻 => N暗刻(4);
+        readonly bool 清老頭 => AllUsedTiles.All(_ => _.IsSuited() && (_.Number() == 1 || _.Number() == 9));
+        readonly bool 四槓子 => Melds.Count(_ => _.槓子) == 4;
 
-        bool 国士無双
+        readonly bool 国士無双
         {
             get
             {

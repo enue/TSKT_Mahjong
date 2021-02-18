@@ -19,8 +19,8 @@ namespace TSKT.Mahjongs.Hands
                 this.third = third;
             }
 
-            public bool 刻子 => first == second;
-            public bool 順子 => !刻子;
+            readonly public bool 刻子 => first == second;
+            readonly public bool 順子 => !刻子;
         }
 
         readonly List<TileType> unsolvedTiles;
