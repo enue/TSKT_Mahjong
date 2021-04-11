@@ -269,25 +269,19 @@ namespace TSKT.Mahjongs
                 if (dealerState == ExhausiveDrawType.ノーテン)
                 {
                     var result = Round.game.AdvanceRoundByノーテン流局(out var gameResult);
-                    roundResult = new RoundResult(gameResult);
-                    roundResult.scoreDiffs = scoreDiffs;
-                    roundResult.states = states;
+                    roundResult = new RoundResult(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.流し満貫)
                 {
                     var result = Round.game.AdvanceRoundBy親上がり(out var gameResult);
-                    roundResult = new RoundResult(gameResult);
-                    roundResult.scoreDiffs = scoreDiffs;
-                    roundResult.states = states;
+                    roundResult = new RoundResult(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.テンパイ)
                 {
                     var result = Round.game.AdvanceRoundByテンパイ流局(out var gameResult);
-                    roundResult = new RoundResult(gameResult);
-                    roundResult.scoreDiffs = scoreDiffs;
-                    roundResult.states = states;
+                    roundResult = new RoundResult(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else
@@ -299,9 +293,7 @@ namespace TSKT.Mahjongs
             {
                 // 子の流し満貫
                 var result = Round.game.AdvanceRoundBy子上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult);
-                roundResult.scoreDiffs = scoreDiffs;
-                roundResult.states = states;
+                roundResult = new RoundResult(gameResult, scoreDiffs, states);
                 return result;
             }
         }

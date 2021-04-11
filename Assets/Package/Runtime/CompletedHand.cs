@@ -1317,8 +1317,7 @@ namespace TSKT.Mahjongs
             {
                 playerResults = new Dictionary<Player, CompletedResult>();
                 var result = game.AdvanceRoundBy子上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult);
-                roundResult.scoreDiffs = round.players.ToDictionary(_ => _, _ => 0);
+                roundResult = new RoundResult(gameResult, scoreDiffs: round.players.ToDictionary(_ => _, _ => 0));
                 return result;
             }
 
@@ -1364,15 +1363,13 @@ namespace TSKT.Mahjongs
             if (completedHands.ContainsKey(round.Dealer))
             {
                 var result = game.AdvanceRoundBy親上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult);
-                roundResult.scoreDiffs = scoreDiffs;
+                roundResult = new RoundResult(gameResult, scoreDiffs);
                 return result;
             }
             else
             {
                 var result = game.AdvanceRoundBy子上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult);
-                roundResult.scoreDiffs = scoreDiffs;
+                roundResult = new RoundResult(gameResult, scoreDiffs);
                 return result;
             }
         }
