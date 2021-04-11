@@ -7,6 +7,7 @@ namespace TSKT.Mahjongs
 {
     public readonly struct CompletedResult
     {
+        public readonly Player winner;
         public readonly (int dealer, int player)? tsumoPenalty;
         public readonly int? dealerTsumoPenalty;
         public readonly int? ronPenalty;
@@ -20,6 +21,7 @@ namespace TSKT.Mahjongs
 
         public CompletedResult(CompletedHand source, Player player)
         {
+            this.winner = player;
             scoreType = source.基本点(player.round.game.rule.handCap).type;
             dora = source.Dora;
             uraDora = source.UraDora;
