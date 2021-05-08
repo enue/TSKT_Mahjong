@@ -8,13 +8,13 @@ namespace TSKT.Mahjongs
     public class AfterDiscard : IController, IRonableController
     {
         public Round Round => DiscardPlayer.round;
-        public int DiscardPlayerIndex => DiscardPlayer.index;
+        public PlayerIndex DiscardPlayerIndex => DiscardPlayer.index;
         public Player DiscardPlayer { get; }
         public bool Consumed { get; private set; }
 
         public Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
-        public Tile DiscardedTile => Round.players[DiscardPlayerIndex].discardPile.Last();
+        public Tile DiscardedTile => Round.players[(int)DiscardPlayerIndex].discardPile.Last();
 
         public AfterDiscard(Player discardPlayer)
         {
@@ -61,7 +61,7 @@ namespace TSKT.Mahjongs
         static public AfterDiscard FromSerializable(in Serializables.AfterDiscard source)
         {
             var round = source.round.Deserialzie();
-            var player = round.players[source.discardPlayerIndex];
+            var player = round.players[(int)source.discardPlayerIndex];
             return new AfterDiscard(player);
         }
 
@@ -110,7 +110,7 @@ namespace TSKT.Mahjongs
 
             if (CanRoundContinue)
             {
-                var playerIndex = (DiscardPlayerIndex + 1) % Round.players.Length;
+                var playerIndex = ((int)DiscardPlayerIndex + 1) % Round.players.Length;
                 roundResult = null;
                 return Round.players[playerIndex].Draw();
             }

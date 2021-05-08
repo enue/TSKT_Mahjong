@@ -127,7 +127,7 @@ namespace TSKT.Mahjongs.Serializables
         public int riichiScore;
         public int 本場;
         public int 連荘;
-        public int firstDealer;
+        public PlayerIndex firstDealer;
         public int[] scores;
         public RuleSetting rule;
 
@@ -157,7 +157,7 @@ namespace TSKT.Mahjongs.Serializables
         public DeadWallTile deadWallTile;
         public Player[] players;
         public TileType roundWind;
-        public int dealer;
+        public PlayerIndex dealer;
         public int[] totalDiscardedTiles;
 
         public Round(Mahjongs.Round source)
@@ -180,7 +180,7 @@ namespace TSKT.Mahjongs.Serializables
     [System.Serializable]
     public struct Player
     {
-        public int index;
+        public PlayerIndex index;
         public Hand hand;
         public int[] discardPile;
         public int[] discardedTiles;
@@ -246,7 +246,9 @@ namespace TSKT.Mahjongs.Serializables
         public Meld(Mahjongs.Meld source)
         {
             tileFroms = source.tileFroms
-                .Select(_ => new Pair() { tile = _.tile.index, fromPlayerIndex = _.fromPlayerIndex })
+                .Select(_ => new Pair() {
+                    tile = _.tile.index,
+                    fromPlayerIndex = _.fromPlayerIndex.HasValue ? (int)_.fromPlayerIndex : -1 })
                 .ToArray();
         }
 

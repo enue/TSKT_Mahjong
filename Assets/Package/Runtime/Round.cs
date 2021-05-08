@@ -12,12 +12,12 @@ namespace TSKT.Mahjongs
         public readonly DeadWallTile deadWallTile = new DeadWallTile();
         public readonly Player[] players = new Player[4];
         public readonly TileType roundWind;
-        public readonly int dealer;
-        public Player Dealer => players[dealer];
+        public readonly PlayerIndex dealer;
+        public Player Dealer => players[(int)dealer];
         public int CountKan => players.Sum(_ => _.hand.melds.Count(x => x.槓子));
         public readonly List<Tile> totalDiscardedTiles = new List<Tile>();
 
-        public Round(Game game, TileType prevailingWind, int dealer,
+        public Round(Game game, TileType prevailingWind, PlayerIndex dealer,
             params TileType[][] initialPlayerTilesByCheat)
         {
             this.game = game;
@@ -29,8 +29,8 @@ namespace TSKT.Mahjongs
 
             for (int i = 0; i < players.Length; ++i)
             {
-                var wind = winds[(i - dealer + winds.Length) % winds.Length];
-                var player = new Player(game.scoreOwners[i], this, i, wind);
+                var wind = winds[(i - (int)dealer + winds.Length) % winds.Length];
+                var player = new Player(game.scoreOwners[i], this, (PlayerIndex)i, wind);
                 players[i] = player;
             }
 
@@ -181,7 +181,7 @@ namespace TSKT.Mahjongs
             var discardTile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            var meldTiles = new List<(Tile, int playerIndex)>();
+            var meldTiles = new List<(Tile, PlayerIndex? playerIndex)>();
             meldTiles.Add((discardTile, discardPlayer.index));
             for (int i = 0; i < 3; ++i)
             {

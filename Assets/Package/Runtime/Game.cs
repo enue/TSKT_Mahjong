@@ -14,19 +14,19 @@ namespace TSKT.Mahjongs
         public int riichiScore;
         public int 本場 { get; private set; }
         public int 連荘 { get; private set; }
-        public readonly int firstDealer;
+        public readonly PlayerIndex firstDealer;
         public readonly ScoreOwner[] scoreOwners;
         public readonly RuleSetting rule;
 
-        public int Dealer => (firstDealer + DisplayRoundCount - 1) % 4;
+        public PlayerIndex Dealer => (PlayerIndex)(((int)firstDealer + DisplayRoundCount - 1) % 4);
 
-        static public AfterDraw Create(int firstDealer, RuleSetting rule)
+        static public AfterDraw Create(PlayerIndex firstDealer, RuleSetting rule)
         {
             var game = new Game(firstDealer, rule);
             return game.StartRound();
         }
 
-        Game(int firstDealer, RuleSetting rule)
+        Game(PlayerIndex firstDealer, RuleSetting rule)
         {
             this.rule = rule;
             this.firstDealer = firstDealer;

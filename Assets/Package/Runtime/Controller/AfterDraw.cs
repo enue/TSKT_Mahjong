@@ -8,7 +8,7 @@ namespace TSKT.Mahjongs
     public class AfterDraw : IController
     {
         public Round Round => DrawPlayer.round;
-        public int DrawPlayerIndex => DrawPlayer.index;
+        public PlayerIndex DrawPlayerIndex => DrawPlayer.index;
         public Player DrawPlayer { get; }
 
         public bool Consumed { get; private set; }
@@ -65,7 +65,7 @@ namespace TSKT.Mahjongs
         static public AfterDraw FromSerializable(in Serializables.AfterDraw source)
         {
             var round = source.round.Deserialzie();
-            var player = round.players[source.drawPlayerIndex];
+            var player = round.players[(int)source.drawPlayerIndex];
             var newTileInHand = source.newTileInHand >= 0 ? round.wallTile.allTiles[source.newTileInHand] : null;
             return new AfterDraw(player, newTileInHand, 嶺上: source.嶺上, openDoraAfterDiscard: source.openDoraAfterDiscard);
         }

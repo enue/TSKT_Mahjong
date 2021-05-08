@@ -22,7 +22,7 @@ namespace TSKT.Tests.Mahjongs
         {
             var meld = new Meld((new Tile(0, tile1, false), 0),
                 (new Tile(0, tile2, false), 0),
-                (new Tile(0, tileFromOtherPlayer, false), 1));
+                (new Tile(0, tileFromOtherPlayer, false), PlayerIndex.Index1));
 
             Assert.AreEqual(expected, meld.Is喰い替え(new Tile(0, tileToDiscard, false)));
         }

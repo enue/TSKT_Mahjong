@@ -9,7 +9,7 @@ namespace TSKT.Mahjongs
     {
         readonly public ScoreOwner scoreOwner;
         readonly public Round round;
-        readonly public int index;
+        readonly public PlayerIndex index;
         readonly public Hand hand;
         readonly public List<Tile> discardPile = new List<Tile>();
         readonly public List<Tile> discardedTiles = new List<Tile>();
@@ -47,7 +47,7 @@ namespace TSKT.Mahjongs
 
         public bool IsDealer => round.dealer == index;
 
-        public Player(ScoreOwner scoreOwner, Round round, int index, TileType wind)
+        public Player(ScoreOwner scoreOwner, Round round, PlayerIndex index, TileType wind)
         {
             this.scoreOwner = scoreOwner;
             this.round = round;
@@ -72,7 +72,7 @@ namespace TSKT.Mahjongs
             FuritenByOtherPlayers = source.furitenByOtherPlayers;
             一発 = source.一発;
 
-            scoreOwner = round.game.scoreOwners[source.index];
+            scoreOwner = round.game.scoreOwners[(int)source.index];
         }
 
         public static Player FromSerializable(in Serializables.Player source, Round round)
@@ -234,7 +234,7 @@ namespace TSKT.Mahjongs
             var meld = new Meld(
                 (left, index),
                 (right, index),
-                (tileFromOtherPlayer, -1));
+                (tileFromOtherPlayer, null));
             return hand.tiles
                 .Where(_ => _ != left && _ != right)
                 .Any(_ => !meld.Is喰い替え(_));

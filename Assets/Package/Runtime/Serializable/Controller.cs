@@ -9,7 +9,7 @@ namespace TSKT.Mahjongs.Serializables
     {
         public Round round;
 
-        public int discardPlayerIndex;
+        public PlayerIndex discardPlayerIndex;
 
         public AfterDiscard(Mahjongs.AfterDiscard source)
         {
@@ -28,7 +28,7 @@ namespace TSKT.Mahjongs.Serializables
     {
         public Round round;
 
-        public int drawPlayerIndex;
+        public PlayerIndex drawPlayerIndex;
         public int newTileInHand;
         public bool openDoraAfterDiscard;
         public bool 嶺上;
@@ -53,7 +53,7 @@ namespace TSKT.Mahjongs.Serializables
     {
         public Round round;
 
-        public int declarePlayerIndex;
+        public PlayerIndex declarePlayerIndex;
         public int tile;
         
         public BeforeAddedOpenQuad(Mahjongs.BeforeAddedOpenQuad source)
@@ -74,7 +74,7 @@ namespace TSKT.Mahjongs.Serializables
     {
         public Round round;
 
-        public int declarePlayerIndex;
+        public PlayerIndex declarePlayerIndex;
         public TileType tile;
 
         public BeforeClosedQuad(Mahjongs.BeforeClosedQuad source)

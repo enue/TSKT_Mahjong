@@ -89,9 +89,17 @@ namespace TSKT.Mahjongs
         上家,
     }
 
+    public enum PlayerIndex
+    {
+        Index0 = 0,
+        Index1,
+        Index2,
+        Index3,
+    }
+
     public static class RelativePlayerUtil
     {
-        static public RelativePlayer GetByPlayerIndex(int fromIndex, int targetIndex)
+        static public RelativePlayer GetByPlayerIndex(PlayerIndex fromIndex, PlayerIndex targetIndex)
         {
             var diff = (targetIndex - fromIndex + 4) % 4;
             if (diff == 0)

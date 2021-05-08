@@ -82,7 +82,7 @@ namespace TSKT.Mahjongs
 
         public void BuildClosedQuad(TileType tileType)
         {
-            var quadTiles = new (Tile, int)[4];
+            var quadTiles = new (Tile, PlayerIndex?)[4];
             for (int i = 0; i < 4; ++i)
             {
                 var tile = tiles.First(_ => _.type == tileType);
@@ -157,7 +157,7 @@ namespace TSKT.Mahjongs
 
     public readonly struct Meld
     {
-        public readonly (Tile tile, int fromPlayerIndex)[] tileFroms;
+        public readonly (Tile tile, PlayerIndex? fromPlayerIndex)[] tileFroms;
 
         public readonly bool 順子 => tileFroms[0].tile.type != tileFroms[1].tile.type;
         public readonly bool 槓子 => tileFroms.Length == 4;
@@ -182,7 +182,7 @@ namespace TSKT.Mahjongs
 
         public readonly Tile Min => tileFroms[0].tile;
 
-        public Meld(params (Tile tile, int fromPlayerIndex)[] tileFroms)
+        public Meld(params (Tile tile, PlayerIndex? fromPlayerIndex)[] tileFroms)
         {
             this.tileFroms = tileFroms.OrderBy(_ => _.tile.type).ToArray();
         }
@@ -190,7 +190,7 @@ namespace TSKT.Mahjongs
         Meld(in Serializables.Meld source, WallTile wallTile)
         {
             tileFroms = source.tileFroms
-                .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex))
+                .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex >= 0 ? (PlayerIndex?)_.fromPlayerIndex : null))
                 .ToArray();
         }
 
@@ -204,11 +204,11 @@ namespace TSKT.Mahjongs
             return new Serializables.Meld(this);
         }
 
-        public readonly (Tile tile, int fromPlayerIndex) TileFromOtherPlayer
+        public readonly (Tile tile, PlayerIndex? fromPlayerIndex) TileFromOtherPlayer
         {
             get
             {
-                int ownerPlayerIndex;
+                PlayerIndex? ownerPlayerIndex;
                 if (tileFroms[0].fromPlayerIndex == tileFroms[1].fromPlayerIndex)
                 {
                     ownerPlayerIndex = tileFroms[0].fromPlayerIndex;

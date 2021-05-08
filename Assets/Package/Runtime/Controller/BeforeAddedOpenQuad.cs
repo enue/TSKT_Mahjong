@@ -8,7 +8,7 @@ namespace TSKT.Mahjongs
     public class BeforeAddedOpenQuad : IBeforeQuad
     {
         public Round Round => DeclarePlayer.round;
-        public int DeclarePlayerIndex => DeclarePlayer.index;
+        public PlayerIndex DeclarePlayerIndex => DeclarePlayer.index;
         public Player DeclarePlayer { get; }
 
         public bool Consumed { get; private set; }
@@ -57,7 +57,7 @@ namespace TSKT.Mahjongs
         public static BeforeAddedOpenQuad FromSerializable(in Serializables.BeforeAddedOpenQuad source)
         {
             var round = source.round.Deserialzie();
-            var player = round.players[source.declarePlayerIndex];
+            var player = round.players[(int)source.declarePlayerIndex];
             var tile = round.wallTile.allTiles[source.tile];
             return new BeforeAddedOpenQuad(player, tile);
         }

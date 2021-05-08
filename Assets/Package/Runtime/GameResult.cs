@@ -7,8 +7,8 @@ namespace TSKT.Mahjongs
 {
     public class GameResult
     {
-        public readonly int[] sortedPlayerIndices;
-        public readonly Dictionary<int, (int rank, int reward)> playerRanks;
+        public readonly PlayerIndex[] sortedPlayerIndices;
+        public readonly Dictionary<PlayerIndex, (int rank, int reward)> playerRanks;
 
         public GameResult(Game game)
         {
@@ -24,12 +24,13 @@ namespace TSKT.Mahjongs
                 { RelativePlayer.上家, 0 },
             };
 
-            sortedPlayerIndices = Enumerable.Range(0, game.scoreOwners.Length)
-                .OrderByDescending(_ => game.scoreOwners[_].score)
+            sortedPlayerIndices = System.Enum.GetValues(typeof(PlayerIndex))
+                .Cast<PlayerIndex>()
+                .OrderByDescending(_ => game.scoreOwners[(int)_].score)
                 .ThenByDescending(_ => orderedPositionFromFirstOrder[RelativePlayerUtil.GetByPlayerIndex(game.firstDealer, _)])
                 .ToArray();
 
-            var rewards = new Dictionary<int, int>();
+            var rewards = new Dictionary<PlayerIndex, int>();
             var topPlayerIndex = sortedPlayerIndices[0];
             rewards[topPlayerIndex] = umas[0];
 
@@ -38,14 +39,14 @@ namespace TSKT.Mahjongs
                 var playerIndex = sortedPlayerIndices[i];
                 if (playerIndex != topPlayerIndex)
                 {
-                    var score = game.scoreOwners[playerIndex].score;
+                    var score = game.scoreOwners[(int)playerIndex].score;
                     var p = Mathf.RoundToInt((score - kaesi) / 1000f);
                     rewards[playerIndex] = p + umas[i];
                     rewards[topPlayerIndex] -= p;
                 }
             }
 
-            playerRanks = new Dictionary<int, (int rank, int reward)>();
+            playerRanks = new Dictionary<PlayerIndex, (int rank, int reward)>();
             for (int i = 0; i < sortedPlayerIndices.Length; ++i)
             {
                 var playerIndex = sortedPlayerIndices[i];

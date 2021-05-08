@@ -53,7 +53,7 @@ namespace TSKT.Tests.Mahjongs
                         uraDoraTiles: null,
                         槍槓: false,
                         handCap: round.game.rule.handCap);
-                    var player = round.players[round.dealer + 1];
+                    var player = round.players[(int)round.dealer + 1];
                     CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var roundResult, out var results);
                     var result = results[player];
                     Debug.Log(result.tsumoPenalty.Value);
@@ -191,13 +191,13 @@ namespace TSKT.Tests.Mahjongs
                 TileType.S8, TileType.S8,
             };
             var meld0 = new Meld(
-                (new Tile(0, TileType.S3, false), 0),
-                (new Tile(0, TileType.S4, false), 0),
-                (new Tile(0, TileType.S5, false), 1));
+                (new Tile(0, TileType.S3, false), PlayerIndex.Index0),
+                (new Tile(0, TileType.S4, false), PlayerIndex.Index0),
+                (new Tile(0, TileType.S5, false), PlayerIndex.Index1));
             var meld1 = new Meld(
-                (new Tile(0, TileType.P3, false), 0),
-                (new Tile(0, TileType.P3, false), 1),
-                (new Tile(0, TileType.P3, false), 0));
+                (new Tile(0, TileType.P3, false), PlayerIndex.Index0),
+                (new Tile(0, TileType.P3, false), PlayerIndex.Index1),
+                (new Tile(0, TileType.P3, false), PlayerIndex.Index0));
 
             var round = Game.Create(0, new RuleSetting()).Round;
             var hand = round.players[0].hand;
