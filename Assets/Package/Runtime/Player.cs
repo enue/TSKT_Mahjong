@@ -234,7 +234,7 @@ namespace TSKT.Mahjongs
             var meld = new Meld(
                 (left, index),
                 (right, index),
-                (tileFromOtherPlayer, null));
+                (tileFromOtherPlayer, (PlayerIndex)((int)(index + 3) % 4)));
             return hand.tiles
                 .Where(_ => _ != left && _ != right)
                 .Any(_ => !meld.Is喰い替え(_));

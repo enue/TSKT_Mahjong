@@ -82,7 +82,7 @@ namespace TSKT.Mahjongs
 
         public void BuildClosedQuad(TileType tileType)
         {
-            var quadTiles = new (Tile, PlayerIndex?)[4];
+            var quadTiles = new (Tile, PlayerIndex)[4];
             for (int i = 0; i < 4; ++i)
             {
                 var tile = tiles.First(_ => _.type == tileType);
@@ -157,7 +157,7 @@ namespace TSKT.Mahjongs
 
     public readonly struct Meld
     {
-        public readonly (Tile tile, PlayerIndex? fromPlayerIndex)[] tileFroms;
+        public readonly (Tile tile, PlayerIndex fromPlayerIndex)[] tileFroms;
 
         public readonly bool 順子 => tileFroms[0].tile.type != tileFroms[1].tile.type;
         public readonly bool 槓子 => tileFroms.Length == 4;
@@ -182,7 +182,7 @@ namespace TSKT.Mahjongs
 
         public readonly Tile Min => tileFroms[0].tile;
 
-        public Meld(params (Tile tile, PlayerIndex? fromPlayerIndex)[] tileFroms)
+        public Meld(params (Tile tile, PlayerIndex fromPlayerIndex)[] tileFroms)
         {
             this.tileFroms = tileFroms.OrderBy(_ => _.tile.type).ToArray();
         }
@@ -190,7 +190,7 @@ namespace TSKT.Mahjongs
         Meld(in Serializables.Meld source, WallTile wallTile)
         {
             tileFroms = source.tileFroms
-                .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex >= 0 ? (PlayerIndex?)_.fromPlayerIndex : null))
+                .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex))
                 .ToArray();
         }
 
@@ -204,38 +204,40 @@ namespace TSKT.Mahjongs
             return new Serializables.Meld(this);
         }
 
-        public readonly (Tile tile, PlayerIndex? fromPlayerIndex) TileFromOtherPlayer
+        public readonly bool TryGetTileFromOtherPlayer(out (Tile tile, PlayerIndex fromPlayerIndex) result)
         {
-            get
+            PlayerIndex ownerPlayerIndex;
+            if (tileFroms[0].fromPlayerIndex == tileFroms[1].fromPlayerIndex)
             {
-                PlayerIndex? ownerPlayerIndex;
-                if (tileFroms[0].fromPlayerIndex == tileFroms[1].fromPlayerIndex)
-                {
-                    ownerPlayerIndex = tileFroms[0].fromPlayerIndex;
-                }
-                else if (tileFroms[0].fromPlayerIndex == tileFroms[2].fromPlayerIndex)
-                {
-                    ownerPlayerIndex = tileFroms[0].fromPlayerIndex;
-                }
-                else
-                {
-                    ownerPlayerIndex = tileFroms[1].fromPlayerIndex;
-                }
-
-                foreach (var it in tileFroms)
-                {
-                    if (it.fromPlayerIndex != ownerPlayerIndex)
-                    {
-                        return it;
-                    }
-                }
-                return default;
+                ownerPlayerIndex = tileFroms[0].fromPlayerIndex;
             }
+            else if (tileFroms[0].fromPlayerIndex == tileFroms[2].fromPlayerIndex)
+            {
+                ownerPlayerIndex = tileFroms[0].fromPlayerIndex;
+            }
+            else
+            {
+                ownerPlayerIndex = tileFroms[1].fromPlayerIndex;
+            }
+
+            foreach (var it in tileFroms)
+            {
+                if (it.fromPlayerIndex != ownerPlayerIndex)
+                {
+                    result = it;
+                    return true;
+                }
+            }
+            result = default;
+            return false;
         }
 
         public readonly bool Is喰い替え(Tile tileToDiscard)
         {
-            var tileFromOtherPlayer = TileFromOtherPlayer;
+            if (!TryGetTileFromOtherPlayer(out var tileFromOtherPlayer))
+            {
+                return false;
+            }
             if (tileToDiscard.type == tileFromOtherPlayer.tile.type)
             {
                 return true;

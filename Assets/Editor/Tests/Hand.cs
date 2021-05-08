@@ -20,8 +20,8 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(false, TileType.M2, TileType.M3, TileType.M4, TileType.M3)]
         public void 喰い替え(bool expected, TileType tile1, TileType tile2, TileType tileFromOtherPlayer, TileType tileToDiscard)
         {
-            var meld = new Meld((new Tile(0, tile1, false), 0),
-                (new Tile(0, tile2, false), 0),
+            var meld = new Meld((new Tile(0, tile1, false), PlayerIndex.Index0),
+                (new Tile(0, tile2, false), PlayerIndex.Index0),
                 (new Tile(0, tileFromOtherPlayer, false), PlayerIndex.Index1));
 
             Assert.AreEqual(expected, meld.Is喰い替え(new Tile(0, tileToDiscard, false)));

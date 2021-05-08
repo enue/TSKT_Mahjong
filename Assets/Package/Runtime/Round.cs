@@ -181,7 +181,7 @@ namespace TSKT.Mahjongs
             var discardTile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            var meldTiles = new List<(Tile, PlayerIndex? playerIndex)>();
+            var meldTiles = new List<(Tile, PlayerIndex playerIndex)>();
             meldTiles.Add((discardTile, discardPlayer.index));
             for (int i = 0; i < 3; ++i)
             {

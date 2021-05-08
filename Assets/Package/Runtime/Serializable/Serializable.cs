@@ -239,16 +239,14 @@ namespace TSKT.Mahjongs.Serializables
         public struct Pair
         {
             public int tile;
-            public int fromPlayerIndex;
+            public PlayerIndex fromPlayerIndex;
         }
         public Pair[] tileFroms;
 
         public Meld(Mahjongs.Meld source)
         {
             tileFroms = source.tileFroms
-                .Select(_ => new Pair() {
-                    tile = _.tile.index,
-                    fromPlayerIndex = _.fromPlayerIndex.HasValue ? (int)_.fromPlayerIndex : -1 })
+                .Select(_ => new Pair() { tile = _.tile.index, fromPlayerIndex = _.fromPlayerIndex })
                 .ToArray();
         }
 
