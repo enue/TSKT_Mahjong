@@ -25,7 +25,7 @@ add package from git url
 　`Game`を`Create`してルールを定める。
 
 ```cs
-var afterDraw = Game.Create(Random.Range(0, 4),
+var afterDraw = Game.Create((PlayerIndex)Random.Range(0, 4),
     new RuleSetting()
     {
         end = new Mahjongs.Rules.EndRule()
