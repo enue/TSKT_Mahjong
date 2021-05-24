@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -64,7 +65,7 @@ namespace TSKT.Mahjongs
             return round.Start();
         }
 
-        public AfterDraw AdvanceRoundBy親上がり(out GameResult gameResult)
+        public AfterDraw? AdvanceRoundBy親上がり(out GameResult? gameResult)
         {
             ++連荘;
             ++本場;
@@ -90,7 +91,7 @@ namespace TSKT.Mahjongs
             gameResult = null;
             return StartRound();
         }
-        public AfterDraw AdvanceRoundBy子上がり(out GameResult gameResult)
+        public AfterDraw? AdvanceRoundBy子上がり(out GameResult? gameResult)
         {
             連荘 = 0;
             本場 = 0;
@@ -113,18 +114,18 @@ namespace TSKT.Mahjongs
             return StartRound();
         }
 
-        public AfterDraw AdvanceRoundByノーテン流局(out GameResult gameResult)
+        public AfterDraw? AdvanceRoundByノーテン流局(out GameResult? gameResult)
         {
             return AdvanceRoundBy子上がり(out gameResult);
         }
 
 
-        public AfterDraw AdvanceRoundBy途中流局(out GameResult gameResult)
+        public AfterDraw? AdvanceRoundBy途中流局(out GameResult? gameResult)
         {
             return AdvanceRoundByテンパイ流局(out gameResult);
         }
 
-        public AfterDraw AdvanceRoundByテンパイ流局(out GameResult gameResult)
+        public AfterDraw? AdvanceRoundByテンパイ流局(out GameResult? gameResult)
         {
             ++本場;
 

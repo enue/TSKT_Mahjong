@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -92,7 +93,7 @@ namespace TSKT.Mahjongs
                 dealerTsumoPenalty = null;
                 tsumoPenalty = null;
 
-                scoreDiffs[source.ronTarget] = -ronPenalty.Value;
+                scoreDiffs[source.ronTarget!] = -ronPenalty.Value;
                 scoreDiffs[player] = ronPenalty.Value;
             }
         }

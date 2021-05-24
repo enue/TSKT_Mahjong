@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TSKT;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs.Commands
 {
@@ -18,7 +19,7 @@ namespace TSKT.Mahjongs.Commands
             Controller = controller;
             Executor = player;
         }
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult? TryExecute()
         {
             return null;
         }

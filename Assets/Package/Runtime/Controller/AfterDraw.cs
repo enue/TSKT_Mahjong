@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -13,8 +14,8 @@ namespace TSKT.Mahjongs
 
         public bool Consumed { get; private set; }
 
-        public readonly Tile newTileInHand;
-        public readonly Hands.Solution handSolution;
+        public readonly Tile? newTileInHand;
+        public readonly Hands.Solution? handSolution;
         public readonly bool canTsumo;
 
         public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
@@ -26,7 +27,7 @@ namespace TSKT.Mahjongs
         bool 一巡目 => DrawPlayer.discardedTiles.Count == 0;
         bool BuiltMeld => newTileInHand == null;
 
-        public AfterDraw(Player player, Tile newTileInHand,
+        public AfterDraw(Player player, Tile? newTileInHand,
             bool 嶺上,
             bool openDoraAfterDiscard)
         {
@@ -50,7 +51,11 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                return handSolution.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
+                if (newTileInHand == null)
+                {
+                    throw new System.NullReferenceException();
+                }
+                return handSolution!.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
                     ronTarget: null,
                     嶺上: 嶺上,
                     海底: !嶺上 && (Round.wallTile.tiles.Count == 0),
@@ -135,7 +140,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public bool CanOpenRiichi(out Commands.Discard[] commands)
+        public bool CanOpenRiichi(out Commands.Discard[]? commands)
         {
             if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
             {
@@ -250,7 +255,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw Tsumo(
+        public AfterDraw? Tsumo(
             out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result)
         {
@@ -417,7 +422,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw 九種九牌(out RoundResult roundResult)
+        public AfterDraw? 九種九牌(out RoundResult roundResult)
         {
             if (Consumed)
             {
@@ -441,7 +446,7 @@ namespace TSKT.Mahjongs
             return Round.game.StartRound(initialPlayerTilesByCheat);
         }
 
-        public IController DoDefaultAction(out RoundResult roundResult)
+        public IController DoDefaultAction(out RoundResult? roundResult)
         {
             throw new System.NotImplementedException();
         }

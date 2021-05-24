@@ -5,6 +5,7 @@ using NUnit.Framework;
 using TSKT.Mahjongs;
 using TSKT.Mahjongs.Rules;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Tests.Mahjongs
 {
@@ -79,12 +80,11 @@ namespace TSKT.Tests.Mahjongs
                 {
                     result = controller.ExecuteCommands(out _);
                 }
-                controller = result.nextController;
-
-                if (controller == null)
+                if (result.nextController == null)
                 {
                     break;
                 }
+                controller = result.nextController;
             }
         }
 

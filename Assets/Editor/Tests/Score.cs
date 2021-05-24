@@ -4,6 +4,7 @@ using UnityEngine;
 using NUnit.Framework;
 using TSKT.Mahjongs;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Tests.Mahjongs
 {
@@ -49,17 +50,17 @@ namespace TSKT.Tests.Mahjongs
                         天和: false,
                         地和: false,
                         人和: false,
-                        doraTiles: null,
-                        uraDoraTiles: null,
+                        doraTiles: new TileType[0],
+                        uraDoraTiles: new TileType[0],
                         槍槓: false,
                         handCap: round.game.rule.handCap);
                     var player = round.players[(int)round.dealer + 1];
                     CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var roundResult, out var results);
                     var result = results[player];
-                    Debug.Log(result.tsumoPenalty.Value);
+                    Debug.Log(result.tsumoPenalty!.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
                     Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
-                    Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
+                    Assert.AreEqual(0, roundResult.scoreDiffs!.Values.Sum());
                 }
             }
 
@@ -108,8 +109,8 @@ namespace TSKT.Tests.Mahjongs
                 天和: false,
                 地和: false,
                 人和: false,
-                doraTiles: null,
-                uraDoraTiles: null,
+                doraTiles: new TileType[0],
+                uraDoraTiles: new TileType[0],
                 槍槓: false,
                 handCap: round.game.rule.handCap);
 
@@ -121,7 +122,7 @@ namespace TSKT.Tests.Mahjongs
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.dealerTsumoPenalty);
-            Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
+            Assert.AreEqual(0, roundResult.scoreDiffs!.Values.Sum());
         }
 
         [Test]
@@ -166,8 +167,8 @@ namespace TSKT.Tests.Mahjongs
                 天和: false,
                 地和: false,
                 人和: false,
-                doraTiles: null,
-                uraDoraTiles: null,
+                doraTiles: new TileType[0],
+                uraDoraTiles: new TileType[0],
                 槍槓: false,
                 handCap: round.game.rule.handCap);
 
@@ -179,7 +180,7 @@ namespace TSKT.Tests.Mahjongs
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.ronPenalty);
-            Assert.AreEqual(0, roundResult.scoreDiffs.Values.Sum());
+            Assert.AreEqual(0, roundResult.scoreDiffs!.Values.Sum());
         }
         [Test]
         public void HandWithMeld()

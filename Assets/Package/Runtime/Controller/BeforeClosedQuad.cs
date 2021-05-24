@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -86,7 +87,7 @@ namespace TSKT.Mahjongs
             command = new Commands.Ron(player, this);
             return true;
         }
-        public AfterDraw Ron(
+        public AfterDraw? Ron(
             out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
@@ -119,7 +120,7 @@ namespace TSKT.Mahjongs
             return Round.ExecuteClosedQuad(DeclarePlayer, tile);
         }
 
-        public IController DoDefaultAction(out RoundResult roundResult)
+        public IController DoDefaultAction(out RoundResult? roundResult)
         {
             roundResult = null;
             return BuildQuad();

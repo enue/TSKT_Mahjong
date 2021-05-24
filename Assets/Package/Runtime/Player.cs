@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -128,7 +129,7 @@ namespace TSKT.Mahjongs
         }
 
         // 赤牌ルールだと、どの牌で鳴くか選択肢があるケースがある
-        public bool CanPon(TileType tile, out List<(Tile left, Tile right)> combinations)
+        public bool CanPon(TileType tile, out List<(Tile left, Tile right)>? combinations)
         {
             if (Riichi)
             {
@@ -155,7 +156,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public bool CanChi(Tile discarded, out List<(Tile left, Tile right)> combinations)
+        public bool CanChi(Tile discarded, out List<(Tile left, Tile right)>? combinations)
         {
             if (Riichi)
             {

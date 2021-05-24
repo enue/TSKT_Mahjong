@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -98,7 +99,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public AfterDraw AdvanceTurn(out RoundResult roundResult)
+        public AfterDraw? AdvanceTurn(out RoundResult? roundResult)
         {
             if (Consumed)
             {
@@ -159,7 +160,7 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                Tile tile = null;
+                Tile? tile = null;
                 foreach (var it in Round.players)
                 {
                     if (it.hand.melds.Count > 0)
@@ -185,7 +186,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        AfterDraw FinishRound(out RoundResult roundResult)
+        AfterDraw? FinishRound(out RoundResult roundResult)
         {
             if (ShouldSuspendRound)
             {
@@ -196,7 +197,7 @@ namespace TSKT.Mahjongs
             return FinishRoundAsExhausiveDraw(out roundResult);
         }
 
-        AfterDraw FinishRoundAsExhausiveDraw(out RoundResult roundResult)
+        AfterDraw? FinishRoundAsExhausiveDraw(out RoundResult roundResult)
         {
             var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
             var states = new Dictionary<Player, ExhausiveDrawType>();
@@ -315,7 +316,7 @@ namespace TSKT.Mahjongs
             return false;
         }
 
-        public AfterDraw Ron(
+        public AfterDraw? Ron(
             out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
@@ -398,7 +399,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanPon(Player player, out Commands.Pon[] commands)
+        public bool CanPon(Player player, out Commands.Pon[]? commands)
         {
             if (player == DiscardPlayer)
             {
@@ -465,7 +466,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanChi(Player player, out Commands.Chi[] commands)
+        public bool CanChi(Player player, out Commands.Chi[]? commands)
         {
             if (player == DiscardPlayer)
             {
@@ -525,7 +526,7 @@ namespace TSKT.Mahjongs
             return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
         }
 
-        public IController DoDefaultAction(out RoundResult roundResult)
+        public IController? DoDefaultAction(out RoundResult? roundResult)
         {
             return AdvanceTurn(out roundResult);
         }

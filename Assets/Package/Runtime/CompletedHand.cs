@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -14,7 +15,7 @@ namespace TSKT.Mahjongs
         public readonly Meld[] Melds => structure.melds;
         public readonly int RedTile => structure.redTileCount;
 
-        public readonly Player ronTarget;
+        public readonly Player? ronTarget;
 
         readonly TileType newTileInHand;
         readonly TileType ownWind;
@@ -31,7 +32,7 @@ namespace TSKT.Mahjongs
         readonly IEnumerable<TileType> AllUsedTiles => structure.AllUsedTiles;
 
         public CompletedHand(Hands.Structure structure, TileType newTileInHand, TileType ownWind, TileType roundWind,
-            Player ronTarget,
+            Player? ronTarget,
             bool riichi,
             bool doubleRiichi,
             bool openRiichi,
@@ -1305,7 +1306,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        static public AfterDraw Execute(Dictionary<Player, CompletedHand> completedHands,
+        static public AfterDraw? Execute(Dictionary<Player, CompletedHand> completedHands,
             out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> playerResults)
         {
@@ -1347,7 +1348,7 @@ namespace TSKT.Mahjongs
             else
             {
                 // ダブロンのリーチ棒回収 : ロンされたプレイヤーから順番が近いほうをがリーチ棒を回収する
-                var ronTarget = completedHands.First().Value.ronTarget;
+                var ronTarget = completedHands.First().Value.ronTarget!;
                 var getter = completedHands.Keys
                     .OrderBy(_ => (_.index - ronTarget.index + _.round.players.Length) % _.round.players.Length)
                     .First();

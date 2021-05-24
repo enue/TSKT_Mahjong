@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs.Hands
 {
@@ -17,7 +18,7 @@ namespace TSKT.Mahjongs.Hands
 
         public CompletedHand ChoiceCompletedHand(Player player,
             TileType newTileInHand,
-            Player ronTarget,
+            Player? ronTarget,
             bool 嶺上,
             bool 海底,
             bool 河底,
@@ -48,7 +49,7 @@ namespace TSKT.Mahjongs.Hands
         }
 
         public CompletedHand ChoiceCompletedHand(TileType newTileInHand, TileType ownWind, TileType roundWind,
-            Player ronTarget,
+            Player? ronTarget,
             bool riichi,
             bool doubleRiichi,
             bool openRiichi,

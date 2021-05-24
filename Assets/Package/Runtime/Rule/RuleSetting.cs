@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TSKT.Mahjongs.Rules;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {

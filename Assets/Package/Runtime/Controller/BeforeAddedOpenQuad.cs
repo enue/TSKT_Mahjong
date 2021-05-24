@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
@@ -87,7 +88,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw Ron(
+        public AfterDraw? Ron(
             out RoundResult roundResult,
             out Dictionary<Player, CompletedResult> result,
             params Player[] players)
@@ -127,7 +128,7 @@ namespace TSKT.Mahjongs
             return Round.ExecuteAddedOpenQuad(DeclarePlayer, tile);
         }
 
-        public IController DoDefaultAction(out RoundResult roundResult)
+        public IController DoDefaultAction(out RoundResult? roundResult)
         {
             roundResult = null;
             return BuildQuad();

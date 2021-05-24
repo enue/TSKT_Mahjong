@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TSKT;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Mahjongs.Commands
 {

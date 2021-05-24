@@ -4,6 +4,7 @@ using UnityEngine;
 using NUnit.Framework;
 using TSKT.Mahjongs;
 using System.Linq;
+#nullable enable
 
 namespace TSKT.Tests.Mahjongs
 {

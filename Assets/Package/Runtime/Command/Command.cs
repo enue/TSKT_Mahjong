@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
     public interface ICommand
     {
         Commands.CommandPriority Priority { get; }
-        CommandResult TryExecute();
+        CommandResult? TryExecute();
         Player Executor { get; }
     }
 
@@ -63,13 +64,13 @@ namespace TSKT.Mahjongs
 
     public class CommandResult
     {
-        public readonly IController nextController;
-        public readonly RoundResult roundResult;
-        public readonly Dictionary<Player, CompletedResult> completedResults;
+        public readonly IController? nextController;
+        public readonly RoundResult? roundResult;
+        public readonly Dictionary<Player, CompletedResult>? completedResults;
 
-        public CommandResult(IController nextController,
-            RoundResult roundResult = null,
-            Dictionary<Player, CompletedResult> completedResults = null)
+        public CommandResult(IController? nextController,
+            RoundResult? roundResult = null,
+            Dictionary<Player, CompletedResult>? completedResults = null)
         {
             this.nextController = nextController;
             this.roundResult = roundResult;

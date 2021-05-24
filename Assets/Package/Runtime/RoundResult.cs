@@ -1,18 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#nullable enable
 
 namespace TSKT.Mahjongs
 {
     public class RoundResult
     {
-        readonly public GameResult gameResult;
-        readonly public Dictionary<Player, int> scoreDiffs;
-        readonly public Dictionary<Player, ExhausiveDrawType> states;
+        readonly public GameResult? gameResult;
+        readonly public Dictionary<Player, int>? scoreDiffs;
+        readonly public Dictionary<Player, ExhausiveDrawType>? states;
 
-        public RoundResult(GameResult gameResult,
-            Dictionary<Player, int> scoreDiffs = null,
-            Dictionary<Player, ExhausiveDrawType> states = null)
+        public RoundResult(GameResult? gameResult,
+            Dictionary<Player, int>? scoreDiffs = null,
+            Dictionary<Player, ExhausiveDrawType>? states = null)
         {
             this.gameResult = gameResult;
             this.scoreDiffs = scoreDiffs;
