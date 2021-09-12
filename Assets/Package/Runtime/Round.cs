@@ -19,7 +19,7 @@ namespace TSKT.Mahjongs
         public readonly List<Tile> totalDiscardedTiles = new List<Tile>();
 
         public Round(Game game, TileType prevailingWind, PlayerIndex dealer,
-            params TileType[][] initialPlayerTilesByCheat)
+            params TileType[]?[]? initialPlayerTilesByCheat)
         {
             this.game = game;
             roundWind = prevailingWind;
@@ -41,7 +41,7 @@ namespace TSKT.Mahjongs
                 {
                     if (initialPlayerTilesByCheat[i] != null)
                     {
-                        foreach (var it in initialPlayerTilesByCheat[i])
+                        foreach (var it in initialPlayerTilesByCheat[i]!)
                         {
                             var t = wallTile.tiles.FirstOrDefault(_ => _.type == it);
                             if (t != null)

@@ -59,7 +59,7 @@ namespace TSKT.Mahjongs
             return new Serializables.Game(this);
         }
 
-        public AfterDraw StartRound(params TileType[][] initialPlayerTilesByCheat)
+        public AfterDraw StartRound(params TileType[]?[]? initialPlayerTilesByCheat)
         {
             var round = new Round(this, Wind, Dealer, initialPlayerTilesByCheat);
             return round.Start();

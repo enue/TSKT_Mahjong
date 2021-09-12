@@ -435,7 +435,7 @@ namespace TSKT.Mahjongs
             return result;
         }
 
-        public AfterDraw ResetRound(params TileType[][] initialPlayerTilesByCheat)
+        public AfterDraw ResetRound(params TileType[]?[]? initialPlayerTilesByCheat)
         {
             if (Consumed)
             {
