@@ -142,16 +142,35 @@ namespace TSKT.Tests.Mahjongs
 
         [Test]
         [TestCase(8000, TileType.M1, TileType.東, TileType.東, true,
-            TileType.M1, TileType.M1, TileType.M1, TileType.M3, TileType.M3, TileType.M3, TileType.P4, TileType.P4, TileType.P4, TileType.P5, TileType.P5, TileType.P5, TileType.M6, TileType.M6)]
+            new[] { TileType.M1, TileType.M1, TileType.M1, TileType.M3, TileType.M3, TileType.M3, TileType.P4, TileType.P4, TileType.P4, TileType.P5, TileType.P5, TileType.P5, TileType.M6, TileType.M6 },
+            null)]
+        [TestCase(1000, TileType.M1, TileType.東, TileType.東, false,
+            new[] { TileType.M1, TileType.M2, TileType.M3, TileType.M6, TileType.M7, TileType.M8, TileType.P1, TileType.P2, TileType.P3, TileType.P4, TileType.P5, TileType.P6, TileType.S9, TileType.S9 },
+            null)]
+        [TestCase(1000, TileType.M2, TileType.東, TileType.東, false,
+            new[] { TileType.M2, TileType.M3, TileType.M4, TileType.P2, TileType.P3, TileType.P4, TileType.P5, TileType.P6, TileType.P7, TileType.S8, TileType.S8 },
+            new[] { TileType.M6, TileType.M7, TileType.M8 })]
         public void ロン上がり(int expected, TileType ロン牌, TileType ownWind, TileType roundWind,
             bool riichi,
-            params TileType[] tiles)
+            TileType[] tiles,
+            TileType[]? meldTiles)
         {
             var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
 
             var hand = round.players[0].hand;
             hand.tiles.Clear();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
+            if (meldTiles != null)
+            {
+                for (int i = 0; i < meldTiles.Length / 3; ++i)
+                {
+                    var meld = new Meld(
+                        (new Tile(0, meldTiles[i * 3], red: false), PlayerIndex.Index0),
+                        (new Tile(0, meldTiles[i * 3 + 1], red: false), PlayerIndex.Index0),
+                        (new Tile(0, meldTiles[i * 3 + 2], red: false), PlayerIndex.Index1));
+                    hand.melds.Add(meld);
+                }
+            }
             var solution = hand.Solve();
             Assert.AreEqual(-1, solution.向聴数);
 

@@ -637,72 +637,90 @@ namespace TSKT.Mahjongs
             }
         }
 
+        readonly bool 平和形(out bool 役, out bool 食い平和)
+        {
+            if (Melds.Any(_ => !_.順子))
+            {
+                役 = false;
+                食い平和 = false;
+                return false;
+            }
+            var 鳴き = Melds.Any();
+
+            if (Pairs.Length > 1)
+            {
+                役 = false;
+                食い平和 = false;
+                return false;
+            }
+            foreach (var it in Sets)
+            {
+                if (it.刻子)
+                {
+                    役 = false;
+                    食い平和 = false;
+                    return false;
+                }
+            }
+
+            foreach (var it in AllUsedTiles)
+            {
+                if (it.三元牌())
+                {
+                    役 = false;
+                    食い平和 = false;
+                    return false;
+                }
+                if (it == ownWind)
+                {
+                    役 = false;
+                    食い平和 = false;
+                    return false;
+                }
+                if (it == roundWind)
+                {
+                    役 = false;
+                    食い平和 = false;
+                    return false;
+                }
+            }
+
+            foreach (var it in Sets)
+            {
+                if (it.first == newTileInHand
+                    && it.first.Number() != 7)
+                {
+                    役 = !Melds.Any();
+                    食い平和 = Melds.Any();
+                    return true;
+                }
+                if (it.third == newTileInHand
+                    && it.first.Number() != 1)
+                {
+                    役 = !Melds.Any();
+                    食い平和 = Melds.Any();
+                    return true;
+                }
+            }
+            役 = false;
+            食い平和 = false;
+            return false;
+        }
+
         readonly bool 食い平和
         {
             get
             {
-                if (Melds.Any(_ => !_.順子))
-                {
-                    return false;
-                }
-                if (Pairs.Length > 1)
-                {
-                    return false;
-                }
-                foreach (var it in Sets)
-                {
-                    if (it.刻子)
-                    {
-                        return false;
-                    }
-                }
-
-                foreach (var it in AllUsedTiles)
-                {
-                    if (it.三元牌())
-                    {
-                        return false;
-                    }
-                    if (it == ownWind)
-                    {
-                        return false;
-                    }
-                    if (it == roundWind)
-                    {
-                        return false;
-                    }
-                }
-
-                foreach (var it in Sets)
-                {
-                    if (it.first == newTileInHand
-                        && it.first.Number() != 7)
-                    {
-                        return true;
-                    }
-                    if (it.third == newTileInHand
-                        && it.first.Number() != 1)
-                    {
-                        return true;
-                    }
-                }
-                return false;
+                平和形(out _, out var result);
+                return result;
             }
         }
-
         readonly int 平和
         {
             get
             {
-                if (Melds.Length > 0)
-                {
-                    return 0;
-                }
-                if (!食い平和)
-                {
-                    return 0;
-                }
-                return 1;
+                平和形(out var yaku, out _);
+                return yaku ? 1 : 0;
             }
         }
         readonly int タンヤオ
