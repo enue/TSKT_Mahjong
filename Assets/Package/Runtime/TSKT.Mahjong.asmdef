@@ -1,8 +1,9 @@
 {
     "name": "TKST.Mahjong",
+    "rootNamespace": "",
     "references": [
-        "TSKTContainer",
-        "TSKT.Math"
+        "GUID:f09ae09e65b1a3c42b7b618a95d1df6c",
+        "GUID:25eaf5e4be2791e43b57be474a081820"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
