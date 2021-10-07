@@ -18,8 +18,6 @@ namespace TSKT.Mahjongs
         public readonly Hands.Solution? handSolution;
         public readonly bool canTsumo;
 
-        public readonly Dictionary<Player, CompletedHand> rons = new Dictionary<Player, CompletedHand>();
-
         public readonly bool 嶺上;
         public readonly bool openDoraAfterDiscard;
 
