@@ -12,6 +12,9 @@ namespace TSKT.Mahjongs
         public readonly TileType[] IsolatedTiles => structure.IsolatedTiles;
         public readonly Hands.Structure.Set[] Sets => structure.Sets;
         public readonly TileType[] Pairs => structure.Pairs;
+        /// <summary>
+        /// 副露
+        /// </summary>
         public readonly Meld[] Melds => structure.melds;
         public readonly int RedTile => structure.redTileCount;
 

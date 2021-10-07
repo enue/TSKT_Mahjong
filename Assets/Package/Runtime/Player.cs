@@ -12,6 +12,9 @@ namespace TSKT.Mahjongs
         readonly public Round round;
         readonly public PlayerIndex index;
         readonly public Hand hand;
+        /// <summary>
+        ///  河
+        /// </summary>
         readonly public List<Tile> discardPile = new List<Tile>();
         readonly public List<Tile> discardedTiles = new List<Tile>();
         readonly public TileType wind;

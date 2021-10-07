@@ -156,6 +156,9 @@ namespace TSKT.Mahjongs
         }
     }
 
+    /// <summary>
+    /// 副露
+    /// </summary>
     public readonly struct Meld
     {
         public readonly (Tile tile, PlayerIndex fromPlayerIndex)[] tileFroms;

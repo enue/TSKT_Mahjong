@@ -332,6 +332,9 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
+        /// <summary>
+        /// 大明槓
+        /// </summary>
         public bool CanOpenQuad(out Commands.Kan[] commands)
         {
             var result = new List<Commands.Kan>();
@@ -346,6 +349,9 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
+        /// <summary>
+        /// 大明槓
+        /// </summary>
         public bool CanOpenQuad(Player player, out Commands.Kan command)
         {
             if (player == DiscardPlayer)

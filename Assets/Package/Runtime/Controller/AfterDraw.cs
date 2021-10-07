@@ -276,6 +276,9 @@ namespace TSKT.Mahjongs
                 out result);
         }
 
+        /// <summary>
+        /// 暗槓
+        /// </summary>
         public bool CanDeclareClosedQuad(out Commands.DeclareClosedQuad[] commands)
         {
             var result = new List<Commands.DeclareClosedQuad>();
@@ -291,6 +294,9 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
+        /// <summary>
+        /// 暗槓
+        /// </summary>
         public bool CanDeclareClosedQuad(TileType tile, out Commands.DeclareClosedQuad command)
         {
             // 海底はカンできない
@@ -324,6 +330,9 @@ namespace TSKT.Mahjongs
             return true;
         }
 
+        /// <summary>
+        /// 暗槓
+        /// </summary>
         public BeforeClosedQuad DeclareClosedQuad(TileType tile)
         {
             if (Consumed)
@@ -340,6 +349,9 @@ namespace TSKT.Mahjongs
             return new BeforeClosedQuad(DrawPlayer, tile);
         }
 
+        /// <summary>
+        /// 加槓
+        /// </summary>
         public bool CanDeclareAddedOpenQuad(out Commands.DeclareAddedOpenQuad[] commands)
         {
             var result = new List<Commands.DeclareAddedOpenQuad>();
@@ -354,6 +366,9 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
+        /// <summary>
+        /// 加槓
+        /// </summary>
         public bool CanDeclareAddedOpenQuad(TileType tile, out Commands.DeclareAddedOpenQuad command)
         {
             // 海底はカンできない
@@ -377,6 +392,9 @@ namespace TSKT.Mahjongs
             command = new Commands.DeclareAddedOpenQuad(this, t);
             return true;
         }
+        /// <summary>
+        /// 加槓
+        /// </summary>
         public BeforeAddedOpenQuad DeclareAddedOpenQuad(Tile tile)
         {
             if (Consumed)

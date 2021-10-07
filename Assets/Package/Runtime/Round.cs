@@ -10,9 +10,18 @@ namespace TSKT.Mahjongs
     {
         public readonly Game game;
         public readonly WallTile wallTile;
+        /// <summary>
+        /// 王牌
+        /// </summary>
         public readonly DeadWallTile deadWallTile = new DeadWallTile();
         public readonly Player[] players = new Player[4];
+        /// <summary>
+        /// 場風
+        /// </summary>
         public readonly TileType roundWind;
+        /// <summary>
+        /// 親
+        /// </summary>
         public readonly PlayerIndex dealer;
         public Player Dealer => players[(int)dealer];
         public int CountKan => players.Sum(_ => _.hand.melds.Count(x => x.槓子));
@@ -126,6 +135,9 @@ namespace TSKT.Mahjongs
             return t;
         }
 
+        /// <summary>
+        /// 暗槓
+        /// </summary>
         public AfterDraw ExecuteClosedQuad(Player player, TileType tileType)
         {
             player.hand.BuildClosedQuad(tileType);
@@ -146,6 +158,9 @@ namespace TSKT.Mahjongs
             return new AfterDraw(player, t, 嶺上: true, openDoraAfterDiscard: false);
         }
 
+        /// <summary>
+        /// 加槓
+        /// </summary>
         public AfterDraw ExecuteAddedOpenQuad(Player player, Tile tile)
         {
             var meldIndex = player.hand.melds.FindIndex(_ => _.tileFroms.All(x => x.tile.type == tile.type));
@@ -176,6 +191,9 @@ namespace TSKT.Mahjongs
                 openDoraAfterDiscard: game.rule.明槓槓ドラ == Rules.明槓槓ドラ.打牌後);
         }
 
+        /// <summary>
+        /// 大明槓
+        /// </summary>
         public AfterDraw ExecuteOpenQuad(Player player, Player discardPlayer)
         {
             var discardPile = discardPlayer.discardPile;

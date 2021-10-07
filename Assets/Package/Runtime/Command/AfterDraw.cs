@@ -151,6 +151,9 @@ namespace TSKT.Mahjongs.Commands
         }
     }
 
+    /// <summary>
+    /// 暗槓
+    /// </summary>
     public readonly struct DeclareClosedQuad : ICommand<AfterDraw>
     {
         public readonly AfterDraw Controller { get; }
@@ -171,6 +174,9 @@ namespace TSKT.Mahjongs.Commands
         }
     }
 
+    /// <summary>
+    /// 加槓
+    /// </summary>
     public readonly struct DeclareAddedOpenQuad : ICommand<AfterDraw>
     {
         public readonly AfterDraw Controller { get; }

@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace TSKT.Mahjongs
 {
+    /// <summary>
+    /// 暗槓宣言時。国士無双ロンができる
+    /// </summary>
     public class BeforeClosedQuad : IBeforeQuad
     {
         public Round Round => DeclarePlayer.round;
