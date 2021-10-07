@@ -21,7 +21,7 @@ namespace TSKT.Mahjongs.Commands
             Executor = player;
             this.pair = pair;
         }
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             return new CommandResult(Controller.Pon(Executor, pair));
         }
@@ -41,7 +41,7 @@ namespace TSKT.Mahjongs.Commands
             Executor = player;
             this.塔子 = 塔子;
         }
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             return new CommandResult(Controller.Chi(Executor, 塔子));
         }
@@ -59,7 +59,7 @@ namespace TSKT.Mahjongs.Commands
             Controller = afterDiscard;
             Executor = player;
         }
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             return new CommandResult(Controller.OpenQuad(Executor));
         }

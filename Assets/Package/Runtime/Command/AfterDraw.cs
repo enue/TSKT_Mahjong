@@ -19,11 +19,10 @@ namespace TSKT.Mahjongs.Commands
             Controller = afterDraw;
         }
 
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             var nextController = Controller.九種九牌(out var roundResult);
-            var result = new CommandResult(nextController, roundResult);
-            return result;
+            return new CommandResult(nextController, roundResult);
         }
     }
 
@@ -145,7 +144,7 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             return new CommandResult(Controller.Discard(tile, riichi, openRiichi));
         }
@@ -168,7 +167,7 @@ namespace TSKT.Mahjongs.Commands
             this.tile = tile;
         }
 
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             return new CommandResult(Controller.DeclareClosedQuad(tile));
         }
@@ -191,7 +190,7 @@ namespace TSKT.Mahjongs.Commands
             this.tile = tile;
         }
 
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             return new CommandResult(Controller.DeclareAddedOpenQuad(tile));
         }
@@ -209,7 +208,7 @@ namespace TSKT.Mahjongs.Commands
             Controller = afterDraw;
         }
 
-        readonly public CommandResult TryExecute()
+        readonly public CommandResult Execute()
         {
             var nextController = Controller.Tsumo(out var roundResult, out var completedResults);
             return new CommandResult(nextController, roundResult, completedResults);

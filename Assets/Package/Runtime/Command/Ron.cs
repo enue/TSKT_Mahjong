@@ -19,9 +19,10 @@ namespace TSKT.Mahjongs.Commands
             Controller = controller;
             Executor = player;
         }
-        readonly public CommandResult? TryExecute()
+        readonly public CommandResult Execute()
         {
-            return null;
+            var nextController = Controller.Ron(out var roundResult, out var completedResults, Executor);
+            return new CommandResult(nextController, roundResult, completedResults);
         }
         readonly public CompletedHand RonResult => Controller.PlayerRons[Executor];
     }

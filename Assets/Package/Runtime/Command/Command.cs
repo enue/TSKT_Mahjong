@@ -8,7 +8,7 @@ namespace TSKT.Mahjongs
     public interface ICommand
     {
         Commands.CommandPriority Priority { get; }
-        CommandResult? TryExecute();
+        CommandResult Execute();
         Player Executor { get; }
     }
 
@@ -38,31 +38,31 @@ namespace TSKT.Mahjongs
                 return new CommandResult(nextController, roundResult);
             }
 
-            var ronExecutor = new List<Player>();
             var maxPriority = MaxPriority;
-            foreach (var it in commands.Where(_ => _.Priority == maxPriority))
+            var selectedCommands = commands.Where(_ => _.Priority == maxPriority);
+
+            // ダブロン、トリロンの場合
+            if (maxPriority == Commands.CommandPriority.Ron
+                && selectedCommands.Count() > 1)
             {
-                executedCommands.Add(it);
-                var commandResult = it.TryExecute();
-                if (commandResult != null)
+                var ronExecutor = new List<Player>();
+                foreach (var it in selectedCommands)
                 {
-                    Debug.Assert(ronExecutor.Count == 0);
-                    return commandResult;
+                    executedCommands.Add(it);
+                    ronExecutor.Add(it.Executor);
                 }
 
-                ronExecutor.Add(it.Executor);
-            }
-
-            Debug.Assert(ronExecutor.Count > 0);
-
-            {
                 var nextController = ((IRonableController)origin).Ron(out var roundResult, out var completedResults, ronExecutor.ToArray());
                 return new CommandResult(nextController, roundResult, completedResults);
             }
+
+            var selectedCommand = selectedCommands.First();
+            executedCommands.Add(selectedCommand);
+            return selectedCommand.Execute();
         }
     }
 
-    public class CommandResult
+    public readonly struct CommandResult
     {
         public readonly IController? nextController;
 
@@ -81,6 +81,9 @@ namespace TSKT.Mahjongs
             afterDiscard = nextController;
             this.roundResult = roundResult;
             this.completedResults = completedResults;
+
+            afterDraw = null;
+            beforeQuad = null;
         }
         public CommandResult(AfterDraw? nextController,
             RoundResult? roundResult = null,
@@ -90,6 +93,9 @@ namespace TSKT.Mahjongs
             afterDraw = nextController;
             this.roundResult = roundResult;
             this.completedResults = completedResults;
+
+            afterDiscard = null;
+            beforeQuad = null;
         }
         public CommandResult(IBeforeQuad? nextController,
             RoundResult? roundResult = null,
@@ -100,6 +106,9 @@ namespace TSKT.Mahjongs
 
             this.roundResult = roundResult;
             this.completedResults = completedResults;
+
+            afterDiscard = null;
+            afterDraw = null;
         }
     }
 }
