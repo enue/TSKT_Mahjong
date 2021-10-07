@@ -467,6 +467,46 @@ namespace TSKT.Mahjongs
             throw new System.NotImplementedException();
         }
 
+        public void GetExecutableCommands(
+            out Commands.DeclareClosedQuad[] declareCloseQuads,
+            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
+            out Commands.Discard[] discards,
+            out Commands.Discard[] riichies,
+            out Commands.Discard[] openRiichies,
+            out Commands.Tsumo? tsumo,
+            out Commands.九種九牌? nineTiles)
+        {
+            CanDeclareClosedQuad(out declareCloseQuads);
+            CanDeclareAddedOpenQuad(out declareAddedOpenQuads);
+            CanDiscard(out discards);
+            CanRiichi(out riichies);
+            if (CanOpenRiichi(out var o))
+            {
+                openRiichies = o!;
+            }
+            else
+            {
+                openRiichies = System.Array.Empty<Commands.Discard>();
+            }
+
+            if (CanTsumo(out var t))
+            {
+                tsumo = t;
+            }
+            else
+            {
+                tsumo = null;
+            }
+            if (Can九種九牌(out var n))
+            {
+                nineTiles = n;
+            }
+            else
+            {
+                nineTiles = null;
+            }
+        }
+
         public ICommand[] ExecutableCommands
         {
             get

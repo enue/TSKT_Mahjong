@@ -537,6 +537,18 @@ namespace TSKT.Mahjongs
             return AdvanceTurn(out roundResult);
         }
 
+        public void GetExecutableCommands(
+            out Commands.Ron[] rons,
+            out Commands.Chi[] chies,
+            out Commands.Pon[] pons,
+            out Commands.Kan[] kans)
+        {
+            CanRon(out rons);
+            CanChi(out chies);
+            CanPon(out pons);
+            CanOpenQuad(out kans);
+        }
+
         public ICommand[] ExecutableCommands
         {
             get

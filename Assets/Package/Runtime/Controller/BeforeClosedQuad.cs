@@ -129,6 +129,11 @@ namespace TSKT.Mahjongs
             return BuildQuad();
         }
 
+        public void GetExecutableCommands(out Commands.Ron[] rons)
+        {
+            CanRon(out rons);
+        }
+
         public ICommand[] ExecutableCommands
         {
             get
