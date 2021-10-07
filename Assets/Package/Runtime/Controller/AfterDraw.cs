@@ -462,7 +462,7 @@ namespace TSKT.Mahjongs
             return Round.game.StartRound(initialPlayerTilesByCheat);
         }
 
-        public IController DoDefaultAction(out RoundResult? roundResult)
+        public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
         {
             throw new System.NotImplementedException();
         }

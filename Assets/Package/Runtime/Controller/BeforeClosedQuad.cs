@@ -123,7 +123,7 @@ namespace TSKT.Mahjongs
             return Round.ExecuteClosedQuad(DeclarePlayer, tile);
         }
 
-        public IController DoDefaultAction(out RoundResult? roundResult)
+        public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
         {
             roundResult = null;
             return BuildQuad();

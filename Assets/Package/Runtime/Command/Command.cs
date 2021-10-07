@@ -65,14 +65,39 @@ namespace TSKT.Mahjongs
     public class CommandResult
     {
         public readonly IController? nextController;
+
+        public readonly AfterDiscard? afterDiscard;
+        public readonly AfterDraw? afterDraw;
+        public readonly IBeforeQuad? beforeQuad;
+
         public readonly RoundResult? roundResult;
         public readonly Dictionary<Player, CompletedResult>? completedResults;
 
-        public CommandResult(IController? nextController,
+        public CommandResult(AfterDiscard? nextController,
             RoundResult? roundResult = null,
             Dictionary<Player, CompletedResult>? completedResults = null)
         {
             this.nextController = nextController;
+            afterDiscard = nextController;
+            this.roundResult = roundResult;
+            this.completedResults = completedResults;
+        }
+        public CommandResult(AfterDraw? nextController,
+            RoundResult? roundResult = null,
+            Dictionary<Player, CompletedResult>? completedResults = null)
+        {
+            this.nextController = nextController;
+            afterDraw = nextController;
+            this.roundResult = roundResult;
+            this.completedResults = completedResults;
+        }
+        public CommandResult(IBeforeQuad? nextController,
+            RoundResult? roundResult = null,
+            Dictionary<Player, CompletedResult>? completedResults = null)
+        {
+            this.nextController = nextController;
+            beforeQuad = nextController;
+
             this.roundResult = roundResult;
             this.completedResults = completedResults;
         }

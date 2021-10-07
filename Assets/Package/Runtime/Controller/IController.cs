@@ -11,7 +11,7 @@ namespace TSKT.Mahjongs
         Round Round { get; }
         bool Consumed { get; }
 
-        IController? DoDefaultAction(out RoundResult? roundResult);
+        AfterDraw? DoDefaultAction(out RoundResult? roundResult);
         ICommand[] ExecutableCommands { get; }
         CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands);
         Serializables.Session SerializeSession();
