@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿#nullable enable
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 using TSKT.Mahjongs;
+using TSKT.Mahjongs.Rounds;
 using System.Linq;
-#nullable enable
 
 namespace TSKT.Tests.Mahjongs
 {

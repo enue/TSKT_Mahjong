@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿#nullable enable
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-#nullable enable
+using TSKT.Mahjongs.Rounds;
 
 namespace TSKT.Mahjongs.Serializables
 {
@@ -194,7 +195,7 @@ namespace TSKT.Mahjongs.Serializables
         public bool 一発;
         public bool furitenByOtherPlayers;
 
-        public Player(Mahjongs.Player source)
+        public Player(Rounds.Player source)
         {
             index = source.index;
             discardedTiles = source.discardedTiles.Select(_ => _.index).ToArray();
@@ -209,9 +210,9 @@ namespace TSKT.Mahjongs.Serializables
             一発 = source.一発;
         }
 
-        readonly public Mahjongs.Player Deserialzie(Mahjongs.Round round)
+        readonly public Rounds.Player Deserialzie(Mahjongs.Round round)
         {
-            return Mahjongs.Player.FromSerializable(this, round);
+            return Rounds.Player.FromSerializable(this, round);
         }
     }
 
@@ -227,7 +228,7 @@ namespace TSKT.Mahjongs.Serializables
             melds = source.melds.Select(_ => _.ToSerializable()).ToArray();
         }
 
-        readonly public Mahjongs.Hand Deserialzie(Mahjongs.Player owner)
+        readonly public Mahjongs.Hand Deserialzie(Rounds.Player owner)
         {
             return Mahjongs.Hand.FromSerializable(this, owner);
         }

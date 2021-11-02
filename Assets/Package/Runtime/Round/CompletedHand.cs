@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿#nullable enable
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-#nullable enable
 
-namespace TSKT.Mahjongs
+namespace TSKT.Mahjongs.Rounds
 {
     public readonly struct CompletedHand
     {

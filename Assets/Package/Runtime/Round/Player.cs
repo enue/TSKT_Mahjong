@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 #nullable enable
 
-namespace TSKT.Mahjongs
+namespace TSKT.Mahjongs.Rounds
 {
     public class Player
     {

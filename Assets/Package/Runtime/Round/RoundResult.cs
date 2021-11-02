@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿#nullable enable
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#nullable enable
 
-namespace TSKT.Mahjongs
+namespace TSKT.Mahjongs.Rounds
 {
     public class RoundResult
     {
