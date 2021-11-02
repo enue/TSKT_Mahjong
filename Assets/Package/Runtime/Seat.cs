@@ -5,15 +5,13 @@ using UnityEngine;
 
 namespace TSKT.Mahjongs
 {
-    public class ScoreOwner
+    public class Seat
     {
-        public readonly Game game;
         public int score;
 
-        public ScoreOwner(Game game)
+        public Seat(int initialScore)
         {
-            this.game = game;
-            score = game.rule.initialScore;
+            score = initialScore;
         }
     }
 }

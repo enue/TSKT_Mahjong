@@ -27,7 +27,7 @@ namespace TSKT.Mahjongs
 
             sortedPlayerIndices = System.Enum.GetValues(typeof(PlayerIndex))
                 .Cast<PlayerIndex>()
-                .OrderByDescending(_ => game.scoreOwners[(int)_].score)
+                .OrderByDescending(_ => game.seats[(int)_].score)
                 .ThenByDescending(_ => orderedPositionFromFirstOrder[RelativePlayerUtil.GetByPlayerIndex(game.firstDealer, _)])
                 .ToArray();
 
@@ -40,7 +40,7 @@ namespace TSKT.Mahjongs
                 var playerIndex = sortedPlayerIndices[i];
                 if (playerIndex != topPlayerIndex)
                 {
-                    var score = game.scoreOwners[(int)playerIndex].score;
+                    var score = game.seats[(int)playerIndex].score;
                     var p = Mathf.RoundToInt((score - kaesi) / 1000f);
                     rewards[playerIndex] = p + umas[i];
                     rewards[topPlayerIndex] -= p;

@@ -16,7 +16,7 @@ namespace TSKT.Mahjongs
         public int 本場 { get; private set; }
         public int 連荘 { get; private set; }
         public readonly PlayerIndex firstDealer;
-        public readonly ScoreOwner[] scoreOwners;
+        public readonly Seat[] seats;
         public readonly RuleSetting rule;
 
         public PlayerIndex Dealer => (PlayerIndex)(((int)firstDealer + DisplayRoundCount - 1) % 4);
@@ -31,10 +31,10 @@ namespace TSKT.Mahjongs
         {
             this.rule = rule;
             this.firstDealer = firstDealer;
-            scoreOwners = new ScoreOwner[4];
-            for (int i = 0; i < scoreOwners.Length; ++i)
+            seats = new Seat[4];
+            for (int i = 0; i < seats.Length; ++i)
             {
-                scoreOwners[i] = new ScoreOwner(this);
+                seats[i] = new Seat(rule.initialScore);
             }
         }
 
@@ -46,7 +46,7 @@ namespace TSKT.Mahjongs
             result.RoundWindCount = source.roundWindCount;
             for (int i = 0; i < source.scores.Length; ++i)
             {
-                result.scoreOwners[i].score = source.scores[i];
+                result.seats[i].score = source.scores[i];
             }
             result.本場 = source.本場;
             result.連荘 = source.連荘;
@@ -145,7 +145,7 @@ namespace TSKT.Mahjongs
             {
                 if (rule.end.endWhenScoreUnderZero)
                 {
-                    if (scoreOwners.Select(_ => _.score).Min() < 0)
+                    if (seats.Select(_ => _.score).Min() < 0)
                     {
                         return true;
                     }
@@ -161,7 +161,7 @@ namespace TSKT.Mahjongs
                 if (rule.end.suddenDeathInExtraRound
                     || (連荘 == 0 && 本場 == 0 && DisplayRoundCount == 1))
                 {
-                    var topScore = scoreOwners.Max(_ => _.score);
+                    var topScore = seats.Max(_ => _.score);
                     if (topScore >= rule.end.extraRoundScoreThreshold)
                     {
                         return true;

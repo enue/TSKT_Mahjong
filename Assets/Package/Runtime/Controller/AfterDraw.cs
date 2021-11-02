@@ -106,7 +106,7 @@ namespace TSKT.Mahjongs
             }
             if (Round.game.rule.end.endWhenScoreUnderZero)
             {
-                if (DrawPlayer.scoreOwner.score < 1000)
+                if (DrawPlayer.Score < 1000)
                 {
                     command = default;
                     return false;

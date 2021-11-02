@@ -41,7 +41,7 @@ namespace TSKT.Mahjongs
             for (int i = 0; i < players.Length; ++i)
             {
                 var wind = winds[(i - (int)dealer + winds.Length) % winds.Length];
-                var player = new Player(game.scoreOwners[i], this, (PlayerIndex)i, wind);
+                var player = new Player(this, (PlayerIndex)i, wind);
                 players[i] = player;
             }
 

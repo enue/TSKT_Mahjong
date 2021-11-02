@@ -140,7 +140,7 @@ namespace TSKT.Mahjongs.Serializables
             riichiScore = source.riichiScore;
             roundWindCount = source.RoundWindCount;
             rule = source.rule;
-            scores = source.scoreOwners.Select(_ => _.score).ToArray();
+            scores = source.seats.Select(_ => _.score).ToArray();
             本場 = source.本場;
             連荘 = source.連荘;
         }

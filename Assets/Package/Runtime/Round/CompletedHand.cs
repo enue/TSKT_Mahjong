@@ -1348,14 +1348,14 @@ namespace TSKT.Mahjongs.Rounds
             var scoreDiffs = new Dictionary<Player, int>();
             foreach (var it in round.players)
             {
-                scoreDiffs[it] = -it.scoreOwner.score;
+                scoreDiffs[it] = -it.Score;
             }
 
             foreach (var it in playerResults)
             {
                 foreach (var pair in it.Value.scoreDiffs)
                 {
-                    pair.Key.scoreOwner.score += pair.Value;
+                    pair.Key.Score += pair.Value;
                 }
             }
 
@@ -1363,7 +1363,7 @@ namespace TSKT.Mahjongs.Rounds
             {
                 foreach (var it in completedHands.Keys)
                 {
-                    it.scoreOwner.score += game.riichiScore;
+                    it.Score += game.riichiScore;
                 }
             }
             else
@@ -1373,13 +1373,13 @@ namespace TSKT.Mahjongs.Rounds
                 var getter = completedHands.Keys
                     .OrderBy(_ => (_.index - ronTarget.index + _.round.players.Length) % _.round.players.Length)
                     .First();
-                getter.scoreOwner.score += game.riichiScore;
+                getter.Score += game.riichiScore;
             }
             game.riichiScore = 0;
 
             foreach (var it in round.players)
             {
-                scoreDiffs[it] += it.scoreOwner.score;
+                scoreDiffs[it] += it.Score;
             }
 
             if (completedHands.ContainsKey(round.Dealer))

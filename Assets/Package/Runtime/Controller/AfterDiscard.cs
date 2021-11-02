@@ -263,7 +263,7 @@ namespace TSKT.Mahjongs
 
             foreach (var it in scoreDiffs)
             {
-                it.Key.scoreOwner.score += it.Value;
+                it.Key.Score += it.Value;
             }
 
             if (states.TryGetValue(Round.Dealer, out var dealerState))

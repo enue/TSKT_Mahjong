@@ -8,7 +8,6 @@ namespace TSKT.Mahjongs.Rounds
 {
     public class Player
     {
-        readonly public ScoreOwner scoreOwner;
         readonly public Round round;
         readonly public PlayerIndex index;
         readonly public Hand hand;
@@ -38,8 +37,8 @@ namespace TSKT.Mahjongs.Rounds
                     {
                         RiichiIndexInDiscardPile = discardPile.Count;
                         RiichiIndexInTotalDiscardTiles = round.totalDiscardedTiles.Count;
-                        scoreOwner.score -= 1000;
-                        scoreOwner.game.riichiScore += 1000;
+                        Score -= 1000;
+                        round.game.riichiScore += 1000;
                     }
                 }
                 else
@@ -51,9 +50,14 @@ namespace TSKT.Mahjongs.Rounds
 
         public bool IsDealer => round.dealer == index;
 
-        public Player(ScoreOwner scoreOwner, Round round, PlayerIndex index, TileType wind)
+        public int Score
         {
-            this.scoreOwner = scoreOwner;
+            get => round.game.seats[(int)index].score;
+            set => round.game.seats[(int)index].score = value;
+        }
+
+        public Player(Round round, PlayerIndex index, TileType wind)
+        {
             this.round = round;
             this.index = index;
             this.wind = wind;
@@ -75,8 +79,6 @@ namespace TSKT.Mahjongs.Rounds
             wind = source.wind;
             FuritenByOtherPlayers = source.furitenByOtherPlayers;
             一発 = source.一発;
-
-            scoreOwner = round.game.scoreOwners[(int)source.index];
         }
 
         public static Player FromSerializable(in Serializables.Player source, Round round)
