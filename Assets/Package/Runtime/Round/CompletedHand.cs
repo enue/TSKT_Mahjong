@@ -63,7 +63,7 @@ namespace TSKT.Mahjongs.Rounds
 
             if (面前 && 自摸)
             {
-                Yakus.Add(役.面前自摸, 1);
+                Yakus.Add(役.門前清自摸和, 1);
             }
 
             if (doubleRiichi)

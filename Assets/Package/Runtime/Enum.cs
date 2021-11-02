@@ -7,7 +7,7 @@ namespace TSKT.Mahjongs
 {
     public enum 役
     {
-        面前自摸,
+        門前清自摸和,
         立直,
         一発,
         タンヤオ,
