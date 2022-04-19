@@ -406,22 +406,22 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanPon(Player player, out Commands.Pon[]? commands)
+        public bool CanPon(Player player, out Commands.Pon[] commands)
         {
             if (player == DiscardPlayer)
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Pon>();
                 return false;
             }
             // 河底はポンできない
             if (Round.wallTile.tiles.Count == 0)
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Pon>();
                 return false;
             }
             if (!player.CanPon(DiscardedTile.type, out var combinations))
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Pon>();
                 return false;
             }
             commands = combinations.Select(_ => new Commands.Pon(player, this, _)).ToArray();
@@ -473,29 +473,29 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanChi(Player player, out Commands.Chi[]? commands)
+        public bool CanChi(Player player, out Commands.Chi[] commands)
         {
             if (player == DiscardPlayer)
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Chi>();
                 return false;
             }
 
             // 河底はチーできない
             if (Round.wallTile.tiles.Count == 0)
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Chi>();
                 return false;
             }
             if (player.GetRelativePlayer(DiscardPlayer) != RelativePlayer.上家)
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Chi>();
                 return false;
             }
 
             if (!player.CanChi(DiscardedTile, out var combinations))
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Chi>();
                 return false;
             }
 
@@ -538,10 +538,11 @@ namespace TSKT.Mahjongs
             return AdvanceTurn(out roundResult);
         }
         public void GetExecutableCommands(
-            out Commands.Ron[] rons,
+            Player player,
+            out Commands.Ron? ron,
             out Commands.Chi[] chies,
             out Commands.Pon[] pons,
-            out Commands.Kan[] kans,
+            out Commands.Kan? kan,
             out Commands.DeclareClosedQuad[] declareCloseQuads,
             out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
             out Commands.Discard[] discards,
@@ -550,7 +551,24 @@ namespace TSKT.Mahjongs
             out Commands.Tsumo? tsumo,
             out Commands.九種九牌? nineTiles)
         {
-            GetExecutableCommands(out rons, out chies, out pons, out kans);
+            if (CanRon(player, out var _ron))
+            {
+                ron = _ron;
+            }
+            else
+            {
+                ron = null;
+            }
+            CanChi(player, out chies);
+            CanPon(player, out pons);
+            if (CanOpenQuad(player, out var _kan))
+            {
+                kan = _kan;
+            }
+            else
+            {
+                kan = null;
+            }
             declareCloseQuads = System.Array.Empty<Commands.DeclareClosedQuad>();
             declareAddedOpenQuads = System.Array.Empty<Commands.DeclareAddedOpenQuad>();
             discards = System.Array.Empty<Commands.Discard>();
@@ -558,18 +576,6 @@ namespace TSKT.Mahjongs
             openRiichies = System.Array.Empty<Commands.Discard>();
             tsumo = null;
             nineTiles = null;
-        }
-
-        public void GetExecutableCommands(
-            out Commands.Ron[] rons,
-            out Commands.Chi[] chies,
-            out Commands.Pon[] pons,
-            out Commands.Kan[] kans)
-        {
-            CanRon(out rons);
-            CanChi(out chies);
-            CanPon(out pons);
-            CanOpenQuad(out kans);
         }
 
         public ICommand[] ExecutableCommands

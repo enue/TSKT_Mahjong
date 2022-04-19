@@ -15,10 +15,11 @@ namespace TSKT.Mahjongs
         AfterDraw? DoDefaultAction(out RoundResult? roundResult);
         ICommand[] ExecutableCommands { get; }
         void GetExecutableCommands(
-            out Commands.Ron[] rons,
+            Player player,
+            out Commands.Ron? rons,
             out Commands.Chi[] chies,
             out Commands.Pon[] pons,
-            out Commands.Kan[] kans,
+            out Commands.Kan? kans,
             out Commands.DeclareClosedQuad[] declareCloseQuads,
             out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
             out Commands.Discard[] discards,

@@ -144,10 +144,11 @@ namespace TSKT.Mahjongs
         }
 
         public void GetExecutableCommands(
-            out Commands.Ron[] rons,
+            Player player,
+            out Commands.Ron? ron,
             out Commands.Chi[] chies,
             out Commands.Pon[] pons,
-            out Commands.Kan[] kans,
+            out Commands.Kan? kan,
             out Commands.DeclareClosedQuad[] declareCloseQuads,
             out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
             out Commands.Discard[] discards,
@@ -156,10 +157,17 @@ namespace TSKT.Mahjongs
             out Commands.Tsumo? tsumo,
             out Commands.九種九牌? nineTiles)
         {
-            CanRon(out rons);
+            if (CanRon(player, out var _ron))
+            {
+                ron = _ron;
+            }
+            else
+            {
+                ron = null;
+            }
             chies = System.Array.Empty<Commands.Chi>();
             pons = System.Array.Empty<Commands.Pon>();
-            kans = System.Array.Empty<Commands.Kan>();
+            kan = null;
             declareCloseQuads = System.Array.Empty<Commands.DeclareClosedQuad>();
             declareAddedOpenQuads = System.Array.Empty<Commands.DeclareAddedOpenQuad>();
             discards = System.Array.Empty<Commands.Discard>();

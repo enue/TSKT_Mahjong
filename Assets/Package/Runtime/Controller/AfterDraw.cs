@@ -139,11 +139,11 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public bool CanOpenRiichi(out Commands.Discard[]? commands)
+        public bool CanOpenRiichi(out Commands.Discard[] commands)
         {
             if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
             {
-                commands = null;
+                commands = System.Array.Empty<Commands.Discard>();
                 return false;
             }
 
@@ -469,10 +469,11 @@ namespace TSKT.Mahjongs
         }
 
         public void GetExecutableCommands(
-            out Commands.Ron[] rons,
+            Player player,
+            out Commands.Ron? ron,
             out Commands.Chi[] chies,
             out Commands.Pon[] pons,
-            out Commands.Kan[] kans,
+            out Commands.Kan? kan,
             out Commands.DeclareClosedQuad[] declareCloseQuads,
             out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
             out Commands.Discard[] discards,
@@ -481,52 +482,47 @@ namespace TSKT.Mahjongs
             out Commands.Tsumo? tsumo,
             out Commands.九種九牌? nineTiles)
         {
-            GetExecutableCommands(out declareCloseQuads, out declareAddedOpenQuads, out discards, out riichies, out openRiichies, out tsumo, out nineTiles);
-            rons = System.Array.Empty<Commands.Ron>();
+            ron = null;
             chies = System.Array.Empty<Commands.Chi>();
             pons = System.Array.Empty<Commands.Pon>();
-            kans = System.Array.Empty<Commands.Kan>();
-        }
+            kan = null;
 
-        public void GetExecutableCommands(
-            out Commands.DeclareClosedQuad[] declareCloseQuads,
-            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
-            out Commands.Discard[] discards,
-            out Commands.Discard[] riichies,
-            out Commands.Discard[] openRiichies,
-            out Commands.Tsumo? tsumo,
-            out Commands.九種九牌? nineTiles)
-        {
-            CanDeclareClosedQuad(out declareCloseQuads);
-            CanDeclareAddedOpenQuad(out declareAddedOpenQuads);
-            CanDiscard(out discards);
-            CanRiichi(out riichies);
-            if (CanOpenRiichi(out var o))
+            if (player == DrawPlayer)
             {
-                openRiichies = o!;
+                CanDeclareClosedQuad(out declareCloseQuads);
+                CanDeclareAddedOpenQuad(out declareAddedOpenQuads);
+                CanDiscard(out discards);
+                CanRiichi(out riichies);
+                CanOpenRiichi(out openRiichies);
+                if (CanTsumo(out var t))
+                {
+                    tsumo = t;
+                }
+                else
+                {
+                    tsumo = null;
+                }
+                if (Can九種九牌(out var n))
+                {
+                    nineTiles = n;
+                }
+                else
+                {
+                    nineTiles = null;
+                }
             }
             else
             {
+                declareCloseQuads = System.Array.Empty<Commands.DeclareClosedQuad>();
+                declareAddedOpenQuads = System.Array.Empty<Commands.DeclareAddedOpenQuad>();
+                discards = System.Array.Empty<Commands.Discard>();
+                riichies = System.Array.Empty<Commands.Discard>();
                 openRiichies = System.Array.Empty<Commands.Discard>();
-            }
-
-            if (CanTsumo(out var t))
-            {
-                tsumo = t;
-            }
-            else
-            {
                 tsumo = null;
-            }
-            if (Can九種九牌(out var n))
-            {
-                nineTiles = n;
-            }
-            else
-            {
                 nineTiles = null;
             }
         }
+
 
         public ICommand[] ExecutableCommands
         {

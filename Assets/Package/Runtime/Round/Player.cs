@@ -352,5 +352,7 @@ namespace TSKT.Mahjongs.Rounds
                 return false;
             }
         }
+        public Dictionary<TileType, int> HiddenTileCounts => round.HiddenTileCountFrom(this);
+        public int HiddenTileCount(TileType t) => round.HiddenTileCountFrom(this, t);
     }
 }
