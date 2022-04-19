@@ -14,6 +14,19 @@ namespace TSKT.Mahjongs
 
         AfterDraw? DoDefaultAction(out RoundResult? roundResult);
         ICommand[] ExecutableCommands { get; }
+        void GetExecutableCommands(
+            out Commands.Ron[] rons,
+            out Commands.Chi[] chies,
+            out Commands.Pon[] pons,
+            out Commands.Kan[] kans,
+            out Commands.DeclareClosedQuad[] declareCloseQuads,
+            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
+            out Commands.Discard[] discards,
+            out Commands.Discard[] riichies,
+            out Commands.Discard[] openRiichies,
+            out Commands.Tsumo? tsumo,
+            out Commands.九種九牌? nineTiles);
+
         CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands);
         Serializables.Session SerializeSession();
     }

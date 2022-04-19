@@ -537,6 +537,28 @@ namespace TSKT.Mahjongs
         {
             return AdvanceTurn(out roundResult);
         }
+        public void GetExecutableCommands(
+            out Commands.Ron[] rons,
+            out Commands.Chi[] chies,
+            out Commands.Pon[] pons,
+            out Commands.Kan[] kans,
+            out Commands.DeclareClosedQuad[] declareCloseQuads,
+            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
+            out Commands.Discard[] discards,
+            out Commands.Discard[] riichies,
+            out Commands.Discard[] openRiichies,
+            out Commands.Tsumo? tsumo,
+            out Commands.九種九牌? nineTiles)
+        {
+            GetExecutableCommands(out rons, out chies, out pons, out kans);
+            declareCloseQuads = System.Array.Empty<Commands.DeclareClosedQuad>();
+            declareAddedOpenQuads = System.Array.Empty<Commands.DeclareAddedOpenQuad>();
+            discards = System.Array.Empty<Commands.Discard>();
+            riichies = System.Array.Empty<Commands.Discard>();
+            openRiichies = System.Array.Empty<Commands.Discard>();
+            tsumo = null;
+            nineTiles = null;
+        }
 
         public void GetExecutableCommands(
             out Commands.Ron[] rons,
