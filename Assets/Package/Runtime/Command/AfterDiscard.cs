@@ -15,6 +15,7 @@ namespace TSKT.Mahjongs.Commands
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor { get; }
         public readonly (Tile, Tile) pair;
+        public readonly Tile TargetTile => Controller.DiscardedTile;
 
         public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) pair)
         {
@@ -34,6 +35,7 @@ namespace TSKT.Mahjongs.Commands
         public static CommandPriority GetPriority => CommandPriority.Chi;
         public readonly CommandPriority Priority => GetPriority;
         public readonly (Tile left, Tile right) 塔子;
+        public readonly Tile TargetTile => Controller.DiscardedTile;
         public readonly Player Executor { get; }
 
         public Chi(Player player, AfterDiscard afterDiscard, (Tile left, Tile right) 塔子)
