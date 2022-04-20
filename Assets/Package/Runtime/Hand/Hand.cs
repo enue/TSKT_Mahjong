@@ -155,6 +155,7 @@ namespace TSKT.Mahjongs
 
             return result.ToArray();
         }
+        public bool Discarding => tiles.Count % 3 == 2;
     }
 
     /// <summary>
