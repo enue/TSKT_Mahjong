@@ -297,6 +297,56 @@ namespace TSKT.Mahjongs
                     throw new System.ArgumentException(tile.ToString());
             }
         }
+        public static string GetEmoji(this TileType tile)
+        {
+            return tile switch
+            {
+                TileType.M1 => "🀇",
+                TileType.M2 => "🀈",
+                TileType.M3 => "🀉",
+                TileType.M4 => "🀊",
+                TileType.M5 => "🀋",
+                TileType.M6 => "🀌",
+                TileType.M7 => "🀍",
+                TileType.M8 => "🀎",
+                TileType.M9 => "🀏",
+                TileType.P1 => "🀙",
+                TileType.P2 => "🀚",
+                TileType.P3 => "🀛",
+                TileType.P4 => "🀜",
+                TileType.P5 => "🀝",
+                TileType.P6 => "🀞",
+                TileType.P7 => "🀟",
+                TileType.P8 => "🀠",
+                TileType.P9 => "🀡",
+                TileType.S1 => "🀐",
+                TileType.S2 => "🀑",
+                TileType.S3 => "🀒",
+                TileType.S4 => "🀓",
+                TileType.S5 => "🀔",
+                TileType.S6 => "🀕",
+                TileType.S7 => "🀖",
+                TileType.S8 => "🀗",
+                TileType.S9 => "🀘",
+                TileType.東 => "🀀",
+                TileType.南 => "🀁",
+                TileType.西 => "🀂",
+                TileType.北 => "🀃",
+                TileType.白 => "🀆",
+                TileType.發 => "🀅",
+                TileType.中 => "🀄",
+                TileType.春 => "🀦",
+                TileType.夏 => "🀧",
+                TileType.秋 => "🀨",
+                TileType.冬 => "🀩",
+
+                TileType.梅 => "🀢",
+                TileType.蘭 => "🀣",
+                TileType.菊 => "🀥",
+                TileType.竹 => "🀤",
+                _ => throw new System.ArgumentException(tile.ToString())
+            };
+        }
     }
 
 }
