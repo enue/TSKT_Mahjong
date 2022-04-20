@@ -82,6 +82,12 @@ namespace TSKT.Tests.Mahjongs
             });
             for (int i = 0; i < 1000; ++i)
             {
+                foreach (var player in controller.Round.players)
+                {
+                    var set = controller.GetExecutableCommandsBy(player);
+                    var pons = set.DistinctPons;
+                    var chies = set.DistinctChies;
+                }
                 var commands = controller.ExecutableCommands;
                 CommandResult result;
                 if (commands.Length > 0)
