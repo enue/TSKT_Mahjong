@@ -537,20 +537,9 @@ namespace TSKT.Mahjongs
         {
             return AdvanceTurn(out roundResult);
         }
-        public void GetExecutableCommands(
-            Player player,
-            out Commands.Ron? ron,
-            out Commands.Chi[] chies,
-            out Commands.Pon[] pons,
-            out Commands.Kan? kan,
-            out Commands.DeclareClosedQuad[] declareCloseQuads,
-            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
-            out Commands.Discard[] discards,
-            out Commands.Discard[] riichies,
-            out Commands.Discard[] openRiichies,
-            out Commands.Tsumo? tsumo,
-            out Commands.九種九牌? nineTiles)
+        public CommandSet GetExecutableCommandsBy(Player player)
         {
+            Commands.Ron? ron;
             if (CanRon(player, out var _ron))
             {
                 ron = _ron;
@@ -559,8 +548,9 @@ namespace TSKT.Mahjongs
             {
                 ron = null;
             }
-            CanChi(player, out chies);
-            CanPon(player, out pons);
+            CanChi(player, out var chies);
+            CanPon(player, out var pons);
+            Commands.Kan? kan;
             if (CanOpenQuad(player, out var _kan))
             {
                 kan = _kan;
@@ -569,13 +559,8 @@ namespace TSKT.Mahjongs
             {
                 kan = null;
             }
-            declareCloseQuads = System.Array.Empty<Commands.DeclareClosedQuad>();
-            declareAddedOpenQuads = System.Array.Empty<Commands.DeclareAddedOpenQuad>();
-            discards = System.Array.Empty<Commands.Discard>();
-            riichies = System.Array.Empty<Commands.Discard>();
-            openRiichies = System.Array.Empty<Commands.Discard>();
-            tsumo = null;
-            nineTiles = null;
+
+            return new CommandSet(ron: ron, chies: chies, pons: pons, kan: kan, null, null, null, null, null, null, null);
         }
 
         public ICommand[] ExecutableCommands

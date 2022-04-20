@@ -468,32 +468,16 @@ namespace TSKT.Mahjongs
             throw new System.NotImplementedException();
         }
 
-        public void GetExecutableCommands(
-            Player player,
-            out Commands.Ron? ron,
-            out Commands.Chi[] chies,
-            out Commands.Pon[] pons,
-            out Commands.Kan? kan,
-            out Commands.DeclareClosedQuad[] declareCloseQuads,
-            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
-            out Commands.Discard[] discards,
-            out Commands.Discard[] riichies,
-            out Commands.Discard[] openRiichies,
-            out Commands.Tsumo? tsumo,
-            out Commands.九種九牌? nineTiles)
+        public CommandSet GetExecutableCommandsBy(Player player)
         {
-            ron = null;
-            chies = System.Array.Empty<Commands.Chi>();
-            pons = System.Array.Empty<Commands.Pon>();
-            kan = null;
-
             if (player == DrawPlayer)
             {
-                CanDeclareClosedQuad(out declareCloseQuads);
-                CanDeclareAddedOpenQuad(out declareAddedOpenQuads);
-                CanDiscard(out discards);
-                CanRiichi(out riichies);
-                CanOpenRiichi(out openRiichies);
+                CanDeclareClosedQuad(out var declareCloseQuads);
+                CanDeclareAddedOpenQuad(out var declareAddedOpenQuads);
+                CanDiscard(out var discards);
+                CanRiichi(out var riichies);
+                CanOpenRiichi(out var openRiichies);
+                Commands.Tsumo? tsumo;
                 if (CanTsumo(out var t))
                 {
                     tsumo = t;
@@ -502,6 +486,7 @@ namespace TSKT.Mahjongs
                 {
                     tsumo = null;
                 }
+                Commands.九種九牌? nineTiles;
                 if (Can九種九牌(out var n))
                 {
                     nineTiles = n;
@@ -510,16 +495,13 @@ namespace TSKT.Mahjongs
                 {
                     nineTiles = null;
                 }
+                return new CommandSet(null, null, null, null, addedOpenQuads: declareAddedOpenQuads, closeQuads: declareCloseQuads,
+                    discards: discards, riichies: riichies, openRiichies: openRiichies,
+                    tsumo: tsumo, nineTiles: nineTiles);
             }
             else
             {
-                declareCloseQuads = System.Array.Empty<Commands.DeclareClosedQuad>();
-                declareAddedOpenQuads = System.Array.Empty<Commands.DeclareAddedOpenQuad>();
-                discards = System.Array.Empty<Commands.Discard>();
-                riichies = System.Array.Empty<Commands.Discard>();
-                openRiichies = System.Array.Empty<Commands.Discard>();
-                tsumo = null;
-                nineTiles = null;
+                return default;
             }
         }
 

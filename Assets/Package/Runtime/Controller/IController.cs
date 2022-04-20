@@ -14,19 +14,7 @@ namespace TSKT.Mahjongs
 
         AfterDraw? DoDefaultAction(out RoundResult? roundResult);
         ICommand[] ExecutableCommands { get; }
-        void GetExecutableCommands(
-            Player player,
-            out Commands.Ron? rons,
-            out Commands.Chi[] chies,
-            out Commands.Pon[] pons,
-            out Commands.Kan? kans,
-            out Commands.DeclareClosedQuad[] declareCloseQuads,
-            out Commands.DeclareAddedOpenQuad[] declareAddedOpenQuads,
-            out Commands.Discard[] discards,
-            out Commands.Discard[] riichies,
-            out Commands.Discard[] openRiichies,
-            out Commands.Tsumo? tsumo,
-            out Commands.九種九牌? nineTiles);
+        CommandSet GetExecutableCommandsBy(Player player);
 
         CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands);
         Serializables.Session SerializeSession();
@@ -44,5 +32,146 @@ namespace TSKT.Mahjongs
     {
         Player DeclarePlayer { get; }
         AfterDraw BuildQuad();
+    }
+
+    public readonly struct CommandSet
+    {
+        public readonly Commands.Ron? Ron { get; }
+        readonly Commands.Chi[]? chies;
+        public readonly Commands.Chi[] Chies => chies ?? System.Array.Empty<Commands.Chi>();
+        readonly Commands.Pon[]? pons;
+        public readonly Commands.Pon[] Pons => pons ?? System.Array.Empty<Commands.Pon>();
+        public readonly Commands.Kan? Kan { get; }
+        readonly Commands.DeclareClosedQuad[]? closeQuads;
+        public readonly Commands.DeclareClosedQuad[] CloseQuads => closeQuads ?? System.Array.Empty<Commands.DeclareClosedQuad>();
+        readonly Commands.DeclareAddedOpenQuad[]? addedOpenQuads;
+        public readonly Commands.DeclareAddedOpenQuad[] AddedOpenQuads => addedOpenQuads ?? System.Array.Empty<Commands.DeclareAddedOpenQuad>();
+        readonly Commands.Discard[]? discards;
+        public readonly Commands.Discard[] Discards => discards ?? System.Array.Empty<Commands.Discard>();
+        readonly Commands.Discard[]? riichies;
+        public readonly Commands.Discard[] Riichies => riichies ?? System.Array.Empty<Commands.Discard>();
+        readonly Commands.Discard[]? openRiichies;
+        public readonly Commands.Discard[] OpenRiichies => openRiichies ?? System.Array.Empty<Commands.Discard>();
+        public readonly Commands.Tsumo? Tsumo { get; }
+        public readonly Commands.九種九牌? NineTiles { get; }
+
+        public CommandSet(
+            Commands.Ron? ron,
+            Commands.Chi[]? chies,
+            Commands.Pon[]? pons,
+            Commands.Kan? kan,
+            Commands.DeclareClosedQuad[]? closeQuads,
+            Commands.DeclareAddedOpenQuad[]? addedOpenQuads,
+            Commands.Discard[]? discards,
+            Commands.Discard[]? riichies,
+            Commands.Discard[]? openRiichies,
+            Commands.Tsumo? tsumo,
+            Commands.九種九牌? nineTiles)
+        {
+            Ron = ron;
+            this.chies = chies;
+            this.pons = pons;
+            Kan = kan;
+            this.closeQuads = closeQuads;
+            this.addedOpenQuads = addedOpenQuads;
+            this.discards = discards;
+            this.riichies = riichies;
+            this.openRiichies = openRiichies;
+            Tsumo = tsumo;
+            NineTiles = nineTiles;
+        }
+
+        public bool Empty
+        {
+            get
+            {
+                return !Ron.HasValue
+                    && Chies.Length == 0
+                    && Pons.Length == 0
+                    && !Kan.HasValue
+                    && CloseQuads.Length == 0
+                    && AddedOpenQuads.Length == 0
+                    && Discards.Length == 0
+                    && Riichies.Length == 0
+                    && OpenRiichies.Length == 0
+                    && !Tsumo.HasValue
+                    && !NineTiles.HasValue;
+            }
+        }
+
+        public Commands.CommandPriority MaxPriority
+        {
+            get
+            {
+                var result = Commands.CommandPriority.Lowest;
+                if (Ron.HasValue && result < Ron.Value.Priority)
+                {
+                    result = Ron.Value.Priority;
+                }
+                foreach(var it in Chies)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                foreach (var it in Pons)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                if (Kan.HasValue && result < Kan.Value.Priority)
+                {
+                    result = Kan.Value.Priority;
+                }
+                foreach (var it in CloseQuads)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                foreach (var it in AddedOpenQuads)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                foreach (var it in Discards)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                foreach (var it in Riichies)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                foreach (var it in OpenRiichies)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                if (Tsumo.HasValue && result < Tsumo.Value.Priority)
+                {
+                    result = Tsumo.Value.Priority;
+                }
+                if (NineTiles.HasValue && result < NineTiles.Value.Priority)
+                {
+                    result = NineTiles.Value.Priority;
+                }
+
+                return result;
+            }
+        }
     }
 }
