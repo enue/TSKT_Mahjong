@@ -29,6 +29,7 @@ namespace TSKT.Mahjongs.Commands
         }
 
         public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, pair.Item1, pair.Item2);
+        public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (pair.Item1, Executor.index), (pair.Item2, Executor.index));
         public int RedTileCount
         {
             get
@@ -71,6 +72,8 @@ namespace TSKT.Mahjongs.Commands
             return new CommandResult(Controller.Chi(Executor, 塔子));
         }
         public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, 塔子.left, 塔子.right);
+        public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (塔子.left, Executor.index), (塔子.right, Executor.index));
+
         public int RedTileCount
         {
             get
