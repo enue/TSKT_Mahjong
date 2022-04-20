@@ -84,7 +84,8 @@ namespace TSKT.Tests.Mahjongs
             {
                 foreach (var player in controller.Round.players)
                 {
-                    var (set, setDiscarding) = controller.GetExecutableCommandsBy(player);
+                    var set = controller.GetExecutableClaimingCommandsBy(player);
+                    var discarding = controller.GetExecutableDiscardingCommandsBy(player);
                     var pons = set.DistinctPons;
                     var chies = set.DistinctChies;
                 }

@@ -143,11 +143,15 @@ namespace TSKT.Mahjongs
             CanRon(out rons);
         }
 
-        public (ClaimingCommandSet claimingSet, DiscardingCommandSet discardingSet) GetExecutableCommandsBy(Player player)
+        public DiscardingCommandSet GetExecutableDiscardingCommandsBy(Player player)
+        {
+            return default;
+        }
+        public ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player)
         {
             if (CanRon(player, out var ron))
             {
-                return (new ClaimingCommandSet(ron: ron, null, null, null), default);
+                return new ClaimingCommandSet(ron: ron, null, null, null);
             }
             else
             {

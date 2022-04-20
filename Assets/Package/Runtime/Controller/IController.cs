@@ -14,7 +14,8 @@ namespace TSKT.Mahjongs
 
         AfterDraw? DoDefaultAction(out RoundResult? roundResult);
         ICommand[] ExecutableCommands { get; }
-        (ClaimingCommandSet claimingSet, DiscardingCommandSet discardingSet) GetExecutableCommandsBy(Player player);
+        ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player);
+        DiscardingCommandSet GetExecutableDiscardingCommandsBy(Player player);
 
         CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands);
         Serializables.Session SerializeSession();

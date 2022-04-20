@@ -537,7 +537,7 @@ namespace TSKT.Mahjongs
         {
             return AdvanceTurn(out roundResult);
         }
-        public (ClaimingCommandSet claimingSet, DiscardingCommandSet discardingSet) GetExecutableCommandsBy(Player player)
+        public ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player)
         {
             Commands.Ron? ron;
             if (CanRon(player, out var _ron))
@@ -560,7 +560,11 @@ namespace TSKT.Mahjongs
                 kan = null;
             }
 
-            return (new ClaimingCommandSet(ron: ron, chies: chies, pons: pons, kan: kan), default);
+            return new ClaimingCommandSet(ron: ron, chies: chies, pons: pons, kan: kan);
+        }
+        public DiscardingCommandSet GetExecutableDiscardingCommandsBy(Player player)
+        {
+            return default;
         }
 
         public ICommand[] ExecutableCommands
