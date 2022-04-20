@@ -495,7 +495,7 @@ namespace TSKT.Mahjongs
                 {
                     nineTiles = null;
                 }
-                return new CommandSet(null, null, null, null, addedOpenQuads: declareAddedOpenQuads, closeQuads: declareCloseQuads,
+                return new CommandSet(null, null, null, null, addedOpenQuads: declareAddedOpenQuads, closedQuads: declareCloseQuads,
                     discards: discards, riichies: riichies, openRiichies: openRiichies,
                     tsumo: tsumo, nineTiles: nineTiles);
             }

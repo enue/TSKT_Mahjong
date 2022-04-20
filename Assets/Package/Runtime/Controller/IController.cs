@@ -42,8 +42,8 @@ namespace TSKT.Mahjongs
         readonly Commands.Pon[]? pons;
         public readonly Commands.Pon[] Pons => pons ?? System.Array.Empty<Commands.Pon>();
         public readonly Commands.Kan? Kan { get; }
-        readonly Commands.DeclareClosedQuad[]? closeQuads;
-        public readonly Commands.DeclareClosedQuad[] CloseQuads => closeQuads ?? System.Array.Empty<Commands.DeclareClosedQuad>();
+        readonly Commands.DeclareClosedQuad[]? closedQuads;
+        public readonly Commands.DeclareClosedQuad[] ClosedQuads => closedQuads ?? System.Array.Empty<Commands.DeclareClosedQuad>();
         readonly Commands.DeclareAddedOpenQuad[]? addedOpenQuads;
         public readonly Commands.DeclareAddedOpenQuad[] AddedOpenQuads => addedOpenQuads ?? System.Array.Empty<Commands.DeclareAddedOpenQuad>();
         readonly Commands.Discard[]? discards;
@@ -60,7 +60,7 @@ namespace TSKT.Mahjongs
             Commands.Chi[]? chies,
             Commands.Pon[]? pons,
             Commands.Kan? kan,
-            Commands.DeclareClosedQuad[]? closeQuads,
+            Commands.DeclareClosedQuad[]? closedQuads,
             Commands.DeclareAddedOpenQuad[]? addedOpenQuads,
             Commands.Discard[]? discards,
             Commands.Discard[]? riichies,
@@ -72,7 +72,7 @@ namespace TSKT.Mahjongs
             this.chies = chies;
             this.pons = pons;
             Kan = kan;
-            this.closeQuads = closeQuads;
+            this.closedQuads = closedQuads;
             this.addedOpenQuads = addedOpenQuads;
             this.discards = discards;
             this.riichies = riichies;
@@ -89,7 +89,7 @@ namespace TSKT.Mahjongs
                     && Chies.Length == 0
                     && Pons.Length == 0
                     && !Kan.HasValue
-                    && CloseQuads.Length == 0
+                    && ClosedQuads.Length == 0
                     && AddedOpenQuads.Length == 0
                     && Discards.Length == 0
                     && Riichies.Length == 0
@@ -126,7 +126,7 @@ namespace TSKT.Mahjongs
                 {
                     result = Kan.Value.Priority;
                 }
-                foreach (var it in CloseQuads)
+                foreach (var it in ClosedQuads)
                 {
                     if (result < it.Priority)
                     {
