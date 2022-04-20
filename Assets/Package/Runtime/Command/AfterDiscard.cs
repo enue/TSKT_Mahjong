@@ -27,6 +27,8 @@ namespace TSKT.Mahjongs.Commands
         {
             return new CommandResult(Controller.Pon(Executor, pair));
         }
+
+        public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, pair.Item1, pair.Item2);
     }
 
     public readonly struct Chi : ICommand<AfterDiscard>
@@ -48,6 +50,7 @@ namespace TSKT.Mahjongs.Commands
         {
             return new CommandResult(Controller.Chi(Executor, 塔子));
         }
+        public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, 塔子.left, 塔子.right);
     }
 
     public readonly struct Kan : ICommand<AfterDiscard>

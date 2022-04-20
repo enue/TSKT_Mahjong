@@ -271,4 +271,33 @@ namespace TSKT.Mahjongs
             return false;
         }
     }
+    public static class MeldUtil
+    {
+        public static (TileType, bool, TileType, bool, TileType, bool) GetKey(Tile a, Tile b, Tile c)
+        {
+            var k = new[] { a, b, c };
+            System.Array.Sort(k, static (left, right) =>
+            {
+                if (left.type > right.type)
+                {
+                    return 1;
+                }
+                if (left.type < right.type)
+                {
+                    return -1;
+                }
+                if (left.red && !right.red)
+                {
+                    return 1;
+                }
+                if (!left.red && right.red)
+                {
+                    return -1;
+                }
+                return 0;
+            });
+            return (k[0].type, k[0].red, k[1].type, k[1].red, k[2].type, k[2].red);
+        }
+
+    }
 }

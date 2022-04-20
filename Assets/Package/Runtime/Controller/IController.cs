@@ -81,6 +81,31 @@ namespace TSKT.Mahjongs
             NineTiles = nineTiles;
         }
 
+        public Commands.Pon[] DistinctPons
+        {
+            get
+            {
+                var dict = new Dictionary<(TileType, bool, TileType, bool, TileType, bool), Commands.Pon>();
+                foreach (var it in Pons)
+                {
+                    dict[it.Key] = it;
+                }
+                return dict.Values.ToArray();
+            }
+        }
+
+        public Commands.Chi[] DistinctChies
+        {
+            get
+            {
+                var dict = new Dictionary<(TileType, bool, TileType, bool, TileType, bool), Commands.Chi>();
+                foreach (var it in Chies)
+                {
+                    dict[it.Key] = it;
+                }
+                return dict.Values.ToArray();
+            }
+        }
         public bool Empty
         {
             get
@@ -108,7 +133,7 @@ namespace TSKT.Mahjongs
                 {
                     result = Ron.Value.Priority;
                 }
-                foreach(var it in Chies)
+                foreach (var it in Chies)
                 {
                     if (result < it.Priority)
                     {
