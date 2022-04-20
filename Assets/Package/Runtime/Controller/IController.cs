@@ -80,6 +80,19 @@ namespace TSKT.Mahjongs
                     && !NineTiles.HasValue;
             }
         }
+        public bool ShouldDiscardLastDrawnTile
+        {
+            get
+            {
+                return Discards.Length == 1
+                    && AddedOpenQuads.Length == 0
+                    && ClosedQuads.Length == 0
+                    && !NineTiles.HasValue
+                    && !Tsumo.HasValue
+                    && Riichies.Length == 0
+                    && OpenRiichies.Length == 0;
+            }
+        }
 
         public Commands.CommandPriority MaxPriority
         {
