@@ -14,7 +14,7 @@ namespace TSKT.Mahjongs
 
         AfterDraw? DoDefaultAction(out RoundResult? roundResult);
         ICommand[] ExecutableCommands { get; }
-        CommandSet GetExecutableCommandsBy(Player player);
+        (ClaimingCommandSet claimingSet, DiscardingCommandSet discardingSet) GetExecutableCommandsBy(Player player);
 
         CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands);
         Serializables.Session SerializeSession();
@@ -34,14 +34,8 @@ namespace TSKT.Mahjongs
         AfterDraw BuildQuad();
     }
 
-    public readonly struct CommandSet
+    public readonly struct DiscardingCommandSet
     {
-        public readonly Commands.Ron? Ron { get; }
-        readonly Commands.Chi[]? chies;
-        public readonly Commands.Chi[] Chies => chies ?? System.Array.Empty<Commands.Chi>();
-        readonly Commands.Pon[]? pons;
-        public readonly Commands.Pon[] Pons => pons ?? System.Array.Empty<Commands.Pon>();
-        public readonly Commands.Kan? Kan { get; }
         readonly Commands.DeclareClosedQuad[]? closedQuads;
         public readonly Commands.DeclareClosedQuad[] ClosedQuads => closedQuads ?? System.Array.Empty<Commands.DeclareClosedQuad>();
         readonly Commands.DeclareAddedOpenQuad[]? addedOpenQuads;
@@ -55,11 +49,7 @@ namespace TSKT.Mahjongs
         public readonly Commands.Tsumo? Tsumo { get; }
         public readonly Commands.九種九牌? NineTiles { get; }
 
-        public CommandSet(
-            Commands.Ron? ron,
-            Commands.Chi[]? chies,
-            Commands.Pon[]? pons,
-            Commands.Kan? kan,
+        public DiscardingCommandSet(
             Commands.DeclareClosedQuad[]? closedQuads,
             Commands.DeclareAddedOpenQuad[]? addedOpenQuads,
             Commands.Discard[]? discards,
@@ -68,10 +58,6 @@ namespace TSKT.Mahjongs
             Commands.Tsumo? tsumo,
             Commands.九種九牌? nineTiles)
         {
-            Ron = ron;
-            this.chies = chies;
-            this.pons = pons;
-            Kan = kan;
             this.closedQuads = closedQuads;
             this.addedOpenQuads = addedOpenQuads;
             this.discards = discards;
@@ -81,40 +67,11 @@ namespace TSKT.Mahjongs
             NineTiles = nineTiles;
         }
 
-        public Commands.Pon[] DistinctPons
-        {
-            get
-            {
-                var dict = new Dictionary<(TileType, bool, TileType, bool, TileType, bool), Commands.Pon>();
-                foreach (var it in Pons)
-                {
-                    dict[it.Key] = it;
-                }
-                return dict.Values.ToArray();
-            }
-        }
-
-        public Commands.Chi[] DistinctChies
-        {
-            get
-            {
-                var dict = new Dictionary<(TileType, bool, TileType, bool, TileType, bool), Commands.Chi>();
-                foreach (var it in Chies)
-                {
-                    dict[it.Key] = it;
-                }
-                return dict.Values.ToArray();
-            }
-        }
         public bool Empty
         {
             get
             {
-                return !Ron.HasValue
-                    && Chies.Length == 0
-                    && Pons.Length == 0
-                    && !Kan.HasValue
-                    && ClosedQuads.Length == 0
+                return ClosedQuads.Length == 0
                     && AddedOpenQuads.Length == 0
                     && Discards.Length == 0
                     && Riichies.Length == 0
@@ -129,28 +86,6 @@ namespace TSKT.Mahjongs
             get
             {
                 var result = Commands.CommandPriority.Lowest;
-                if (Ron.HasValue && result < Ron.Value.Priority)
-                {
-                    result = Ron.Value.Priority;
-                }
-                foreach (var it in Chies)
-                {
-                    if (result < it.Priority)
-                    {
-                        result = it.Priority;
-                    }
-                }
-                foreach (var it in Pons)
-                {
-                    if (result < it.Priority)
-                    {
-                        result = it.Priority;
-                    }
-                }
-                if (Kan.HasValue && result < Kan.Value.Priority)
-                {
-                    result = Kan.Value.Priority;
-                }
                 foreach (var it in ClosedQuads)
                 {
                     if (result < it.Priority)
@@ -195,6 +130,93 @@ namespace TSKT.Mahjongs
                     result = NineTiles.Value.Priority;
                 }
 
+                return result;
+            }
+        }
+    }
+    public readonly struct ClaimingCommandSet
+    {
+        public readonly Commands.Ron? Ron { get; }
+        readonly Commands.Chi[]? chies;
+        public readonly Commands.Chi[] Chies => chies ?? System.Array.Empty<Commands.Chi>();
+        readonly Commands.Pon[]? pons;
+        public readonly Commands.Pon[] Pons => pons ?? System.Array.Empty<Commands.Pon>();
+        public readonly Commands.Kan? Kan { get; }
+        public ClaimingCommandSet(
+            Commands.Ron? ron,
+            Commands.Chi[]? chies,
+            Commands.Pon[]? pons,
+            Commands.Kan? kan)
+        {
+            Ron = ron;
+            this.chies = chies;
+            this.pons = pons;
+            Kan = kan;
+        }
+
+        public Commands.Pon[] DistinctPons
+        {
+            get
+            {
+                var dict = new Dictionary<(TileType, bool, TileType, bool, TileType, bool), Commands.Pon>();
+                foreach (var it in Pons)
+                {
+                    dict[it.Key] = it;
+                }
+                return dict.Values.ToArray();
+            }
+        }
+
+        public Commands.Chi[] DistinctChies
+        {
+            get
+            {
+                var dict = new Dictionary<(TileType, bool, TileType, bool, TileType, bool), Commands.Chi>();
+                foreach (var it in Chies)
+                {
+                    dict[it.Key] = it;
+                }
+                return dict.Values.ToArray();
+            }
+        }
+        public bool Empty
+        {
+            get
+            {
+                return !Ron.HasValue
+                    && Chies.Length == 0
+                    && Pons.Length == 0
+                    && !Kan.HasValue;
+            }
+        }
+
+        public Commands.CommandPriority MaxPriority
+        {
+            get
+            {
+                var result = Commands.CommandPriority.Lowest;
+                if (Ron.HasValue && result < Ron.Value.Priority)
+                {
+                    result = Ron.Value.Priority;
+                }
+                foreach (var it in Chies)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                foreach (var it in Pons)
+                {
+                    if (result < it.Priority)
+                    {
+                        result = it.Priority;
+                    }
+                }
+                if (Kan.HasValue && result < Kan.Value.Priority)
+                {
+                    result = Kan.Value.Priority;
+                }
                 return result;
             }
         }

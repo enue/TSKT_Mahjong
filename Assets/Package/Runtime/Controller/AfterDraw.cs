@@ -468,7 +468,7 @@ namespace TSKT.Mahjongs
             throw new System.NotImplementedException();
         }
 
-        public CommandSet GetExecutableCommandsBy(Player player)
+        public (ClaimingCommandSet claimingSet, DiscardingCommandSet discardingSet) GetExecutableCommandsBy(Player player)
         {
             if (player == DrawPlayer)
             {
@@ -495,9 +495,10 @@ namespace TSKT.Mahjongs
                 {
                     nineTiles = null;
                 }
-                return new CommandSet(null, null, null, null, addedOpenQuads: declareAddedOpenQuads, closedQuads: declareCloseQuads,
-                    discards: discards, riichies: riichies, openRiichies: openRiichies,
-                    tsumo: tsumo, nineTiles: nineTiles);
+                return (default,
+                    new DiscardingCommandSet(addedOpenQuads: declareAddedOpenQuads, closedQuads: declareCloseQuads,
+                        discards: discards, riichies: riichies, openRiichies: openRiichies,
+                        tsumo: tsumo, nineTiles: nineTiles));
             }
             else
             {

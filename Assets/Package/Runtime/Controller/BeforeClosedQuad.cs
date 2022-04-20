@@ -131,7 +131,7 @@ namespace TSKT.Mahjongs
             return BuildQuad();
         }
 
-        public CommandSet GetExecutableCommandsBy(Player player)
+        public (ClaimingCommandSet claimingSet, DiscardingCommandSet discardingSet) GetExecutableCommandsBy(Player player)
         {
             Commands.Ron? ron;
             if (CanRon(player, out var _ron))
@@ -142,7 +142,7 @@ namespace TSKT.Mahjongs
             {
                 ron = null;
             }
-            return new CommandSet(ron: ron, null, null, null, null, null, null, null, null, null, null);
+            return (new ClaimingCommandSet(ron: ron, null, null, null), default);
         }
 
         public ICommand[] ExecutableCommands
