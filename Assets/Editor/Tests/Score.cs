@@ -56,12 +56,12 @@ namespace TSKT.Tests.Mahjongs
                         槍槓: false,
                         handCap: round.game.rule.handCap);
                     var player = round.players[(int)round.dealer + 1];
-                    CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } }, out var roundResult, out var results);
-                    var result = results[player];
+                    var r = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } });
+                    var result = r.completedResults[player];
                     Debug.Log(result.tsumoPenalty!.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
                     Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
-                    Assert.AreEqual(0, roundResult.scoreDiffs!.Values.Sum());
+                    Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
                 }
             }
 
@@ -116,14 +116,12 @@ namespace TSKT.Tests.Mahjongs
                 handCap: round.game.rule.handCap);
 
             var player = round.Dealer;
-            CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
-                out var roundResult,
-                out var results);
-            var result = results[player];
+            var r = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } });
+            var result = r.completedResults[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.dealerTsumoPenalty);
-            Assert.AreEqual(0, roundResult.scoreDiffs!.Values.Sum());
+            Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
         }
 
         [Test]
@@ -193,14 +191,12 @@ namespace TSKT.Tests.Mahjongs
                 handCap: round.game.rule.handCap);
 
             var player = round.players[1];
-            CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } },
-                out var roundResult,
-                out var results);
-            var result = results[player];
+            var r = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } });
+            var result = r.completedResults[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.ronPenalty);
-            Assert.AreEqual(0, roundResult.scoreDiffs!.Values.Sum());
+            Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
         }
         [Test]
         public void HandWithMeld()

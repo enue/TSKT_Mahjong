@@ -92,10 +92,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw? Ron(
-            out RoundResult roundResult,
-            out Dictionary<Player, CompletedResult> result,
-            params Player[] players)
+        public CommandResult Ron(params Player[] players)
         {
             if (Consumed)
             {
@@ -103,9 +100,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]),
-                out roundResult,
-                out result);
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]));
         }
 
         public AfterDraw BuildQuad()
@@ -115,19 +110,6 @@ namespace TSKT.Mahjongs
                 throw new System.Exception("consumed controller");
             }
             Consumed = true;
-
-            foreach (var player in Round.players)
-            {
-                if (player == DeclarePlayer)
-                {
-                    continue;
-                }
-                player.TryAttachFuritenByOtherPlayers(tile);
-            }
-            foreach (var it in Round.players)
-            {
-                it.一発 = false;
-            }
 
             return Round.ExecuteAddedOpenQuad(DeclarePlayer, tile);
         }

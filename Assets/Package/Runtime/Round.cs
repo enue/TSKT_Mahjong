@@ -141,6 +141,12 @@ namespace TSKT.Mahjongs
         /// </summary>
         public AfterDraw ExecuteClosedQuad(Player player, TileType tileType)
         {
+            // 国士無双の槍槓見逃しでフリテンになるが、どのみち上がれないので無視する
+            foreach (var it in players)
+            {
+                it.一発 = false;
+            }
+
             player.hand.BuildClosedQuad(tileType);
 
             var t = DrawFromDeadWallTile(player);
@@ -164,6 +170,19 @@ namespace TSKT.Mahjongs
         /// </summary>
         public AfterDraw ExecuteAddedOpenQuad(Player player, Tile tile)
         {
+            foreach (var it in players)
+            {
+                if (it == player)
+                {
+                    continue;
+                }
+                it.TryAttachFuritenByOtherPlayers(tile);
+            }
+            foreach (var it in players)
+            {
+                it.一発 = false;
+            }
+
             var meldIndex = player.hand.melds.FindIndex(_ => _.tileFroms.All(x => x.tile.type == tile.type));
             var tiles = player.hand.melds[meldIndex].tileFroms
                 .Append((tile, player.index))
@@ -197,6 +216,10 @@ namespace TSKT.Mahjongs
         /// </summary>
         public AfterDraw ExecuteOpenQuad(Player player, Player discardPlayer)
         {
+            foreach (var it in players)
+            {
+                it.一発 = false;
+            }
             var discardPile = discardPlayer.discardPile;
             var discardTile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);

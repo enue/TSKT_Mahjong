@@ -25,7 +25,7 @@ namespace TSKT.Mahjongs.Commands
         }
         readonly public CommandResult Execute()
         {
-            return new CommandResult(Controller.Pon(Executor, pair));
+            return Controller.Pon(Executor, pair);
         }
 
         public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, pair.Item1, pair.Item2);
@@ -69,7 +69,7 @@ namespace TSKT.Mahjongs.Commands
         }
         readonly public CommandResult Execute()
         {
-            return new CommandResult(Controller.Chi(Executor, 塔子));
+            return Controller.Chi(Executor, 塔子);
         }
         public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, 塔子.left, 塔子.right);
         public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (塔子.left, Executor.index), (塔子.right, Executor.index));
@@ -110,7 +110,7 @@ namespace TSKT.Mahjongs.Commands
         }
         readonly public CommandResult Execute()
         {
-            return new CommandResult(Controller.OpenQuad(Executor));
+            return Controller.OpenQuad(Executor);
         }
     }
 }

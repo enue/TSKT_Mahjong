@@ -254,9 +254,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw? Tsumo(
-            out RoundResult roundResult,
-            out Dictionary<Player, CompletedResult> result)
+        public CommandResult Tsumo()
         {
             if (Consumed)
             {
@@ -270,11 +268,7 @@ namespace TSKT.Mahjongs
                 Round.deadWallTile.OpenDora();
             }
             var completedHand = CompletedHand;
-
-            return CompletedHand.Execute(
-                new Dictionary<Player, CompletedHand>() { { DrawPlayer, completedHand } },
-                out roundResult,
-                out result);
+            return CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { DrawPlayer, completedHand } });
         }
 
         /// <summary>
@@ -439,7 +433,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw? 九種九牌(out RoundResult roundResult)
+        public CommandResult 九種九牌()
         {
             if (Consumed)
             {
@@ -448,8 +442,8 @@ namespace TSKT.Mahjongs
             Consumed = true;
 
             var result = Round.game.AdvanceRoundBy途中流局(out var gameResult);
-            roundResult = new RoundResult(gameResult);
-            return result;
+            var roundResult = new RoundResult(gameResult);
+            return new CommandResult(result, roundResult);
         }
 
         public AfterDraw ResetRound(params TileType[]?[]? initialPlayerTilesByCheat)

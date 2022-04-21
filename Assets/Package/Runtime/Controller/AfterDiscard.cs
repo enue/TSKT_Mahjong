@@ -100,25 +100,6 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public AfterDraw? AdvanceTurn(out RoundResult? roundResult)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            TryAttachFuriten();
-
-            if (CanRoundContinue)
-            {
-                var playerIndex = ((int)DiscardPlayerIndex + 1) % Round.players.Length;
-                roundResult = null;
-                return Round.players[playerIndex].Draw();
-            }
-
-            return FinishRound(out roundResult);
-        }
 
         bool ShouldSuspendRound
         {
@@ -187,19 +168,30 @@ namespace TSKT.Mahjongs
             }
         }
 
-        AfterDraw? FinishRound(out RoundResult roundResult)
+        public AfterDraw? AdvanceTurn(out RoundResult? roundResult)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
+
+            TryAttachFuriten();
+
+            if (CanRoundContinue)
+            {
+                var playerIndex = ((int)DiscardPlayerIndex + 1) % Round.players.Length;
+                roundResult = null;
+                return Round.players[playerIndex].Draw();
+            }
+
             if (ShouldSuspendRound)
             {
                 var result = Round.game.AdvanceRoundBy途中流局(out var gameResult);
                 roundResult = new RoundResult(gameResult);
                 return result;
             }
-            return FinishRoundAsExhausiveDraw(out roundResult);
-        }
 
-        AfterDraw? FinishRoundAsExhausiveDraw(out RoundResult roundResult)
-        {
             var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
             var states = new Dictionary<Player, ExhausiveDrawType>();
 
@@ -317,10 +309,7 @@ namespace TSKT.Mahjongs
             return false;
         }
 
-        public AfterDraw? Ron(
-            out RoundResult roundResult,
-            out Dictionary<Player, CompletedResult> result,
-            params Player[] players)
+        public CommandResult Ron(params Player[] players)
         {
             if (Consumed)
             {
@@ -328,9 +317,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
 
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]),
-                out roundResult,
-                out result);
+            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]));
         }
 
         /// <summary>
@@ -375,7 +362,7 @@ namespace TSKT.Mahjongs
             command = new Commands.Kan(player, this);
             return true;
         }
-        public AfterDraw OpenQuad(Player player)
+        public CommandResult OpenQuad(Player player)
         {
             if (Consumed)
             {
@@ -384,12 +371,7 @@ namespace TSKT.Mahjongs
             Consumed = true;
 
             TryAttachFuriten();
-            foreach (var it in Round.players)
-            {
-                it.一発 = false;
-            }
-
-            return Round.ExecuteOpenQuad(player, DiscardPlayer);
+            return new CommandResult(Round.ExecuteOpenQuad(player, DiscardPlayer));
         }
 
         public bool CanPon(out Commands.Pon[] commands)
@@ -428,7 +410,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw Pon(Player player, (Tile, Tile) 対子)
+        public CommandResult Pon(Player player, (Tile, Tile) 対子)
         {
             if (Consumed)
             {
@@ -456,7 +438,7 @@ namespace TSKT.Mahjongs
             player.hand.melds.Add(meld);
 
             player.OnTurnStart();
-            return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
+            return new CommandResult(new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false));
         }
 
         public bool CanChi(out Commands.Chi[] commands)
@@ -502,7 +484,7 @@ namespace TSKT.Mahjongs
             commands = combinations.Select(_ => new Commands.Chi(player, this, _)).ToArray();
             return true;
         }
-        public AfterDraw Chi(Player player, (Tile, Tile) 塔子)
+        public CommandResult Chi(Player player, (Tile, Tile) 塔子)
         {
             if (Consumed)
             {
@@ -530,7 +512,8 @@ namespace TSKT.Mahjongs
             player.hand.melds.Add(meld);
 
             player.OnTurnStart();
-            return new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false);
+
+            return new CommandResult(new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false));
         }
 
         public AfterDraw? DoDefaultAction(out RoundResult? roundResult)

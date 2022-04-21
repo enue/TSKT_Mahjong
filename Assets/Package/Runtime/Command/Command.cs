@@ -53,8 +53,7 @@ namespace TSKT.Mahjongs
                     ronExecutor.Add(it.Executor);
                 }
 
-                var nextController = ((IRonableController)origin).Ron(out var roundResult, out var completedResults, ronExecutor.ToArray());
-                return new CommandResult(nextController, roundResult, completedResults);
+                return ((IRonableController)origin).Ron(ronExecutor.ToArray());
             }
 
             var selectedCommand = selectedCommands.First();

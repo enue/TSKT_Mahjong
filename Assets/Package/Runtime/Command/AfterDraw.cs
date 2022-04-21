@@ -22,8 +22,7 @@ namespace TSKT.Mahjongs.Commands
 
         readonly public CommandResult Execute()
         {
-            var nextController = Controller.九種九牌(out var roundResult);
-            return new CommandResult(nextController, roundResult);
+            return Controller.九種九牌();
         }
     }
 
@@ -211,8 +210,7 @@ namespace TSKT.Mahjongs.Commands
 
         readonly public CommandResult Execute()
         {
-            var nextController = Controller.Tsumo(out var roundResult, out var completedResults);
-            return new CommandResult(nextController, roundResult, completedResults);
+            return Controller.Tsumo();
         }
     }
 }

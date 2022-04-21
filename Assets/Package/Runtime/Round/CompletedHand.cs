@@ -1327,9 +1327,7 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        static public AfterDraw? Execute(Dictionary<Player, CompletedHand> completedHands,
-            out RoundResult roundResult,
-            out Dictionary<Player, CompletedResult> playerResults)
+        static public CommandResult Execute(Dictionary<Player, CompletedHand> completedHands)
         {
             var round = completedHands.First().Key.round;
             var game = round.game;
@@ -1337,62 +1335,64 @@ namespace TSKT.Mahjongs.Rounds
             if (completedHands.Count == 3
                 && game.rule.tripleRon == Rules.TripleRon.流局)
             {
-                playerResults = new Dictionary<Player, CompletedResult>();
+                var playerResults = new Dictionary<Player, CompletedResult>();
                 var result = game.AdvanceRoundBy子上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult, scoreDiffs: round.players.ToDictionary(_ => _, _ => 0));
-                return result;
-            }
-
-            playerResults = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
-
-            var scoreDiffs = new Dictionary<Player, int>();
-            foreach (var it in round.players)
-            {
-                scoreDiffs[it] = -it.Score;
-            }
-
-            foreach (var it in playerResults)
-            {
-                foreach (var pair in it.Value.scoreDiffs)
-                {
-                    pair.Key.Score += pair.Value;
-                }
-            }
-
-            if (completedHands.Count == 1)
-            {
-                foreach (var it in completedHands.Keys)
-                {
-                    it.Score += game.riichiScore;
-                }
+                var roundResult = new RoundResult(gameResult, scoreDiffs: round.players.ToDictionary(_ => _, _ => 0));
+                return new CommandResult(result, roundResult, playerResults);
             }
             else
             {
-                // ダブロンのリーチ棒回収 : ロンされたプレイヤーから順番が近いほうをがリーチ棒を回収する
-                var ronTarget = completedHands.First().Value.ronTarget!;
-                var getter = completedHands.Keys
-                    .OrderBy(_ => (_.index - ronTarget.index + _.round.players.Length) % _.round.players.Length)
-                    .First();
-                getter.Score += game.riichiScore;
-            }
-            game.riichiScore = 0;
+                var playerResults = completedHands.ToDictionary(_ => _.Key, _ => _.Value.BuildResult(_.Key));
 
-            foreach (var it in round.players)
-            {
-                scoreDiffs[it] += it.Score;
-            }
+                var scoreDiffs = new Dictionary<Player, int>();
+                foreach (var it in round.players)
+                {
+                    scoreDiffs[it] = -it.Score;
+                }
 
-            if (completedHands.ContainsKey(round.Dealer))
-            {
-                var result = game.AdvanceRoundBy親上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult, scoreDiffs);
-                return result;
-            }
-            else
-            {
-                var result = game.AdvanceRoundBy子上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult, scoreDiffs);
-                return result;
+                foreach (var it in playerResults)
+                {
+                    foreach (var pair in it.Value.scoreDiffs)
+                    {
+                        pair.Key.Score += pair.Value;
+                    }
+                }
+
+                if (completedHands.Count == 1)
+                {
+                    foreach (var it in completedHands.Keys)
+                    {
+                        it.Score += game.riichiScore;
+                    }
+                }
+                else
+                {
+                    // ダブロンのリーチ棒回収 : ロンされたプレイヤーから順番が近いほうをがリーチ棒を回収する
+                    var ronTarget = completedHands.First().Value.ronTarget!;
+                    var getter = completedHands.Keys
+                        .OrderBy(_ => (_.index - ronTarget.index + _.round.players.Length) % _.round.players.Length)
+                        .First();
+                    getter.Score += game.riichiScore;
+                }
+                game.riichiScore = 0;
+
+                foreach (var it in round.players)
+                {
+                    scoreDiffs[it] += it.Score;
+                }
+
+                if (completedHands.ContainsKey(round.Dealer))
+                {
+                    var result = game.AdvanceRoundBy親上がり(out var gameResult);
+                    var roundResult = new RoundResult(gameResult, scoreDiffs);
+                    return new CommandResult(result, roundResult, playerResults);
+                }
+                else
+                {
+                    var result = game.AdvanceRoundBy子上がり(out var gameResult);
+                    var roundResult = new RoundResult(gameResult, scoreDiffs);
+                    return new CommandResult(result, roundResult, playerResults);
+                }
             }
         }
     }
