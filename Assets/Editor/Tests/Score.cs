@@ -56,7 +56,7 @@ namespace TSKT.Tests.Mahjongs
                         槍槓: false,
                         handCap: round.game.rule.handCap);
                     var player = round.players[(int)round.dealer + 1];
-                    var r = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } });
+                    var r = CompletedHand.Execute((player, completed));
                     var result = r.completedResults[player];
                     Debug.Log(result.tsumoPenalty!.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
@@ -116,7 +116,7 @@ namespace TSKT.Tests.Mahjongs
                 handCap: round.game.rule.handCap);
 
             var player = round.Dealer;
-            var r = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } });
+            var r = CompletedHand.Execute((player, completed));
             var result = r.completedResults[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
@@ -191,7 +191,7 @@ namespace TSKT.Tests.Mahjongs
                 handCap: round.game.rule.handCap);
 
             var player = round.players[1];
-            var r = CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { player, completed } });
+            var r = CompletedHand.Execute((player, completed));
             var result = r.completedResults[player];
             Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);

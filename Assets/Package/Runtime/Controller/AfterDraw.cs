@@ -10,10 +10,9 @@ namespace TSKT.Mahjongs
     public class AfterDraw : IController
     {
         public Round Round => DrawPlayer.round;
+        public bool Consumed { get; private set; }
         public PlayerIndex DrawPlayerIndex => DrawPlayer.index;
         public Player DrawPlayer { get; }
-
-        public bool Consumed { get; private set; }
 
         public readonly Tile? newTileInHand;
         public readonly Hands.Solution? handSolution;
@@ -46,7 +45,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        CompletedHand CompletedHand
+        public CompletedHand CompletedHand
         {
             get
             {
@@ -83,7 +82,7 @@ namespace TSKT.Mahjongs
             return new Serializables.Session(this);
         }
 
-        public bool CanRiichi(out Commands.Discard[] commands)
+        bool CanRiichi(out Commands.Discard[] commands)
         {
             var result = new List<Commands.Discard>();
             foreach (var it in DrawPlayer.hand.tiles)
@@ -97,7 +96,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanRiichi(Tile tile, out Commands.Discard command)
+        bool CanRiichi(Tile tile, out Commands.Discard command)
         {
             if (DrawPlayer.Riichi)
             {
@@ -139,7 +138,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public bool CanOpenRiichi(out Commands.Discard[] commands)
+        bool CanOpenRiichi(out Commands.Discard[] commands)
         {
             if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
             {
@@ -159,7 +158,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanOpenRiichi(Tile tile, out Commands.Discard command)
+        bool CanOpenRiichi(Tile tile, out Commands.Discard command)
         {
             if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
             {
@@ -176,7 +175,7 @@ namespace TSKT.Mahjongs
             return false;
         }
 
-        public bool CanDiscard(out Commands.Discard[] commands)
+        bool CanDiscard(out Commands.Discard[] commands)
         {
             var result = new List<Commands.Discard>();
             foreach (var it in DrawPlayer.hand.tiles)
@@ -190,7 +189,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanDiscard(Tile tile, out Commands.Discard command)
+        bool CanDiscard(Tile tile, out Commands.Discard command)
         {
             if (tile == newTileInHand)
             {
@@ -226,23 +225,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDiscard Discard(Tile tile, bool riichi, bool openRiichi = false)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            DrawPlayer.Discard(tile, riichi, openRiichi);
-            if (openDoraAfterDiscard)
-            {
-                DrawPlayer.round.deadWallTile.OpenDora();
-            }
-            return new AfterDiscard(DrawPlayer);
-        }
-
-        public bool CanTsumo(out Commands.Tsumo command)
+        bool CanTsumo(out Commands.Tsumo command)
         {
             if (!canTsumo)
             {
@@ -254,27 +237,10 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public CommandResult Tsumo()
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            // 明槓だとここでドラが増えるので点数の確定もここでおこなう
-            if (openDoraAfterDiscard)
-            {
-                Round.deadWallTile.OpenDora();
-            }
-            var completedHand = CompletedHand;
-            return CompletedHand.Execute(new Dictionary<Player, CompletedHand>() { { DrawPlayer, completedHand } });
-        }
-
         /// <summary>
         /// 暗槓
         /// </summary>
-        public bool CanDeclareClosedQuad(out Commands.DeclareClosedQuad[] commands)
+        bool CanDeclareClosedQuad(out Commands.DeclareClosedQuad[] commands)
         {
             var result = new List<Commands.DeclareClosedQuad>();
             foreach (var tile in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
@@ -292,7 +258,7 @@ namespace TSKT.Mahjongs
         /// <summary>
         /// 暗槓
         /// </summary>
-        public bool CanDeclareClosedQuad(TileType tile, out Commands.DeclareClosedQuad command)
+        bool CanDeclareClosedQuad(TileType tile, out Commands.DeclareClosedQuad command)
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
@@ -326,28 +292,9 @@ namespace TSKT.Mahjongs
         }
 
         /// <summary>
-        /// 暗槓
-        /// </summary>
-        public BeforeClosedQuad DeclareClosedQuad(TileType tile)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            if (openDoraAfterDiscard)
-            {
-                DrawPlayer.round.deadWallTile.OpenDora();
-            }
-
-            return new BeforeClosedQuad(DrawPlayer, tile);
-        }
-
-        /// <summary>
         /// 加槓
         /// </summary>
-        public bool CanDeclareAddedOpenQuad(out Commands.DeclareAddedOpenQuad[] commands)
+        bool CanDeclareAddedOpenQuad(out Commands.DeclareAddedOpenQuad[] commands)
         {
             var result = new List<Commands.DeclareAddedOpenQuad>();
             foreach (var it in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
@@ -364,7 +311,7 @@ namespace TSKT.Mahjongs
         /// <summary>
         /// 加槓
         /// </summary>
-        public bool CanDeclareAddedOpenQuad(TileType tile, out Commands.DeclareAddedOpenQuad command)
+        bool CanDeclareAddedOpenQuad(TileType tile, out Commands.DeclareAddedOpenQuad command)
         {
             // 海底はカンできない
             if (Round.wallTile.tiles.Count == 0)
@@ -387,26 +334,7 @@ namespace TSKT.Mahjongs
             command = new Commands.DeclareAddedOpenQuad(this, t);
             return true;
         }
-        /// <summary>
-        /// 加槓
-        /// </summary>
-        public BeforeAddedOpenQuad DeclareAddedOpenQuad(Tile tile)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            if (openDoraAfterDiscard)
-            {
-                DrawPlayer.round.deadWallTile.OpenDora();
-            }
-
-            return new BeforeAddedOpenQuad(DrawPlayer, tile);
-        }
-
-        public bool Can九種九牌(out Commands.九種九牌 command)
+        bool Can九種九牌(out Commands.九種九牌 command)
         {
             if (!鳴きなし)
             {
@@ -433,27 +361,8 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public CommandResult 九種九牌()
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            var result = Round.game.AdvanceRoundBy途中流局(out var gameResult);
-            var roundResult = new RoundResult(gameResult);
-            return new CommandResult(result, roundResult);
-        }
-
         public AfterDraw ResetRound(params TileType[]?[]? initialPlayerTilesByCheat)
         {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
             return Round.game.StartRound(initialPlayerTilesByCheat);
         }
 
@@ -544,6 +453,11 @@ namespace TSKT.Mahjongs
         }
         public CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
             var selector = new CommandSelector(this);
             selector.commands.AddRange(commands);
             return selector.Execute(out executedCommands);

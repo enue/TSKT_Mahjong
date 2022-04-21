@@ -42,18 +42,14 @@ namespace TSKT.Mahjongs
             var maxPriority = MaxPriority;
             var selectedCommands = commands.Where(_ => _.Priority == maxPriority);
 
-            // ダブロン、トリロンの場合
-            if (maxPriority == Commands.CommandPriority.Ron
-                && selectedCommands.Count() > 1)
+            // ダブロン、トリロンに対応する
+            if (maxPriority == Commands.CommandPriority.Ron)
             {
-                var ronExecutor = new List<Player>();
-                foreach (var it in selectedCommands)
-                {
-                    executedCommands.Add(it);
-                    ronExecutor.Add(it.Executor);
-                }
-
-                return ((IRonableController)origin).Ron(ronExecutor.ToArray());
+                var rons = selectedCommands
+                    .OfType<Commands.Ron>()
+                    .Select(_ => (_.Executor, _.RonResult))
+                    .ToArray();
+                return CompletedHand.Execute(rons);
             }
 
             var selectedCommand = selectedCommands.First();
@@ -68,7 +64,6 @@ namespace TSKT.Mahjongs
 
         public readonly AfterDiscard? afterDiscard;
         public readonly AfterDraw? afterDraw;
-        public readonly IBeforeQuad? beforeQuad;
 
         public readonly RoundResult? roundResult;
         public readonly Dictionary<Player, CompletedResult>? completedResults;
@@ -83,7 +78,6 @@ namespace TSKT.Mahjongs
             this.completedResults = completedResults;
 
             afterDraw = null;
-            beforeQuad = null;
         }
         public CommandResult(AfterDraw? nextController,
             RoundResult? roundResult = null,
@@ -95,14 +89,12 @@ namespace TSKT.Mahjongs
             this.completedResults = completedResults;
 
             afterDiscard = null;
-            beforeQuad = null;
         }
         public CommandResult(IBeforeQuad? nextController,
             RoundResult? roundResult = null,
             Dictionary<Player, CompletedResult>? completedResults = null)
         {
             this.nextController = nextController;
-            beforeQuad = nextController;
 
             this.roundResult = roundResult;
             this.completedResults = completedResults;

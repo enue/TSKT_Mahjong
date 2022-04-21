@@ -20,9 +20,11 @@ namespace TSKT.Mahjongs.Commands
             Controller = afterDraw;
         }
 
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return Controller.九種九牌();
+            var result = Controller.Round.game.AdvanceRoundBy途中流局(out var gameResult);
+            var roundResult = new RoundResult(gameResult);
+            return new CommandResult(result, roundResult);
         }
     }
 
@@ -144,9 +146,15 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return new CommandResult(Controller.Discard(tile, riichi, openRiichi));
+            Controller.DrawPlayer.Discard(tile, riichi, openRiichi);
+            if (Controller.openDoraAfterDiscard)
+            {
+                Controller.DrawPlayer.round.deadWallTile.OpenDora();
+            }
+
+            return new CommandResult(new AfterDiscard(Controller.DrawPlayer));
         }
     }
 
@@ -167,9 +175,13 @@ namespace TSKT.Mahjongs.Commands
             this.tile = tile;
         }
 
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return new CommandResult(Controller.DeclareClosedQuad(tile));
+            if (Controller.openDoraAfterDiscard)
+            {
+                Controller.DrawPlayer.round.deadWallTile.OpenDora();
+            }
+            return new CommandResult(new BeforeClosedQuad(Controller.DrawPlayer, tile));
         }
     }
 
@@ -190,9 +202,13 @@ namespace TSKT.Mahjongs.Commands
             this.tile = tile;
         }
 
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return new CommandResult(Controller.DeclareAddedOpenQuad(tile));
+            if (Controller.openDoraAfterDiscard)
+            {
+                Controller.DrawPlayer.round.deadWallTile.OpenDora();
+            }
+            return new CommandResult(new BeforeAddedOpenQuad(Controller.DrawPlayer, tile));
         }
     }
 
@@ -208,9 +224,14 @@ namespace TSKT.Mahjongs.Commands
             Controller = afterDraw;
         }
 
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return Controller.Tsumo();
+            // 明槓だとここでドラが増えるので点数の確定もここでおこなう
+            if (Controller.openDoraAfterDiscard)
+            {
+                Controller.Round.deadWallTile.OpenDora();
+            }
+            return CompletedHand.Execute((Controller.DrawPlayer, Controller.CompletedHand));
         }
     }
 }

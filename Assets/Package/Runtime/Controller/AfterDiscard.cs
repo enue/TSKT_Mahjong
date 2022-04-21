@@ -7,14 +7,14 @@ using TSKT.Mahjongs.Rounds;
 
 namespace TSKT.Mahjongs
 {
-    public class AfterDiscard : IController, IRonableController
+    public class AfterDiscard : IController
     {
         public Round Round => DiscardPlayer.round;
+        public bool Consumed { get; private set; }
         public PlayerIndex DiscardPlayerIndex => DiscardPlayer.index;
         public Player DiscardPlayer { get; }
-        public bool Consumed { get; private set; }
 
-        public Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
+        Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
         public Tile DiscardedTile => Round.players[(int)DiscardPlayerIndex].discardPile.Last();
 
@@ -88,7 +88,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        void TryAttachFuriten()
+        public void TryAttachFuriten()
         {
             foreach (var player in Round.players)
             {
@@ -168,14 +168,8 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public AfterDraw? AdvanceTurn(out RoundResult? roundResult)
+        AfterDraw? AdvanceTurn(out RoundResult? roundResult)
         {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
             TryAttachFuriten();
 
             if (CanRoundContinue)
@@ -292,38 +286,27 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public bool CanRon(out Commands.Ron[] commands)
+        bool CanRon(out Commands.Ron[] commands)
         {
-            commands = PlayerRons.Select(_ => new Commands.Ron(_.Key, this)).ToArray();
+            commands = PlayerRons.Select(_ => new Commands.Ron(_.Key, this, _.Value)).ToArray();
             return commands.Length > 0;
         }
 
-        public bool CanRon(Player player, out Commands.Ron command)
+        bool CanRon(Player player, out Commands.Ron command)
         {
-            if (PlayerRons.ContainsKey(player))
+            if (PlayerRons.TryGetValue(player, out var hand))
             {
-                command = new Commands.Ron(player, this);
+                command = new Commands.Ron(player, this, hand);
                 return true;
             }
             command = default;
             return false;
         }
 
-        public CommandResult Ron(params Player[] players)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]));
-        }
-
         /// <summary>
         /// 大明槓
         /// </summary>
-        public bool CanOpenQuad(out Commands.Kan[] commands)
+        bool CanOpenQuad(out Commands.Kan[] commands)
         {
             var result = new List<Commands.Kan>();
             foreach (var player in Round.players)
@@ -340,7 +323,7 @@ namespace TSKT.Mahjongs
         /// <summary>
         /// 大明槓
         /// </summary>
-        public bool CanOpenQuad(Player player, out Commands.Kan command)
+        bool CanOpenQuad(Player player, out Commands.Kan command)
         {
             if (player == DiscardPlayer)
             {
@@ -362,19 +345,8 @@ namespace TSKT.Mahjongs
             command = new Commands.Kan(player, this);
             return true;
         }
-        public CommandResult OpenQuad(Player player)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
 
-            TryAttachFuriten();
-            return new CommandResult(Round.ExecuteOpenQuad(player, DiscardPlayer));
-        }
-
-        public bool CanPon(out Commands.Pon[] commands)
+        bool CanPon(out Commands.Pon[] commands)
         {
             var result = new List<Commands.Pon>();
             foreach (var player in Round.players)
@@ -388,7 +360,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanPon(Player player, out Commands.Pon[] commands)
+        bool CanPon(Player player, out Commands.Pon[] commands)
         {
             if (player == DiscardPlayer)
             {
@@ -410,38 +382,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public CommandResult Pon(Player player, (Tile, Tile) 対子)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            TryAttachFuriten();
-            foreach (var it in Round.players)
-            {
-                it.一発 = false;
-            }
-
-            var discardPile = DiscardPlayer.discardPile;
-            var tile = discardPile[discardPile.Count - 1];
-            discardPile.RemoveAt(discardPile.Count - 1);
-
-            player.hand.tiles.Remove(対子.Item1);
-            player.hand.tiles.Remove(対子.Item2);
-
-            var meld = new Meld(
-                (tile, DiscardPlayer.index),
-                (対子.Item1, player.index),
-                (対子.Item2, player.index));
-            player.hand.melds.Add(meld);
-
-            player.OnTurnStart();
-            return new CommandResult(new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false));
-        }
-
-        public bool CanChi(out Commands.Chi[] commands)
+        bool CanChi(out Commands.Chi[] commands)
         {
             var result = new List<Commands.Chi>();
             foreach (var player in Round.players)
@@ -455,7 +396,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        public bool CanChi(Player player, out Commands.Chi[] commands)
+        bool CanChi(Player player, out Commands.Chi[] commands)
         {
             if (player == DiscardPlayer)
             {
@@ -483,37 +424,6 @@ namespace TSKT.Mahjongs
 
             commands = combinations.Select(_ => new Commands.Chi(player, this, _)).ToArray();
             return true;
-        }
-        public CommandResult Chi(Player player, (Tile, Tile) 塔子)
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            TryAttachFuriten();
-            foreach (var it in Round.players)
-            {
-                it.一発 = false;
-            }
-
-            var discardPile = DiscardPlayer.discardPile;
-            var tile = discardPile[discardPile.Count - 1];
-            discardPile.RemoveAt(discardPile.Count - 1);
-
-            player.hand.tiles.Remove(塔子.Item1);
-            player.hand.tiles.Remove(塔子.Item2);
-
-            var meld = new Meld(
-                (tile, DiscardPlayer.index),
-                (塔子.Item1, player.index),
-                (塔子.Item2, player.index));
-            player.hand.melds.Add(meld);
-
-            player.OnTurnStart();
-
-            return new CommandResult(new AfterDraw(player, null, 嶺上: false, openDoraAfterDiscard: false));
         }
 
         public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
@@ -578,6 +488,11 @@ namespace TSKT.Mahjongs
         }
         public CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
             var selector = new CommandSelector(this);
             selector.commands.AddRange(commands);
             return selector.Execute(out executedCommands);

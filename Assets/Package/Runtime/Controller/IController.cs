@@ -21,18 +21,8 @@ namespace TSKT.Mahjongs
         Serializables.Session SerializeSession();
     }
 
-    public interface IRonableController : IController
+    public interface IBeforeQuad : IController
     {
-        bool CanRon(out Commands.Ron[] command);
-        bool CanRon(Player player, out Commands.Ron command);
-        CommandResult Ron(params Player[] players);
-        Dictionary<Player, CompletedHand> PlayerRons { get; }
-    }
-
-    public interface IBeforeQuad : IController, IRonableController
-    {
-        Player DeclarePlayer { get; }
-        AfterDraw BuildQuad();
     }
 
     public readonly struct DiscardingCommandSet

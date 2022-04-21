@@ -25,8 +25,29 @@ namespace TSKT.Mahjongs.Commands
         }
         readonly public CommandResult Execute()
         {
-            return Controller.Pon(Executor, pair);
+            Controller.TryAttachFuriten();
+            foreach (var it in Controller.Round.players)
+            {
+                it.一発 = false;
+            }
+
+            var discardPile = Controller.DiscardPlayer.discardPile;
+            var tile = discardPile[discardPile.Count - 1];
+            discardPile.RemoveAt(discardPile.Count - 1);
+
+            Executor.hand.tiles.Remove(pair.Item1);
+            Executor.hand.tiles.Remove(pair.Item2);
+
+            var meld = new Meld(
+                (tile, Controller.DiscardPlayer.index),
+                (pair.Item1, Executor.index),
+                (pair.Item2, Executor.index));
+            Executor.hand.melds.Add(meld);
+
+            Executor.OnTurnStart();
+            return new CommandResult(new AfterDraw(Executor, null, 嶺上: false, openDoraAfterDiscard: false));
         }
+
 
         public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, pair.Item1, pair.Item2);
         public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (pair.Item1, Executor.index), (pair.Item2, Executor.index));
@@ -67,10 +88,32 @@ namespace TSKT.Mahjongs.Commands
             Executor = player;
             this.塔子 = 塔子;
         }
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return Controller.Chi(Executor, 塔子);
+            Controller.TryAttachFuriten();
+            foreach (var it in Controller.Round.players)
+            {
+                it.一発 = false;
+            }
+
+            var discardPile = Controller.DiscardPlayer.discardPile;
+            var tile = discardPile[discardPile.Count - 1];
+            discardPile.RemoveAt(discardPile.Count - 1);
+
+            Executor.hand.tiles.Remove(塔子.Item1);
+            Executor.hand.tiles.Remove(塔子.Item2);
+
+            var meld = new Meld(
+                (tile, Controller.DiscardPlayer.index),
+                (塔子.Item1, Executor.index),
+                (塔子.Item2, Executor.index));
+            Executor.hand.melds.Add(meld);
+
+            Executor.OnTurnStart();
+
+            return new CommandResult(new AfterDraw(Executor, null, 嶺上: false, openDoraAfterDiscard: false));
         }
+
         public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, 塔子.left, 塔子.right);
         public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (塔子.left, Executor.index), (塔子.right, Executor.index));
 
@@ -110,7 +153,9 @@ namespace TSKT.Mahjongs.Commands
         }
         readonly public CommandResult Execute()
         {
-            return Controller.OpenQuad(Executor);
+            Controller.TryAttachFuriten();
+            var afterDraw = Controller.Round.ExecuteOpenQuad(Executor, Controller.DiscardPlayer);
+            return new CommandResult(afterDraw);
         }
     }
 }

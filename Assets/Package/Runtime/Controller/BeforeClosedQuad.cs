@@ -14,13 +14,12 @@ namespace TSKT.Mahjongs
     public class BeforeClosedQuad : IBeforeQuad
     {
         public Round Round => DeclarePlayer.round;
+        public bool Consumed { get; private set; }
         public PlayerIndex DeclarePlayerIndex => DeclarePlayer.index;
         public Player DeclarePlayer { get; }
 
-        public bool Consumed { get; private set; }
-
         public readonly TileType tile;
-        public Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
+        Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
         public BeforeClosedQuad(Player declarePlayer, TileType tile)
         {
@@ -76,41 +75,25 @@ namespace TSKT.Mahjongs
             return new Serializables.Session(this);
         }
 
-        public bool CanRon(out Commands.Ron[] commands)
+        bool CanRon(out Commands.Ron[] commands)
         {
-            commands = PlayerRons.Select(_ => new Commands.Ron(_.Key, this)).ToArray();
+            commands = PlayerRons.Select(_ => new Commands.Ron(_.Key, this, _.Value)).ToArray();
             return commands.Length > 0;
         }
 
-        public bool CanRon(Player player, out Commands.Ron command)
+        bool CanRon(Player player, out Commands.Ron command)
         {
-            if (!PlayerRons.ContainsKey(player))
+            if (!PlayerRons.TryGetValue(player, out var hand))
             {
                 command = default;
                 return false;
             }
-            command = new Commands.Ron(player, this);
+            command = new Commands.Ron(player, this, hand);
             return true;
         }
-        public CommandResult Ron(params Player[] players)
+
+        AfterDraw BuildQuad()
         {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
-            return CompletedHand.Execute(players.ToDictionary(_ => _, _ => PlayerRons[_]));
-        }
-
-        public AfterDraw BuildQuad()
-        {
-            if (Consumed)
-            {
-                throw new System.Exception("consumed controller");
-            }
-            Consumed = true;
-
             return Round.ExecuteClosedQuad(DeclarePlayer, tile);
         }
 
@@ -153,6 +136,11 @@ namespace TSKT.Mahjongs
 
         public CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands)
         {
+            if (Consumed)
+            {
+                throw new System.Exception("consumed controller");
+            }
+            Consumed = true;
             var selector = new CommandSelector(this);
             selector.commands.AddRange(commands);
             return selector.Execute(out executedCommands);

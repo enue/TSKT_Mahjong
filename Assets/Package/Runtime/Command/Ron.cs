@@ -8,22 +8,23 @@ using TSKT.Mahjongs.Rounds;
 
 namespace TSKT.Mahjongs.Commands
 {
-    public readonly struct Ron : ICommand<IRonableController>
+    public readonly struct Ron : ICommand<IController>
     {
-        public readonly IRonableController Controller { get; }
+        public readonly IController Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Ron;
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor { get; }
 
-        public Ron(Player player, IRonableController controller)
+        public readonly CompletedHand RonResult { get; }
+        public Ron(Player player, IController controller, CompletedHand completedHand)
         {
             Controller = controller;
             Executor = player;
+            RonResult = completedHand;
         }
-        readonly public CommandResult Execute()
+        public readonly CommandResult Execute()
         {
-            return Controller.Ron(Executor);
+            return CompletedHand.Execute((Executor, RonResult));
         }
-        readonly public CompletedHand RonResult => Controller.PlayerRons[Executor];
     }
 }

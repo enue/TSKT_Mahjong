@@ -25,8 +25,8 @@ namespace TSKT.Tests.Mahjongs
             var json0_1 = controller0_1.SerializeSession().ToJson(prettyPrint: true);
             Assert.AreEqual(json0_0, json0_1);
 
-
-            var controller1_0 = controller0_0.Discard(controller0_0.DrawPlayer.hand.tiles[0], false);
+            var discards = controller0_0.GetExecutableDiscardingCommandsBy(controller0_0.DrawPlayer).Discards;
+            var controller1_0 = discards[0].Execute().nextController;
             var session1_0 = controller1_0.SerializeSession();
             var json1_0 = session1_0.ToJson();
             var controller1_1 = TSKT.Mahjongs.Serializables.Session.FromJson(json1_0);
