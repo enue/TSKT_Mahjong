@@ -19,27 +19,25 @@ namespace TSKT.Mahjongs
         T Controller { get; }
     }
 
-    public class CommandSelector
+    public readonly struct CommandSelector
     {
         public readonly IController origin;
-        public readonly List<ICommand> commands = new List<ICommand>();
-        public Commands.CommandPriority MaxPriority => commands.Count == 0 ? Commands.CommandPriority.Lowest : commands.Max(_ => _.Priority);
 
         public CommandSelector(IController origin)
         {
             this.origin = origin;
         }
-        public CommandResult Execute(out List<ICommand> executedCommands)
+        public CommandResult Execute(out List<ICommand> executedCommands, params ICommand[] commands)
         {
             executedCommands = new List<ICommand>();
 
-            if (commands.Count == 0)
+            if (commands.Length == 0)
             {
                 var nextController = origin.DoDefaultAction(out var roundResult);
                 return new CommandResult(nextController, roundResult);
             }
 
-            var maxPriority = MaxPriority;
+            var maxPriority = commands.Length == 0 ? Commands.CommandPriority.Lowest : commands.Max(_ => _.Priority);
             var selectedCommands = commands.Where(_ => _.Priority == maxPriority);
 
             // ダブロン、トリロンに対応する

@@ -142,8 +142,7 @@ namespace TSKT.Mahjongs
             }
             Consumed = true;
             var selector = new CommandSelector(this);
-            selector.commands.AddRange(commands);
-            return selector.Execute(out executedCommands);
+            return selector.Execute(out executedCommands, commands);
         }
     }
 }
