@@ -44,9 +44,10 @@ namespace TSKT.Mahjongs
             if (maxPriority == Commands.CommandPriority.Ron)
             {
                 var rons = selectedCommands
-                    .OfType<Commands.Ron>()
+                    .Cast<Commands.Ron>()
                     .Select(_ => (_.Executor, _.RonResult))
                     .ToArray();
+                executedCommands.AddRange(selectedCommands);
                 return CompletedHand.Execute(rons);
             }
 
