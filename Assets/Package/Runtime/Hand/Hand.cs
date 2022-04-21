@@ -36,7 +36,14 @@ namespace TSKT.Mahjongs
 
         public void Sort()
         {
-            tiles.Sort();
+            if (Discarding)
+            {
+                tiles.Sort(0, tiles.Count - 1, null);
+            }
+            else
+            {
+                tiles.Sort();
+            }
         }
 
         public Hand Clone()
