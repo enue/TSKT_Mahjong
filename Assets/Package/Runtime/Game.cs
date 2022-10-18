@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Linq;
 #nullable enable
 
@@ -18,6 +16,7 @@ namespace TSKT.Mahjongs
         public readonly PlayerIndex firstDealer;
         public readonly Seat[] seats;
         public readonly RuleSetting rule;
+        public readonly List<ScriptableRules.ICompletedResultModifier> completedHandModifiers = new();
 
         public PlayerIndex Dealer => (PlayerIndex)(((int)firstDealer + DisplayRoundCount - 1) % 4);
 

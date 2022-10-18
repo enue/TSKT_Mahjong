@@ -9,8 +9,8 @@ namespace TSKT.Mahjongs
     [System.Serializable]
     public class RuleSetting
     {
-        public PaymentRule payment = new PaymentRule();
-        public EndRule end = new EndRule();
+        public PaymentRule payment = new();
+        public EndRule end = new();
 
         public int initialScore = 25000;
         public RedTile redTile = RedTile.赤ドラ3;

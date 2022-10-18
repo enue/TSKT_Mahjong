@@ -596,7 +596,12 @@ namespace TSKT.Mahjongs.Rounds
 
         readonly public CompletedResult BuildResult(Player player)
         {
-            return new CompletedResult(this, player);
+            var result = new CompletedResult(this, player);
+            foreach(var it in player.round.game.completedHandModifiers)
+            {
+                it.Modify(ref result);
+            }
+            return result;
         }
 
         readonly IEnumerable<TileType> 刻子槓子
