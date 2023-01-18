@@ -57,16 +57,14 @@ namespace TSKT.Mahjongs.Hands
             }
             else
             {
-                var count = new IntDictionary<TileType>();
-                foreach (var it in unsolvedTiles)
-                {
-                    if (it.么九牌())
-                    {
-                        ++count[it];
-                    }
-                }
-                国士無双向聴数 = 13 - count.Count;
-                if (count.Any(_ => _.Value >= 2))
+                var tileCounts = unsolvedTiles
+                    .Where(_ => _.么九牌())
+                    .GroupBy(_ => _)
+                    .Select(_ => _.Count())
+                    .ToArray();
+                国士無双向聴数 = 13 - tileCounts.Length;
+
+                if (tileCounts.Any(_ => _ >= 2))
                 {
                     国士無双向聴数 -= 1;
                 }

@@ -768,12 +768,11 @@ namespace TSKT.Mahjongs.Rounds
                 {
                     return 0;
                 }
-                var dict = new IntDictionary<TileType>();
-                foreach (var it in 順子)
-                {
-                    ++dict[it];
-                }
-                if (dict.Count(_ => _.Value == 2) == 1)
+                var count = 順子
+                    .GroupBy(_ => _)
+                    .Select(_ => _.Count())
+                    .Count(_ => _ == 2);
+                if (count == 1)
                 {
                     return 1;
                 }
@@ -788,12 +787,11 @@ namespace TSKT.Mahjongs.Rounds
                 {
                     return 0;
                 }
-                var dict = new IntDictionary<TileType>();
-                foreach (var it in 順子)
-                {
-                    ++dict[it];
-                }
-                if (dict.Count(_ => _.Value == 2) == 2)
+                var count = 順子
+                    .GroupBy(_ => _)
+                    .Select(_ => _.Count())
+                    .Count(_ => _ == 2);
+                if (count == 2)
                 {
                     return 3;
                 }

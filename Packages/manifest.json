@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.github.enue.tskt_container": "https://github.com/enue/Unity_TSKT_Container.git?path=Assets/Package",
     "com.github.enue.tskt_math": "https://github.com/enue/Unity_TSKT_Math.git?path=Assets/Package",
     "com.unity.ide.rider": "3.0.16",
     "com.unity.ide.visualstudio": "2.0.17",
