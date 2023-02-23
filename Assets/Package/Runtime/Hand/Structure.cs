@@ -98,11 +98,38 @@ namespace TSKT.Mahjongs.Hands
                 if (melds.Length == 0)
                 {
                     // 七対子の場合
-                    result = Mathf.Min(result, 6 - Pairs.Length);
+                    result = Mathf.Min(result, 七対子向聴数);
                 }
                 result = Mathf.Min(result, 国士無双向聴数);
 
                 return result;
+            }
+        }
+        int 七対子向聴数
+        {
+            get
+            {
+                var result = 6 - Pairs.Length;
+                var typeCount = CountTileType();
+                if (typeCount < 7)
+                {
+                    result += 7 - typeCount;
+                }
+                return result;
+
+                int CountTileType()
+                {
+                    var tiles = new List<TileType>();
+                    tiles.AddRange(unsolvedTiles);
+                    tiles.AddRange(IsolatedTiles);
+                    tiles.AddRange(Sets.Select(_ => _.first));
+                    tiles.AddRange(Sets.Select(_ => _.second));
+                    tiles.AddRange(Sets.Select(_ => _.third));
+                    tiles.AddRange(Pairs);
+                    tiles.AddRange(塔子.Select(_ => _.left));
+                    tiles.AddRange(塔子.Select(_ => _.right));
+                    return tiles.Distinct().Count();
+                }
             }
         }
 

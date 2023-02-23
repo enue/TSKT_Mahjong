@@ -27,5 +27,42 @@ namespace TSKT.Tests.Mahjongs
 
             Assert.AreEqual(expected, meld.Is喰い替え(new Tile(0, tileToDiscard, false)));
         }
+
+        [Test]
+        [TestCase(0, new[] {
+            TileType.M1, TileType.M1,
+            TileType.M3, TileType.M3,
+            TileType.M5, TileType.M5,
+            TileType.M8, TileType.M8,
+            TileType.P1, TileType.P1,
+            TileType.白, TileType.白,
+            TileType.中
+        })]
+        [TestCase(1, new[] {
+            TileType.M1, TileType.M1,
+            TileType.M3, TileType.M3,
+            TileType.M5, TileType.M5,
+            TileType.M8, TileType.M8,
+            TileType.P1, TileType.P1,
+            TileType.白, TileType.白, TileType.白
+        })]
+        public void 七対子向聴数(int expected, TileType[] tiles)
+        {
+            var round = Game.Create(0, new RuleSetting()).Round;
+
+            var hand = round.players[0].hand;
+            hand.tiles.Clear();
+            hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
+            Assert.IsTrue(hand.向聴数IsLessThanOrEqual(expected));
+            Assert.IsFalse(hand.向聴数IsLessThanOrEqual(expected - 1));
+            if (expected == 0)
+            {
+                Assert.AreEqual(1, hand.GetWinningTiles().Length);
+            }
+            else
+            {
+                Assert.AreEqual(0, hand.GetWinningTiles().Length);
+            }
+        }
     }
 }
