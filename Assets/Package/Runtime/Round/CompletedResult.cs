@@ -23,7 +23,7 @@ namespace TSKT.Mahjongs.Rounds
 
         public CompletedResult(CompletedHand source, Player player)
         {
-            this.winner = player;
+            winner = player;
             scoreType = source.基本点(player.round.game.rule.handCap).type;
             dora = source.Dora;
             uraDora = source.UraDora;

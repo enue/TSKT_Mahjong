@@ -25,6 +25,14 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(-1, TileType.M2, TileType.M3, TileType.M4, TileType.P4, TileType.P5, TileType.P6, TileType.S3, TileType.S4, TileType.S5, TileType.S5, TileType.S6, TileType.S7, TileType.S8, TileType.S8)]
         [TestCase(-1, TileType.M1, TileType.M2, TileType.M3, TileType.M4, TileType.M5, TileType.M6, TileType.M4, TileType.M5, TileType.M6, TileType.P7, TileType.P8, TileType.P9, TileType.M8, TileType.M8)]
         [TestCase(-1, TileType.M2, TileType.M2, TileType.白, TileType.白, TileType.白, TileType.發, TileType.發, TileType.發, TileType.中, TileType.中, TileType.中, TileType.M3, TileType.M3, TileType.M3)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.P2, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P3, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S4, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S5, TileType.南)]
+        [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.南)]
         public void シャンテン数(int expected, params TileType[] tiles)
         {
             var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;

@@ -1363,19 +1363,19 @@ namespace TSKT.Mahjongs.Rounds
 
                 if (completedHands.Length == 1)
                 {
-                    foreach (var it in completedHands)
+                    foreach (var (player, hand) in completedHands)
                     {
-                        it.player.Score += game.riichiScore;
+                        player.Score += game.riichiScore;
                     }
                 }
                 else
                 {
                     // ダブロンのリーチ棒回収 : ロンされたプレイヤーから順番が近いほうをがリーチ棒を回収する
                     var ronTarget = completedHands[0].hand.ronTarget!;
-                    var getter = completedHands
+                    var (player, hand) = completedHands
                         .OrderBy(_ => (_.player.index - ronTarget.index + _.player.round.players.Length) % _.player.round.players.Length)
                         .First();
-                    getter.player.Score += game.riichiScore;
+                    player.Score += game.riichiScore;
                 }
                 game.riichiScore = 0;
 
