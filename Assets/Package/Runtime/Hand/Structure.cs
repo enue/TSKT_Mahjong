@@ -191,18 +191,37 @@ namespace TSKT.Mahjongs.Hands
                 }
 
                 var tile = task.unsolvedTiles[0];
-                // 刻子
-                if (task.unsolvedTiles.Count(_ => _ == tile) >= 3)
+
+                // 対子
+                if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
                 {
-                    var structure = new Structure(task);
-                    for (int i = 0; i < 3; ++i)
+                    // 同じ対子が二組あるのは許可しない。
+                    if (System.Array.IndexOf(task.Pairs, tile) == -1)
                     {
-                        structure.unsolvedTiles.Remove(tile);
+                        var structure = new Structure(task);
+                        for (int i = 0; i < 2; ++i)
+                        {
+                            structure.unsolvedTiles.Remove(tile);
+                        }
+                        var pairs = structure.Pairs.ToList();
+                        pairs.Add(tile);
+                        structure.Pairs = pairs.ToArray();
+                        tasks.Push(structure);
                     }
-                    var sets = structure.Sets.ToList();
-                    sets.Add(new Set(tile, tile, tile));
-                    structure.Sets = sets.ToArray();
-                    tasks.Push(structure);
+
+                    // 刻子
+                    if (task.unsolvedTiles.Count(_ => _ == tile) >= 3)
+                    {
+                        var structure = new Structure(task);
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            structure.unsolvedTiles.Remove(tile);
+                        }
+                        var sets = structure.Sets.ToList();
+                        sets.Add(new Set(tile, tile, tile));
+                        structure.Sets = sets.ToArray();
+                        tasks.Push(structure);
+                    }
                 }
 
                 if (tile.IsSuited() && tile.Number() <= 8)
@@ -226,17 +245,15 @@ namespace TSKT.Mahjongs.Hands
                             tasks.Push(structure);
                         }
                         // 塔子
+                        if (task.unsolvedTiles.Contains(plusTwo))
                         {
-                            if (task.unsolvedTiles.Contains(plusTwo))
-                            {
-                                var structure = new Structure(task);
-                                structure.unsolvedTiles.Remove(tile);
-                                structure.unsolvedTiles.Remove(plusTwo);
-                                var tou = structure.塔子.ToList();
-                                tou.Add((tile, plusTwo));
-                                structure.塔子 = tou.ToArray();
-                                tasks.Push(structure);
-                            }
+                            var structure = new Structure(task);
+                            structure.unsolvedTiles.Remove(tile);
+                            structure.unsolvedTiles.Remove(plusTwo);
+                            var tou = structure.塔子.ToList();
+                            tou.Add((tile, plusTwo));
+                            structure.塔子 = tou.ToArray();
+                            tasks.Push(structure);
                         }
                     }
                     // 塔子
@@ -248,23 +265,6 @@ namespace TSKT.Mahjongs.Hands
                         var tou = structure.塔子.ToList();
                         tou.Add((tile, plusOne));
                         structure.塔子 = tou.ToArray();
-                        tasks.Push(structure);
-                    }
-                }
-                // 頭
-                if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
-                {
-                    // 同じ対子が二組あるのは許可しない。
-                    if (System.Array.IndexOf(task.Pairs, tile) == -1)
-                    {
-                        var structure = new Structure(task);
-                        for (int i = 0; i < 2; ++i)
-                        {
-                            structure.unsolvedTiles.Remove(tile);
-                        }
-                        var pairs = structure.Pairs.ToList();
-                        pairs.Add(tile);
-                        structure.Pairs = pairs.ToArray();
                         tasks.Push(structure);
                     }
                 }
