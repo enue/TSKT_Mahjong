@@ -24,51 +24,37 @@ namespace TSKT.Mahjongs.Hands
             readonly public bool 順子 => !刻子;
         }
 
-        readonly List<TileType> unsolvedTiles;
+        TileType[] unsolvedTiles;
         public TileType[] IsolatedTiles { get; private set; } = System.Array.Empty<TileType>();
         public Set[] Sets { get; private set; } = System.Array.Empty<Set>();
         public TileType[] Pairs { get; private set; } = System.Array.Empty<TileType>();
         public (TileType left, TileType right)[] 塔子 { get; private set; } = System.Array.Empty<(TileType, TileType)>();
         public readonly Meld[] melds;
         public readonly int 国士無双向聴数;
+        public readonly int 七対子向聴数;
         public readonly int redTileCount;
 
         public Structure(Structure source)
         {
-            unsolvedTiles = source.unsolvedTiles.ToList();
+            unsolvedTiles = source.unsolvedTiles;
             IsolatedTiles = source.IsolatedTiles;
             Sets = source.Sets;
             Pairs = source.Pairs;
             塔子 = source.塔子;
             melds = source.melds;
             国士無双向聴数 = source.国士無双向聴数;
+            七対子向聴数 = source.七対子向聴数;
             redTileCount = source.redTileCount;
         }
 
         public Structure(Hand hand)
         {
-            unsolvedTiles = hand.tiles.Select(_ => _.type).ToList();
-            unsolvedTiles.Sort();
+            unsolvedTiles = hand.tiles.Select(_ => _.type).ToArray();
+            System.Array.Sort(unsolvedTiles);
             melds = hand.melds.ToArray();
+            七対子向聴数 = hand.七対子向聴数;
+            国士無双向聴数 = hand.国士無双向聴数;
 
-            if (melds.Length > 0)
-            {
-                国士無双向聴数 = int.MaxValue;
-            }
-            else
-            {
-                var tileCounts = unsolvedTiles
-                    .Where(_ => _.么九牌())
-                    .GroupBy(_ => _)
-                    .Select(_ => _.Count())
-                    .ToArray();
-                国士無双向聴数 = 13 - tileCounts.Length;
-
-                if (tileCounts.Any(_ => _ >= 2))
-                {
-                    国士無双向聴数 -= 1;
-                }
-            }
             redTileCount = hand.AllTiles.Count(_ => _.red);
         }
         public int 向聴数
@@ -104,34 +90,6 @@ namespace TSKT.Mahjongs.Hands
                 return result;
             }
         }
-        int 七対子向聴数
-        {
-            get
-            {
-                var result = 6 - Pairs.Length;
-                var typeCount = CountTileType();
-                if (typeCount < 7)
-                {
-                    result += 7 - typeCount;
-                }
-                return result;
-
-                int CountTileType()
-                {
-                    var tiles = new List<TileType>();
-                    tiles.AddRange(unsolvedTiles);
-                    tiles.AddRange(IsolatedTiles);
-                    tiles.AddRange(Sets.Select(_ => _.first));
-                    tiles.AddRange(Sets.Select(_ => _.second));
-                    tiles.AddRange(Sets.Select(_ => _.third));
-                    tiles.AddRange(Pairs);
-                    tiles.AddRange(塔子.Select(_ => _.left));
-                    tiles.AddRange(塔子.Select(_ => _.right));
-                    return tiles.Distinct().Count();
-                }
-            }
-        }
-
         static public (int 向聴数, List<Structure>) Build(Hand hand)
         {
             var 向聴数 = int.MaxValue;
@@ -184,7 +142,7 @@ namespace TSKT.Mahjongs.Hands
             {
                 var task = tasks.Pop();
 
-                if (task.unsolvedTiles.Count == 0)
+                if (task.unsolvedTiles.Length == 0)
                 {
                     yield return task;
                     continue;
@@ -193,16 +151,19 @@ namespace TSKT.Mahjongs.Hands
                 var tile = task.unsolvedTiles[0];
 
                 // 対子
-                if (task.unsolvedTiles.Count(_ => _ == tile) >= 2)
+                var sameTileCount = task.unsolvedTiles.Count(_ => _ == tile);
+                if (sameTileCount >= 2)
                 {
                     // 同じ対子が二組あるのは許可しない。
                     if (System.Array.IndexOf(task.Pairs, tile) == -1)
                     {
                         var structure = new Structure(task);
+                        var unsolvedTiles = structure.unsolvedTiles.ToList();
                         for (int i = 0; i < 2; ++i)
                         {
-                            structure.unsolvedTiles.Remove(tile);
+                            unsolvedTiles.Remove(tile);
                         }
+                        structure.unsolvedTiles = unsolvedTiles.ToArray();
                         var pairs = structure.Pairs.ToList();
                         pairs.Add(tile);
                         structure.Pairs = pairs.ToArray();
@@ -210,13 +171,15 @@ namespace TSKT.Mahjongs.Hands
                     }
 
                     // 刻子
-                    if (task.unsolvedTiles.Count(_ => _ == tile) >= 3)
+                    if (sameTileCount >= 3)
                     {
                         var structure = new Structure(task);
+                        var unsolvedTiles = structure.unsolvedTiles.ToList();
                         for (int i = 0; i < 3; ++i)
                         {
-                            structure.unsolvedTiles.Remove(tile);
+                            unsolvedTiles.Remove(tile);
                         }
+                        structure.unsolvedTiles = unsolvedTiles.ToArray();
                         var sets = structure.Sets.ToList();
                         sets.Add(new Set(tile, tile, tile));
                         structure.Sets = sets.ToArray();
@@ -236,9 +199,11 @@ namespace TSKT.Mahjongs.Hands
                             && task.unsolvedTiles.Contains(plusTwo))
                         {
                             var structure = new Structure(task);
-                            structure.unsolvedTiles.Remove(tile);
-                            structure.unsolvedTiles.Remove(plusOne);
-                            structure.unsolvedTiles.Remove(plusTwo);
+                            var unsolvedTiles = structure.unsolvedTiles.ToList();
+                            unsolvedTiles.Remove(tile);
+                            unsolvedTiles.Remove(plusOne);
+                            unsolvedTiles.Remove(plusTwo);
+                            structure.unsolvedTiles = unsolvedTiles.ToArray();
                             var sets = structure.Sets.ToList();
                             sets.Add(new Set(tile, plusOne, plusTwo));
                             structure.Sets = sets.ToArray();
@@ -248,8 +213,10 @@ namespace TSKT.Mahjongs.Hands
                         if (task.unsolvedTiles.Contains(plusTwo))
                         {
                             var structure = new Structure(task);
-                            structure.unsolvedTiles.Remove(tile);
-                            structure.unsolvedTiles.Remove(plusTwo);
+                            var unsolvedTiles = structure.unsolvedTiles.ToList();
+                            unsolvedTiles.Remove(tile);
+                            unsolvedTiles.Remove(plusTwo);
+                            structure.unsolvedTiles = unsolvedTiles.ToArray();
                             var tou = structure.塔子.ToList();
                             tou.Add((tile, plusTwo));
                             structure.塔子 = tou.ToArray();
@@ -260,8 +227,10 @@ namespace TSKT.Mahjongs.Hands
                     if (task.unsolvedTiles.Contains(plusOne))
                     {
                         var structure = new Structure(task);
-                        structure.unsolvedTiles.Remove(tile);
-                        structure.unsolvedTiles.Remove(plusOne);
+                        var unsolvedTiles = structure.unsolvedTiles.ToList();
+                        unsolvedTiles.Remove(tile);
+                        unsolvedTiles.Remove(plusOne);
+                        structure.unsolvedTiles = unsolvedTiles.ToArray();
                         var tou = structure.塔子.ToList();
                         tou.Add((tile, plusOne));
                         structure.塔子 = tou.ToArray();
@@ -298,7 +267,9 @@ namespace TSKT.Mahjongs.Hands
                     if (canAddIsolatedTile)
                     {
                         var structure = new Structure(task);
-                        structure.unsolvedTiles.Remove(tile);
+                        var unsolvedTiles = structure.unsolvedTiles.ToList();
+                        unsolvedTiles.Remove(tile);
+                        structure.unsolvedTiles = unsolvedTiles.ToArray();
                         var isolatedTiles = structure.IsolatedTiles.ToList();
                         isolatedTiles.Add(tile);
                         structure.IsolatedTiles = isolatedTiles.ToArray();

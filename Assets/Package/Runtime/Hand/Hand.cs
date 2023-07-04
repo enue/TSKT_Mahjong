@@ -163,6 +163,53 @@ namespace TSKT.Mahjongs
             return result.ToArray();
         }
         public bool Discarding => tiles.Count % 3 == 2;
+
+        public int 国士無双向聴数
+        {
+            get
+            {
+                if (melds.Count > 0)
+                {
+                    return int.MaxValue;
+                }
+                var tileCounts = tiles
+                    .Select(_ => _.type)
+                    .Where(_ => _.么九牌())
+                    .GroupBy(_ => _)
+                    .Select(_ => _.Count())
+                    .ToArray();
+                var result = 13 - tileCounts.Length;
+
+                if (tileCounts.Any(_ => _ >= 2))
+                {
+                    result -= 1;
+                }
+                return result;
+            }
+        }
+        public int 七対子向聴数
+        {
+            get
+            {
+                if (melds.Count > 0)
+                {
+                    return int.MaxValue;
+                }
+
+                var pairCount = tiles.Select(_ => _.type).GroupBy(_ => _)
+                    .Select(_ => _.Count())
+                    .Where(_ => _ >= 2)
+                    .Count();
+
+                var result = 6 - pairCount;
+                var typeCount = tiles.Select(_ => _.type).Distinct().Count();
+                if (typeCount < 7)
+                {
+                    result += 7 - typeCount;
+                }
+                return result;
+            }
+        }
     }
 
     /// <summary>
