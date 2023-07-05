@@ -192,12 +192,7 @@ namespace TSKT.Mahjongs.Hands
                             && task.unsolvedTiles.Contains(plusTwo))
                         {
                             var structure = new Structure(task);
-                            var unsolvedTiles = structure.unsolvedTiles.ToList();
-                            unsolvedTiles.Remove(tile);
-                            unsolvedTiles.Remove(plusOne);
-                            unsolvedTiles.Remove(plusTwo);
-                            structure.unsolvedTiles = unsolvedTiles.ToArray();
-
+                            structure.unsolvedTiles = Remove(structure.unsolvedTiles, tile, plusOne, plusTwo);
                             structure.Sets = Append(structure.Sets, new Set(tile, plusOne, plusTwo));
                             tasks.Push(structure);
                         }
@@ -205,11 +200,7 @@ namespace TSKT.Mahjongs.Hands
                         if (task.unsolvedTiles.Contains(plusTwo))
                         {
                             var structure = new Structure(task);
-                            var unsolvedTiles = structure.unsolvedTiles.ToList();
-                            unsolvedTiles.Remove(tile);
-                            unsolvedTiles.Remove(plusTwo);
-                            structure.unsolvedTiles = unsolvedTiles.ToArray();
-
+                            structure.unsolvedTiles = Remove(structure.unsolvedTiles, tile, plusTwo);
                             structure.塔子 = Append(structure.塔子, (tile, plusTwo));
                             tasks.Push(structure);
                         }
@@ -218,11 +209,7 @@ namespace TSKT.Mahjongs.Hands
                     if (task.unsolvedTiles.Contains(plusOne))
                     {
                         var structure = new Structure(task);
-                        var unsolvedTiles = structure.unsolvedTiles.ToList();
-                        unsolvedTiles.Remove(tile);
-                        unsolvedTiles.Remove(plusOne);
-                        structure.unsolvedTiles = unsolvedTiles.ToArray();
-
+                        structure.unsolvedTiles = Remove(structure.unsolvedTiles, tile, plusOne);
                         structure.塔子 = Append(structure.塔子, (tile, plusOne));
                         tasks.Push(structure);
                     }
@@ -309,6 +296,36 @@ namespace TSKT.Mahjongs.Hands
             array.CopyTo(result, 0);
             result[^1] = item;
             return result;
+        }
+
+        static TileType[] Remove(TileType[] array, TileType item1, TileType item2, TileType? item3 = null)
+        {
+            var copy = array.ToArray().AsSpan();
+            copy = Remove(copy, item1);
+            copy = Remove(copy, item2);
+
+            if (item3.HasValue)
+            {
+                copy = Remove(copy, item3.Value);
+            }
+
+            return copy.ToArray();
+
+            static Span<TileType> Remove(Span<TileType> span, TileType item)
+            {
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    if (span[i] == item)
+                    {
+                        for (int j = i; j < span.Length - 1; ++j)
+                        {
+                            span[j] = span[j + 1];
+                        }
+                        return span[..^1];
+                    }
+                }
+                return span;
+            }
         }
     }
 }
