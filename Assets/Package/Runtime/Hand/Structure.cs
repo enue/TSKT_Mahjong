@@ -149,7 +149,10 @@ namespace TSKT.Mahjongs.Hands
                 }
 
                 var tile = task.unsolvedTiles[0];
-
+                if (task.IsolatedTiles.Contains(tile))
+                {
+                    continue;
+                }
                 // 対子
                 var sameTileCount = task.unsolvedTiles.Count(_ => _ == tile);
                 if (sameTileCount >= 2)
