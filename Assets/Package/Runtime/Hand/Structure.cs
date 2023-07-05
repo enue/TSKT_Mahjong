@@ -164,9 +164,8 @@ namespace TSKT.Mahjongs.Hands
                             unsolvedTiles.Remove(tile);
                         }
                         structure.unsolvedTiles = unsolvedTiles.ToArray();
-                        var pairs = structure.Pairs.ToList();
-                        pairs.Add(tile);
-                        structure.Pairs = pairs.ToArray();
+
+                        structure.Pairs = Append(structure.Pairs, tile);
                         tasks.Push(structure);
                     }
 
@@ -180,9 +179,8 @@ namespace TSKT.Mahjongs.Hands
                             unsolvedTiles.Remove(tile);
                         }
                         structure.unsolvedTiles = unsolvedTiles.ToArray();
-                        var sets = structure.Sets.ToList();
-                        sets.Add(new Set(tile, tile, tile));
-                        structure.Sets = sets.ToArray();
+
+                        structure.Sets = Append(structure.Sets, new Set(tile, tile, tile));
                         tasks.Push(structure);
                     }
                 }
@@ -204,9 +202,8 @@ namespace TSKT.Mahjongs.Hands
                             unsolvedTiles.Remove(plusOne);
                             unsolvedTiles.Remove(plusTwo);
                             structure.unsolvedTiles = unsolvedTiles.ToArray();
-                            var sets = structure.Sets.ToList();
-                            sets.Add(new Set(tile, plusOne, plusTwo));
-                            structure.Sets = sets.ToArray();
+
+                            structure.Sets = Append(structure.Sets, new Set(tile, plusOne, plusTwo));
                             tasks.Push(structure);
                         }
                         // 塔子
@@ -217,9 +214,8 @@ namespace TSKT.Mahjongs.Hands
                             unsolvedTiles.Remove(tile);
                             unsolvedTiles.Remove(plusTwo);
                             structure.unsolvedTiles = unsolvedTiles.ToArray();
-                            var tou = structure.塔子.ToList();
-                            tou.Add((tile, plusTwo));
-                            structure.塔子 = tou.ToArray();
+
+                            structure.塔子 = Append(structure.塔子, (tile, plusTwo));
                             tasks.Push(structure);
                         }
                     }
@@ -231,9 +227,8 @@ namespace TSKT.Mahjongs.Hands
                         unsolvedTiles.Remove(tile);
                         unsolvedTiles.Remove(plusOne);
                         structure.unsolvedTiles = unsolvedTiles.ToArray();
-                        var tou = structure.塔子.ToList();
-                        tou.Add((tile, plusOne));
-                        structure.塔子 = tou.ToArray();
+
+                        structure.塔子 = Append(structure.塔子, (tile, plusOne));
                         tasks.Push(structure);
                     }
                 }
@@ -270,9 +265,8 @@ namespace TSKT.Mahjongs.Hands
                         var unsolvedTiles = structure.unsolvedTiles.ToList();
                         unsolvedTiles.Remove(tile);
                         structure.unsolvedTiles = unsolvedTiles.ToArray();
-                        var isolatedTiles = structure.IsolatedTiles.ToList();
-                        isolatedTiles.Add(tile);
-                        structure.IsolatedTiles = isolatedTiles.ToArray();
+
+                        structure.IsolatedTiles = Append(structure.IsolatedTiles, tile);
                         tasks.Push(structure);
                     }
                 }
@@ -317,5 +311,12 @@ namespace TSKT.Mahjongs.Hands
             }
         }
 
+        static T[] Append<T>(T[] array, T item)
+        {
+            var result = new T[array.Length + 1];
+            array.CopyTo(result, 0);
+            result[^1] = item;
+            return result;
+        }
     }
 }
