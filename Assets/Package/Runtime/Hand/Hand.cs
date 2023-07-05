@@ -10,8 +10,8 @@ namespace TSKT.Mahjongs
     public class Hand
     {
         readonly Player owner;
-        readonly public List<Tile> tiles = new List<Tile>();
-        readonly public List<Meld> melds = new List<Meld>();
+        readonly public List<Tile> tiles = new();
+        readonly public List<Meld> melds = new();
 
         public Hand(Player owner)
         {
