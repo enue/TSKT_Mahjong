@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 #nullable enable
@@ -154,35 +155,22 @@ namespace TSKT.Mahjongs.Hands
                     continue;
                 }
                 // 対子
-                var sameTileCount = task.unsolvedTiles.Count(_ => _ == tile);
-                if (sameTileCount >= 2)
+                if (task.unsolvedTiles.Length >= 2 && task.unsolvedTiles[1] == tile)
                 {
                     // 同じ対子が二組あるのは許可しない。
                     if (System.Array.IndexOf(task.Pairs, tile) == -1)
                     {
                         var structure = new Structure(task);
-                        var unsolvedTiles = structure.unsolvedTiles.ToList();
-                        for (int i = 0; i < 2; ++i)
-                        {
-                            unsolvedTiles.Remove(tile);
-                        }
-                        structure.unsolvedTiles = unsolvedTiles.ToArray();
-
+                        structure.unsolvedTiles = structure.unsolvedTiles.AsSpan(2).ToArray();
                         structure.Pairs = Append(structure.Pairs, tile);
                         tasks.Push(structure);
                     }
 
                     // 刻子
-                    if (sameTileCount >= 3)
+                    if (task.unsolvedTiles.Length >= 3 && task.unsolvedTiles[2] == tile)
                     {
                         var structure = new Structure(task);
-                        var unsolvedTiles = structure.unsolvedTiles.ToList();
-                        for (int i = 0; i < 3; ++i)
-                        {
-                            unsolvedTiles.Remove(tile);
-                        }
-                        structure.unsolvedTiles = unsolvedTiles.ToArray();
-
+                        structure.unsolvedTiles = structure.unsolvedTiles.AsSpan(3).ToArray();
                         structure.Sets = Append(structure.Sets, new Set(tile, tile, tile));
                         tasks.Push(structure);
                     }
@@ -265,10 +253,7 @@ namespace TSKT.Mahjongs.Hands
                     if (canAddIsolatedTile)
                     {
                         var structure = new Structure(task);
-                        var unsolvedTiles = structure.unsolvedTiles.ToList();
-                        unsolvedTiles.Remove(tile);
-                        structure.unsolvedTiles = unsolvedTiles.ToArray();
-
+                        structure.unsolvedTiles = structure.unsolvedTiles.AsSpan(1).ToArray();
                         structure.IsolatedTiles = Append(structure.IsolatedTiles, tile);
                         tasks.Push(structure);
                     }
