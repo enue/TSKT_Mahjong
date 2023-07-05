@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TSKT.Mahjongs.Hands
 {
-    public class Structure
+    public struct Structure
     {
         public readonly struct Set
         {
@@ -26,10 +26,10 @@ namespace TSKT.Mahjongs.Hands
         }
 
         TileType[] unsolvedTiles;
-        public TileType[] IsolatedTiles { get; private set; } = System.Array.Empty<TileType>();
-        public Set[] Sets { get; private set; } = System.Array.Empty<Set>();
-        public TileType[] Pairs { get; private set; } = System.Array.Empty<TileType>();
-        public (TileType left, TileType right)[] 塔子 { get; private set; } = System.Array.Empty<(TileType, TileType)>();
+        public TileType[] IsolatedTiles { get; private set; }
+        public Set[] Sets { get; private set; }
+        public TileType[] Pairs { get; private set; }
+        public (TileType left, TileType right)[] 塔子 { get; private set; }
         public readonly Meld[] melds;
         public readonly int 国士無双向聴数;
         public readonly int 七対子向聴数;
@@ -47,9 +47,13 @@ namespace TSKT.Mahjongs.Hands
             七対子向聴数 = source.七対子向聴数;
             redTileCount = source.redTileCount;
         }
-
         public Structure(Hand hand)
         {
+            IsolatedTiles = System.Array.Empty<TileType>();
+            Sets = System.Array.Empty<Set>();
+            Pairs = System.Array.Empty<TileType>();
+            塔子 = System.Array.Empty<(TileType, TileType)>();
+
             unsolvedTiles = hand.tiles.Select(_ => _.type).ToArray();
             System.Array.Sort(unsolvedTiles);
             melds = hand.melds.ToArray();
@@ -91,7 +95,7 @@ namespace TSKT.Mahjongs.Hands
                 return result;
             }
         }
-        static public (int 向聴数, List<Structure>) Build(Hand hand)
+        static public (int 向聴数, Structure[]) Build(Hand hand)
         {
             var 向聴数 = int.MaxValue;
             var structures = new List<Structure>();
@@ -111,7 +115,7 @@ namespace TSKT.Mahjongs.Hands
                 }
             }
 
-            return (向聴数, structures);
+            return (向聴数, structures.ToArray());
         }
 
         static public bool 向聴数IsLessThanOrEqual(Hand hand, int value)

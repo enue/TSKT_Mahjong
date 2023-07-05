@@ -9,8 +9,8 @@ namespace TSKT.Mahjongs.Hands
 {
     public class Solution
     {
-        readonly public int 向聴数;
-        readonly public List<Structure> structures;
+        public readonly int 向聴数;
+        public readonly Structure[] structures;
 
         public Solution(Hand hand)
         {
