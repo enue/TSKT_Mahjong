@@ -121,7 +121,15 @@ namespace TSKT.Mahjongs.Hands
 
         public static bool 向聴数IsLessThanOrEqual(Hand hand, int value)
         {
-            foreach(var it in CollectStructures(hand))
+            if (hand.七対子向聴数 <= value)
+            {
+                return true;
+            }
+            if (hand.国士無双向聴数 <= value)
+            {
+                return true;
+            }
+            foreach (var it in CollectStructures(hand))
             {
                 if (it.向聴数 <= value)
                 {

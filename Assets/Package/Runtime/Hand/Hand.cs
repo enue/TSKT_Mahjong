@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
+using TSKT.Mahjongs.Hands;
 
 namespace TSKT.Mahjongs
 {
@@ -101,21 +102,25 @@ namespace TSKT.Mahjongs
             var meld = new Meld(quadTiles);
             melds.Add(meld);
         }
-
+        
         public TileType[] GetWinningTiles()
         {
             if (!向聴数IsLessThanOrEqual(0))
             {
                 return System.Array.Empty<TileType>();
             }
+            return GetAdoptableTiles();
+        }
+
+        public TileType[] GetAdoptableTiles()
+        {
+            var currentScore = new Solution(this).向聴数;
+            var tilesToCheck = new List<TileType>();
 
             // 待ち牌候補
             // 　一九字牌 : 国士無双
-            // 　手牌と同じ牌 : シャンポン・単騎
-            // 　手牌の隣牌 : リャンメン、ペンチャン、カンチャン
-
-            var tilesToCheck = new List<TileType>();
-
+            // 　手牌と同じ牌：対子、暗刻
+            // 　手牌の隣牌、二つ隣の牌：順子
             foreach (var it in tiles)
             {
                 tilesToCheck.Add(it.type);
@@ -127,9 +132,17 @@ namespace TSKT.Mahjongs
                     {
                         tilesToCheck.Add(TileTypeUtil.Get(it.type.Suit(), number - 1));
                     }
+                    if (number > 2)
+                    {
+                        tilesToCheck.Add(TileTypeUtil.Get(it.type.Suit(), number - 2));
+                    }
                     if (number < 9)
                     {
                         tilesToCheck.Add(TileTypeUtil.Get(it.type.Suit(), number + 1));
+                    }
+                    if (number < 8)
+                    {
+                        tilesToCheck.Add(TileTypeUtil.Get(it.type.Suit(), number + 2));
                     }
                 }
             }
@@ -154,7 +167,7 @@ namespace TSKT.Mahjongs
 
                 var clone = Clone();
                 clone.tiles.Add(new Tile(0, tile, false));
-                if (clone.向聴数IsLessThanOrEqual(-1))
+                if (clone.向聴数IsLessThan(currentScore))
                 {
                     result.Add(tile);
                 }
@@ -162,6 +175,7 @@ namespace TSKT.Mahjongs
 
             return result.ToArray();
         }
+
         public bool Discarding => tiles.Count % 3 == 2;
 
         public int 国士無双向聴数
