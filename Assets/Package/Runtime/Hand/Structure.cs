@@ -155,74 +155,14 @@ namespace TSKT.Mahjongs.Hands
                 }
 
                 var tile = task.unsolvedTiles[0];
-                if (task.IsolatedTiles.Contains(tile))
+                if (Array.IndexOf(task.IsolatedTiles, tile) >= 0)
                 {
                     continue;
-                }
-                // 対子
-                if (task.unsolvedTiles.Length >= 2 && task.unsolvedTiles[1] == tile)
-                {
-                    // 同じ対子が二組あるのは許可しない。
-                    if (System.Array.IndexOf(task.Pairs, tile) == -1)
-                    {
-                        var structure = new Structure(task,
-                            unsolvedTiles: task.unsolvedTiles.AsSpan(2).ToArray(),
-                            pairs: Append(task.Pairs, tile));
-                        tasks.Push(structure);
-                    }
-
-                    // 刻子
-                    if (task.unsolvedTiles.Length >= 3 && task.unsolvedTiles[2] == tile)
-                    {
-                        var structure = new Structure(task,
-                            unsolvedTiles: task.unsolvedTiles.AsSpan(3).ToArray(),
-                            sets: Append(task.Sets, new Set(tile, tile, tile)));
-                        tasks.Push(structure);
-                    }
-                }
-
-                if (tile.IsSuited() && tile.Number() <= 8)
-                {
-                    var plusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() + 1);
-                    if (tile.Number() <= 7)
-                    {
-                        var plusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() + 2);
-
-                        // 順子
-                        if (task.unsolvedTiles.Contains(plusOne)
-                            && task.unsolvedTiles.Contains(plusTwo))
-                        {
-                            var structure = new Structure(task,
-                                unsolvedTiles: Remove(task.unsolvedTiles, tile, plusOne, plusTwo),
-                                sets: Append(task.Sets, new Set(tile, plusOne, plusTwo)));
-                            tasks.Push(structure);
-                        }
-                        // 塔子
-                        if (task.unsolvedTiles.Contains(plusTwo))
-                        {
-                            var structure = new Structure(task,
-                                unsolvedTiles: Remove(task.unsolvedTiles, tile, plusTwo),
-                                塔子: Append(task.塔子, (tile, plusTwo)));
-                            tasks.Push(structure);
-                        }
-                    }
-                    // 塔子
-                    if (task.unsolvedTiles.Contains(plusOne))
-                    {
-                        var structure = new Structure(task,
-                            unsolvedTiles: Remove(task.unsolvedTiles, tile, plusOne),
-                            塔子: Append(task.塔子, (tile, plusOne)));
-                        tasks.Push(structure);
-                    }
                 }
                 // 浮き牌
                 {
                     // ただし浮き牌内で塔子、対子ができないようにする
                     bool canAddIsolatedTile = true;
-                    if (System.Array.IndexOf(task.IsolatedTiles, tile) >= 0)
-                    {
-                        canAddIsolatedTile = false;
-                    }
                     if (tile.IsSuited())
                     {
                         if (tile.Number() > 1)
@@ -247,6 +187,66 @@ namespace TSKT.Mahjongs.Hands
                         var structure = new Structure(task,
                             unsolvedTiles: task.unsolvedTiles.AsSpan(1).ToArray(),
                             isolatedTiles: Append(task.IsolatedTiles, tile));
+                        tasks.Push(structure);
+                    }
+                }
+
+                if (tile.IsSuited() && tile.Number() <= 8)
+                {
+                    var plusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() + 1);
+                    // 塔子
+                    if (Array.IndexOf(task.unsolvedTiles, plusOne) >= 0)
+                    {
+                        var structure = new Structure(task,
+                            unsolvedTiles: Remove(task.unsolvedTiles, tile, plusOne).ToArray(),
+                            塔子: Append(task.塔子, (tile, plusOne)));
+                        tasks.Push(structure);
+                    }
+
+                    if (tile.Number() <= 7)
+                    {
+                        var plusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() + 2);
+
+                        // 塔子
+                        if (Array.IndexOf(task.unsolvedTiles, plusTwo) >= 0)
+                        {
+                            {
+                                var structure = new Structure(task,
+                                    unsolvedTiles: Remove(task.unsolvedTiles, tile, plusTwo).ToArray(),
+                                    塔子: Append(task.塔子, (tile, plusTwo)));
+                                tasks.Push(structure);
+                            }
+
+                            // 順子
+                            if (Array.IndexOf(task.unsolvedTiles, plusOne) >= 0)
+                            {
+                                var structure = new Structure(task,
+                                    unsolvedTiles: Remove(task.unsolvedTiles, tile, plusOne, plusTwo).ToArray(),
+                                    sets: Append(task.Sets, new Set(tile, plusOne, plusTwo)));
+                                tasks.Push(structure);
+                            }
+                        }
+                    }
+                }
+
+                // 対子
+                if (task.unsolvedTiles.Length >= 2 && task.unsolvedTiles[1] == tile)
+                {
+                    // 同じ対子が二組あるのは許可しない。
+                    if (System.Array.IndexOf(task.Pairs, tile) == -1)
+                    {
+                        var structure = new Structure(task,
+                            unsolvedTiles: task.unsolvedTiles.AsSpan(2).ToArray(),
+                            pairs: Append(task.Pairs, tile));
+                        tasks.Push(structure);
+                    }
+
+                    // 刻子
+                    if (task.unsolvedTiles.Length >= 3 && task.unsolvedTiles[2] == tile)
+                    {
+                        var structure = new Structure(task,
+                            unsolvedTiles: task.unsolvedTiles.AsSpan(3).ToArray(),
+                            sets: Append(task.Sets, new Set(tile, tile, tile)));
                         tasks.Push(structure);
                     }
                 }
@@ -299,9 +299,11 @@ namespace TSKT.Mahjongs.Hands
             return result;
         }
 
-        static TileType[] Remove(TileType[] array, TileType item1, TileType item2, TileType? item3 = null)
+        static Span<TileType> Remove(TileType[] array, TileType item1, TileType item2, TileType? item3 = null)
         {
-            var copy = array.ToArray().AsSpan();
+            var copy = new TileType[array.Length].AsSpan();
+            array.CopyTo(copy);
+
             copy = Remove(copy, item1);
             copy = Remove(copy, item2);
 
@@ -310,7 +312,7 @@ namespace TSKT.Mahjongs.Hands
                 copy = Remove(copy, item3.Value);
             }
 
-            return copy.ToArray();
+            return copy;
 
             static Span<TileType> Remove(Span<TileType> span, TileType item)
             {
