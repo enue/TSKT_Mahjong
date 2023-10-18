@@ -86,11 +86,11 @@ namespace TSKT.Mahjongs
 
         Round(in Serializables.Round source)
         {
-            wallTile = source.wallTile.Deserialzie();
-            deadWallTile = source.deadWallTile.Deserialzie(wallTile);
+            wallTile = source.wallTile.Deserialize();
+            deadWallTile = source.deadWallTile.Deserialize(wallTile);
             dealer = source.dealer;
-            game = source.game.Deserialzie();
-            players = source.players.Select(_ => _.Deserialzie(this)).ToArray();
+            game = source.game.Deserialize();
+            players = source.players.Select(_ => _.Deserialize(this)).ToArray();
             roundWind = source.roundWind;
             totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => wallTile.allTiles[_]).ToList();
         }

@@ -67,7 +67,7 @@ namespace TSKT.Mahjongs
 
         static public AfterDraw FromSerializable(in Serializables.AfterDraw source)
         {
-            var round = source.round.Deserialzie();
+            var round = source.round.Deserialize();
             var player = round.players[(int)source.drawPlayerIndex];
             var newTileInHand = source.newTileInHand >= 0 ? round.wallTile.allTiles[source.newTileInHand] : null;
             return new AfterDraw(player, newTileInHand, 嶺上: source.嶺上, openDoraAfterDiscard: source.openDoraAfterDiscard);

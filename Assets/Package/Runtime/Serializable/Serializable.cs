@@ -145,7 +145,7 @@ namespace TSKT.Mahjongs.Serializables
             連荘 = source.連荘;
         }
 
-        readonly public Mahjongs.Game Deserialzie()
+        public readonly Mahjongs.Game Deserialize()
         {
             return Mahjongs.Game.FromSerializable(this);
         }
@@ -173,7 +173,7 @@ namespace TSKT.Mahjongs.Serializables
             wallTile = source.wallTile.ToSerializable();
         }
 
-        readonly public Mahjongs.Round Deserialzie()
+        public readonly Mahjongs.Round Deserialize()
         {
             return Mahjongs.Round.FromSerializable(this);
         }
@@ -210,7 +210,7 @@ namespace TSKT.Mahjongs.Serializables
             一発 = source.一発;
         }
 
-        readonly public Rounds.Player Deserialzie(Mahjongs.Round round)
+        public readonly Rounds.Player Deserialize(Mahjongs.Round round)
         {
             return Rounds.Player.FromSerializable(this, round);
         }
@@ -228,7 +228,7 @@ namespace TSKT.Mahjongs.Serializables
             melds = source.melds.Select(_ => _.ToSerializable()).ToArray();
         }
 
-        readonly public Mahjongs.Hand Deserialzie(Rounds.Player owner)
+        public readonly Mahjongs.Hand Deserialize(Rounds.Player owner)
         {
             return Mahjongs.Hand.FromSerializable(this, owner);
         }
@@ -252,7 +252,7 @@ namespace TSKT.Mahjongs.Serializables
                 .ToArray();
         }
 
-        public Mahjongs.Meld Deserialzie(Mahjongs.WallTile wallTile)
+        public Mahjongs.Meld Deserialize(Mahjongs.WallTile wallTile)
         {
             return Mahjongs.Meld.FromSerializable(this, wallTile);
         }
@@ -272,7 +272,7 @@ namespace TSKT.Mahjongs.Serializables
             randomSeed = source.randomSeed;
         }
 
-        readonly public Mahjongs.WallTile Deserialzie()
+        public readonly Mahjongs.WallTile Deserialize()
         {
             return Mahjongs.WallTile.FromSerializable(this);
         }
@@ -294,7 +294,7 @@ namespace TSKT.Mahjongs.Serializables
             uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => _.index).ToArray();
         }
 
-        readonly public Mahjongs.DeadWallTile Deserialzie(Mahjongs.WallTile wallTile)
+        public readonly Mahjongs.DeadWallTile Deserialize(Mahjongs.WallTile wallTile)
         {
             return Mahjongs.DeadWallTile.FromSerializable(this, wallTile);
         }

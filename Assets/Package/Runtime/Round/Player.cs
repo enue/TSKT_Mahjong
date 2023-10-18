@@ -71,7 +71,7 @@ namespace TSKT.Mahjongs.Rounds
             discardedTiles = source.discardedTiles.Select(_ => round.wallTile.allTiles[_]).ToList();
             discardPile = source.discardPile.Select(_ => round.wallTile.allTiles[_]).ToList();
             DoubleRiichi = source.doubleRiichi;
-            hand = source.hand.Deserialzie(this);
+            hand = source.hand.Deserialize(this);
             index = source.index;
             OpenRiichi = source.openRiichi;
             RiichiIndexInDiscardPile = (source.riichiIndexInDiscardPile >= 0) ? source.riichiIndexInDiscardPile : (int?)null;

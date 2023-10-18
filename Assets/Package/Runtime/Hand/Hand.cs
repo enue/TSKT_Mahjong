@@ -22,7 +22,7 @@ namespace TSKT.Mahjongs
         Hand(in Serializables.Hand source, Player owner)
         {
             this.owner = owner;
-            melds = source.melds.Select(_ => _.Deserialzie(owner.round.wallTile)).ToList();
+            melds = source.melds.Select(_ => _.Deserialize(owner.round.wallTile)).ToList();
             tiles = source.tiles.Select(_ => owner.round.wallTile.allTiles[_]).ToList();
         }
 
