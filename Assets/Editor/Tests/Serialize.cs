@@ -87,6 +87,19 @@ namespace TSKT.Tests.Mahjongs
                 controller = result.nextController;
             }
         }
+        [Test]
+        public void Rule()
+        {
+            var rule = new RuleSetting();
+            rule.payment.返し = 1000;
+            rule.payment.ウマ[0] = 99;
+            rule.end.lengthType = LengthType.一荘戦;
+            var controller0 = Game.Create(0, rule);
 
+            var json = controller0.SerializeSession().ToJson();
+            var controller1 = TSKT.Mahjongs.Serializables.Session.FromJson(json);
+            Assert.AreEqual(JsonUtility.ToJson(rule.end), JsonUtility.ToJson(controller1.Round.game.rule.end));
+            Assert.AreEqual(JsonUtility.ToJson(rule.payment), JsonUtility.ToJson(controller1.Round.game.rule.payment));
+        }
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace TSKT.Mahjongs.Rules
 {
+    [System.Serializable]
     public class PaymentRule
     {
         public int 返し = 30000;

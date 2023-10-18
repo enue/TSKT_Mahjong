@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace TSKT.Mahjongs.Rules
 {
+    [System.Serializable]
     public class EndRule
     {
         public LengthType lengthType = LengthType.東風戦;
