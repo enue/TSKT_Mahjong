@@ -54,4 +54,9 @@ namespace TSKT.Mahjongs.Rules
         なし,
         あり,
     }
+    public enum 四槓流れ
+    {
+        続行,
+        流局,
+    }
 }

@@ -112,9 +112,12 @@ namespace TSKT.Mahjongs
                         return true;
                     }
                 }
-                if (四開槓)
+                if (Round.game.rule.四槓流れ == Rules.四槓流れ.流局)
                 {
-                    return true;
+                    if (四開槓)
+                    {
+                        return true;
+                    }
                 }
                 if (四風子連打)
                 {
