@@ -20,5 +20,6 @@ namespace TSKT.Mahjongs
         public 喰い替え 喰い替え = 喰い替え.なし;
         public OpenRiichi openRiichi = OpenRiichi.あり;
         public 明槓槓ドラ 明槓槓ドラ = 明槓槓ドラ.打牌後;
+        public 四槓流れ 四槓流れ = 四槓流れ.流局;
     }
 }
