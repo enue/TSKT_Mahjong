@@ -31,8 +31,8 @@ namespace TSKT.Mahjongs.Hands
         public TileType[] Pairs { get; }
         public (TileType left, TileType right)[] 塔子 { get; }
         public readonly Meld[] melds;
-        public readonly int 国士無双向聴数;
-        public readonly int 七対子向聴数;
+        readonly int 国士無双向聴数;
+        readonly int 七対子向聴数;
         public readonly int redTileCount;
 
         Structure(Structure source, TileType[] unsolvedTiles, TileType[]? isolatedTiles = null, Set[]? sets = null, TileType[]? pairs = null, (TileType left, TileType right)[]? 塔子 = null)
@@ -87,7 +87,7 @@ namespace TSKT.Mahjongs.Hands
                     result -= 1;
                 }
 
-                if (melds.Length == 0)
+                if (melds.Length == 0 && 塔子.Length == 0 && Sets.Length == 0)
                 {
                     result = Mathf.Min(result, 七対子向聴数);
                     result = Mathf.Min(result, 国士無双向聴数);
@@ -167,36 +167,13 @@ namespace TSKT.Mahjongs.Hands
                 {
                     continue;
                 }
-                // 浮き牌
+                // 浮き牌に追加
+                // ただし浮き牌内で対子はできないようになっている
                 {
-                    // ただし浮き牌内で塔子、対子ができないようにする
-                    bool canAddIsolatedTile = true;
-                    if (tile.IsSuited())
-                    {
-                        if (tile.Number() > 1)
-                        {
-                            var minusOne = TileTypeUtil.Get(tile.Suit(), tile.Number() - 1);
-                            if (System.Array.IndexOf(task.IsolatedTiles, minusOne) >= 0)
-                            {
-                                canAddIsolatedTile = false;
-                            }
-                        }
-                        if (tile.Number() > 2)
-                        {
-                            var minusTwo = TileTypeUtil.Get(tile.Suit(), tile.Number() - 2);
-                            if (System.Array.IndexOf(task.IsolatedTiles, minusTwo) >= 0)
-                            {
-                                canAddIsolatedTile = false;
-                            }
-                        }
-                    }
-                    if (canAddIsolatedTile)
-                    {
-                        var structure = new Structure(task,
-                            unsolvedTiles: task.unsolvedTiles.AsSpan(1).ToArray(),
-                            isolatedTiles: Append(task.IsolatedTiles, tile));
-                        tasks.Push(structure);
-                    }
+                    var structure = new Structure(task,
+                        unsolvedTiles: task.unsolvedTiles.AsSpan(1).ToArray(),
+                        isolatedTiles: Append(task.IsolatedTiles, tile));
+                    tasks.Push(structure);
                 }
 
                 if (tile.IsSuited() && tile.Number() <= 8)
