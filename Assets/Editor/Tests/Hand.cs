@@ -46,6 +46,15 @@ namespace TSKT.Tests.Mahjongs
             TileType.P1, TileType.P1,
             TileType.白, TileType.白, TileType.白
         )]
+        [TestCase(2,
+            TileType.M1, TileType.M1,
+            TileType.S3, TileType.S3,
+            TileType.P5, TileType.P5,
+            TileType.中, TileType.中,
+            TileType.白, TileType.白,
+            TileType.白, TileType.白,
+            TileType.發
+        )]
         public void 七対子向聴数(int expected, params TileType[] tiles)
         {
             var round = Game.Create(0, new RuleSetting()).Round;
@@ -63,6 +72,7 @@ namespace TSKT.Tests.Mahjongs
             {
                 Assert.AreEqual(0, hand.GetWinningTiles().Length);
             }
+            Assert.AreEqual(expected, hand.Solve().向聴数);
         }
         [Test]
         [TestCase(new[] { 役.門前清自摸和, 役.七対子 },
