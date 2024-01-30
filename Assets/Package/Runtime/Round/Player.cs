@@ -44,7 +44,7 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        public bool Is親 => 局.dealer == index;
+        public bool Is親 => 局.親Index == index;
 
         public int Score
         {
@@ -64,16 +64,16 @@ namespace TSKT.Mahjongs.Rounds
         {
             this.局 = 局;
 
-            捨て牌 = source.discardedTiles.Select(_ => 局.壁牌.allTiles[_]).ToList();
-            河 = source.discardPile.Select(_ => 局.壁牌.allTiles[_]).ToList();
-            ダブルリーチ = source.doubleRiichi;
-            手牌 = source.hand.Deserialize(this);
+            捨て牌 = source.捨て牌.Select(_ => 局.壁牌.allTiles[_]).ToList();
+            河 = source.河.Select(_ => 局.壁牌.allTiles[_]).ToList();
+            ダブルリーチ = source.ダブルリーチ;
+            手牌 = source.手牌.Deserialize(this);
             index = source.index;
-            オープンリーチ = source.openRiichi;
+            オープンリーチ = source.オープンリーチ;
             RiichiIndexInDiscardPile = (source.riichiIndexInDiscardPile >= 0) ? source.riichiIndexInDiscardPile : (int?)null;
             RiichiIndexInTotalDiscardTiles = (source.riichiIndexInTotalDiscardTiles >= 0) ? source.riichiIndexInTotalDiscardTiles : (int?)null;
-            自風 = source.wind;
-            フリテンByOtherPlayers = source.furitenByOtherPlayers;
+            自風 = source.自風;
+            フリテンByOtherPlayers = source.フリテンByOtherPlayers;
             一発 = source.一発;
         }
 
@@ -242,7 +242,7 @@ namespace TSKT.Mahjongs.Rounds
                 .Any(_ => !meld.Is喰い替え(_));
         }
 
-        public bool CanClosedQuad(TileType tile)
+        public bool Can暗槓(TileType tile)
         {
             if (局.CountKan == 4)
             {
@@ -257,20 +257,20 @@ namespace TSKT.Mahjongs.Rounds
             if (リーチ)
             {
                 // 待ち牌が変わる暗槓はできない
-                TileType[] winningTilesBeforeDraw;
-                TileType[] winningTilesAfterClosedQuad;
+                TileType[] 和了牌BeforeDraw;
+                TileType[] 和了牌After暗槓;
                 {
                     var clone = 手牌.Clone();
                     var drewTileIndex = clone.tiles.FindIndex(_ => _.type == tile);
                     clone.tiles.RemoveAt(drewTileIndex);
-                    winningTilesBeforeDraw = clone.Get和了牌();
+                    和了牌BeforeDraw = clone.Get和了牌();
                 }
                 {
                     var clone = 手牌.Clone();
-                    clone.BuildClosedQuad(tile);
-                    winningTilesAfterClosedQuad = clone.Get和了牌();
+                    clone.Build暗槓(tile);
+                    和了牌After暗槓 = clone.Get和了牌();
                 }
-                if (!winningTilesBeforeDraw.SequenceEqual(winningTilesAfterClosedQuad))
+                if (!和了牌BeforeDraw.SequenceEqual(和了牌After暗槓))
                 {
                     return false;
                 }
@@ -279,7 +279,7 @@ namespace TSKT.Mahjongs.Rounds
             return true;
         }
 
-        public bool CanOpenQuad(TileType tile)
+        public bool Can大明槓(TileType tile)
         {
             if (リーチ)
             {
@@ -291,7 +291,7 @@ namespace TSKT.Mahjongs.Rounds
             }
             return 手牌.tiles.Count(_ => _.type == tile) >= 3;
         }
-        public bool CanAddedOpenQuad(TileType tile)
+        public bool Can加槓(TileType tile)
         {
             if (リーチ)
             {

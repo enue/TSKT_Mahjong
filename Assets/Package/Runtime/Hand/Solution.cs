@@ -16,7 +16,7 @@ namespace TSKT.Mahjongs.Hands
             (向聴数, structures) = Structure.Build(hand);
         }
 
-        public CompletedHand ChoiceCompletedHand(Player player,
+        public 和了 Choice和了(Player player,
             TileType newTileInHand,
             Player? ronTarget,
             bool 嶺上,
@@ -27,7 +27,7 @@ namespace TSKT.Mahjongs.Hands
             bool 人和,
             bool 槍槓)
         {
-            return ChoiceCompletedHand(
+            return Choice和了(
                 newTileInHand,
                 ownWind: player.自風,
                 roundWind: player.局.場風,
@@ -45,10 +45,10 @@ namespace TSKT.Mahjongs.Hands
                 doraTiles: player.局.王牌.DoraTiles,
                 uraDoraTiles: player.局.王牌.UraDoraTiles,
                 槍槓: 槍槓,
-                handCap: player.局.game.rule.handCap);
+                handCap: player.局.game.rule.役満複合);
         }
 
-        public CompletedHand ChoiceCompletedHand(TileType newTileInHand, TileType ownWind, TileType roundWind,
+        public 和了 Choice和了(TileType newTileInHand, TileType ownWind, TileType roundWind,
             Player? ronTarget,
             bool riichi,
             bool doubleRiichi,
@@ -63,13 +63,13 @@ namespace TSKT.Mahjongs.Hands
             TileType[] doraTiles,
             TileType[] uraDoraTiles,
             bool 槍槓,
-            Rules.HandCap handCap)
+            Rules.役満複合上限 handCap)
         {
-            var result = (score: int.MinValue, completed: default(CompletedHand));
+            var result = (score: int.MinValue, completed: default(和了));
 
             foreach (var it in structures)
             {
-                var item = new CompletedHand(it, newTileInHand, ownWind: ownWind, roundWind: roundWind,
+                var item = new 和了(it, newTileInHand, ownWind: ownWind, roundWind: roundWind,
                     ronTarget: ronTarget,
                     riichi: riichi,
                     doubleRiichi: doubleRiichi,

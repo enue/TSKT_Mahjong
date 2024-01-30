@@ -14,15 +14,15 @@ namespace TSKT.Tests.Mahjongs
         [Test]
         public void Rules()
         {
-            foreach (OpenRiichi openRiichi in System.Enum.GetValues(typeof(OpenRiichi)))
+            foreach (オープンリーチ openRiichi in System.Enum.GetValues(typeof(オープンリーチ)))
             {
                 Execute(false, openRiichi, default, default, default, default, default, default, default);
             }
-            foreach (HandCap handCap in System.Enum.GetValues(typeof(HandCap)))
+            foreach (役満複合上限 handCap in System.Enum.GetValues(typeof(役満複合上限)))
             {
                 Execute(false, default, handCap, default, default, default, default, default, default);
             }
-            foreach (RedTile redTile in System.Enum.GetValues(typeof(RedTile)))
+            foreach (赤牌 redTile in System.Enum.GetValues(typeof(赤牌)))
             {
                 Execute(false, default, default, redTile, default, default, default, default, default);
             }
@@ -34,7 +34,7 @@ namespace TSKT.Tests.Mahjongs
             {
                 Execute(false, default, default, default, default, 四家立直, default, default, default);
             }
-            foreach (TripleRon tripleRon in System.Enum.GetValues(typeof(TripleRon)))
+            foreach (トリロン tripleRon in System.Enum.GetValues(typeof(トリロン)))
             {
                 Execute(false, default, default, default, default, default, tripleRon, default, default);
             }
@@ -49,18 +49,18 @@ namespace TSKT.Tests.Mahjongs
         }
 
         [Test]
-        [TestCase(true, OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後, アガリ止め.なし)]
-        [TestCase(true, OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後, アガリ止め.なし)]
-        [TestCase(true, OpenRiichi.なし, HandCap.役満, RedTile.赤無し, 喰い替え.あり, 四家立直.続行, TripleRon.流局, 明槓槓ドラ.即ノリ, アガリ止め.あり)]
-        [TestCase(true, OpenRiichi.あり, HandCap.ダブル役満, RedTile.赤ドラ3, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後, アガリ止め.あり)]
+        [TestCase(true, オープンリーチ.あり, 役満複合上限.トリプル役満, 赤牌.赤ドラ4, 喰い替え.なし, 四家立直.流局, トリロン.有効, 明槓槓ドラ.打牌後, アガリ止め.なし)]
+        [TestCase(true, オープンリーチ.あり, 役満複合上限.トリプル役満, 赤牌.赤ドラ4, 喰い替え.なし, 四家立直.流局, トリロン.有効, 明槓槓ドラ.打牌後, アガリ止め.なし)]
+        [TestCase(true, オープンリーチ.なし, 役満複合上限.役満, 赤牌.赤無し, 喰い替え.あり, 四家立直.続行, トリロン.流局, 明槓槓ドラ.即ノリ, アガリ止め.あり)]
+        [TestCase(true, オープンリーチ.あり, 役満複合上限.ダブル役満, 赤牌.赤ドラ3, 喰い替え.なし, 四家立直.流局, トリロン.有効, 明槓槓ドラ.打牌後, アガリ止め.あり)]
         public void Execute(
             bool verbose,
-            OpenRiichi openRiichi,
-            HandCap handCap,
-            RedTile redTile,
+            オープンリーチ openRiichi,
+            役満複合上限 handCap,
+            赤牌 redTile,
             喰い替え kuikae,
             四家立直 allRiichi,
-            TripleRon tripleRon,
+            トリロン tripleRon,
             明槓槓ドラ 明槓槓ドラ,
             アガリ止め アガリ止め)
         {
@@ -72,8 +72,8 @@ namespace TSKT.Tests.Mahjongs
                 {
                     アガリ止め = アガリ止め,
                 },
-                openRiichi = openRiichi,
-                handCap = handCap,
+                オープンリーチ = openRiichi,
+                役満複合 = handCap,
                 redTile = redTile,
                 喰い替え = kuikae,
                 四家立直 = allRiichi,

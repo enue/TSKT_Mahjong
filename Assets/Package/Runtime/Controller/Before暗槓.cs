@@ -18,7 +18,7 @@ namespace TSKT.Mahjongs
         public Player DeclarePlayer { get; }
 
         public readonly TileType tile;
-        Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
+        Dictionary<Player, 和了> PlayerRons { get; } = new Dictionary<Player, 和了>();
 
         public Before暗槓(Player declarePlayer, TileType tile)
         {
@@ -42,7 +42,7 @@ namespace TSKT.Mahjongs
                 {
                     continue;
                 }
-                var completed = solution.ChoiceCompletedHand(ronPlayer, tile,
+                var completed = solution.Choice和了(ronPlayer, tile,
                     ronTarget: declarePlayer,
                     嶺上: false,
                     海底: false,
@@ -58,16 +58,16 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public static Before暗槓 FromSerializable(in Serializables.BeforeClosedQuad source)
+        public static Before暗槓 FromSerializable(in Serializables.Before暗槓 source)
         {
-            var round = source.round.Deserialize();
+            var round = source.局.Deserialize();
             var player = round.players[(int)source.declarePlayerIndex];
             return new Before暗槓(player, source.tile);
         }
 
-        public Serializables.BeforeClosedQuad ToSerializable()
+        public Serializables.Before暗槓 ToSerializable()
         {
-            return new Serializables.BeforeClosedQuad(this);
+            return new Serializables.Before暗槓(this);
         }
         public Serializables.Session SerializeSession()
         {
@@ -91,15 +91,10 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        AfterDraw BuildQuad()
-        {
-            return 局.Execute暗槓(DeclarePlayer, tile);
-        }
-
-        public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
+        public AfterDraw? DoDefaultAction(out 局Result? roundResult)
         {
             roundResult = null;
-            return BuildQuad();
+            return 局.Execute暗槓(DeclarePlayer, tile);
         }
 
         public ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player)

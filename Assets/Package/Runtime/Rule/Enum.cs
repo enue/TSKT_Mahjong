@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace TSKT.Mahjongs.Rules
 {
-    public enum RedTile
+    public enum 赤牌
     {
         赤無し,
         赤ドラ3,
@@ -16,13 +16,13 @@ namespace TSKT.Mahjongs.Rules
         半荘戦,
         一荘戦,
     }
-    public enum TripleRon
+    public enum トリロン
     {
         有効,
         流局,
         // 頭ハネ
     }
-    public enum HandCap
+    public enum 役満複合上限
     {
         役満,
         ダブル役満,
@@ -38,7 +38,7 @@ namespace TSKT.Mahjongs.Rules
         なし,
         あり,
     }
-    public enum OpenRiichi
+    public enum オープンリーチ
     {
         なし,
         あり,

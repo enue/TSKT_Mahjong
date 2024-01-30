@@ -13,7 +13,7 @@ namespace TSKT.Mahjongs
         public PlayerIndex DiscardPlayerIndex => DiscardPlayer.index;
         public Player DiscardPlayer { get; }
 
-        Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
+        Dictionary<Player, 和了> PlayerRons { get; } = new Dictionary<Player, 和了>();
 
         public Tile 捨て牌 => 局.players[(int)DiscardPlayerIndex].河.Last();
 
@@ -41,7 +41,7 @@ namespace TSKT.Mahjongs
                     continue;
                 }
                 var 一巡目 = ronPlayer.捨て牌.Count == 0;
-                var completed = solution.ChoiceCompletedHand(ronPlayer, 捨て牌.type,
+                var completed = solution.Choice和了(ronPlayer, 捨て牌.type,
                     ronTarget: DiscardPlayer,
                     嶺上: false,
                     海底: false,
@@ -60,7 +60,7 @@ namespace TSKT.Mahjongs
 
         static public AfterDiscard FromSerializable(in Serializables.AfterDiscard source)
         {
-            var round = source.round.Deserialize();
+            var round = source.局.Deserialize();
             var player = round.players[(int)source.discardPlayerIndex];
             return new AfterDiscard(player);
         }
@@ -169,21 +169,21 @@ namespace TSKT.Mahjongs
             }
         }
 
-        AfterDraw? AdvanceTurn(out RoundResult? roundResult)
+        AfterDraw? AdvanceTurn(out 局Result? 局Result)
         {
             TryAttachFuriten();
 
             if (CanRoundContinue)
             {
                 var playerIndex = ((int)DiscardPlayerIndex + 1) % 局.players.Length;
-                roundResult = null;
+                局Result = null;
                 return 局.players[playerIndex].Draw();
             }
 
             if (ShouldSuspendRound)
             {
-                var result = 局.game.AdvanceRoundBy途中流局(out var gameResult);
-                roundResult = new RoundResult(gameResult);
+                var result = 局.game.Advance局By途中流局(out var gameResult);
+                局Result = new 局Result(gameResult);
                 return result;
             }
 
@@ -257,20 +257,20 @@ namespace TSKT.Mahjongs
             {
                 if (dealerState == ExhausiveDrawType.ノーテン)
                 {
-                    var result = 局.game.AdvanceRoundByノーテン流局(out var gameResult);
-                    roundResult = new RoundResult(gameResult, scoreDiffs, states);
+                    var result = 局.game.Advance局Byノーテン流局(out var gameResult);
+                    局Result = new 局Result(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.流し満貫)
                 {
-                    var result = 局.game.AdvanceRoundBy親上がり(out var gameResult);
-                    roundResult = new RoundResult(gameResult, scoreDiffs, states);
+                    var result = 局.game.Advance局By親上がり(out var gameResult);
+                    局Result = new 局Result(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.テンパイ)
                 {
-                    var result = 局.game.AdvanceRoundByテンパイ流局(out var gameResult);
-                    roundResult = new RoundResult(gameResult, scoreDiffs, states);
+                    var result = 局.game.Advance局Byテンパイ流局(out var gameResult);
+                    局Result = new 局Result(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else
@@ -281,8 +281,8 @@ namespace TSKT.Mahjongs
             else
             {
                 // 子の流し満貫
-                var result = 局.game.AdvanceRoundBy子上がり(out var gameResult);
-                roundResult = new RoundResult(gameResult, scoreDiffs, states);
+                var result = 局.game.Advance局By子上がり(out var gameResult);
+                局Result = new 局Result(gameResult, scoreDiffs, states);
                 return result;
             }
         }
@@ -304,15 +304,12 @@ namespace TSKT.Mahjongs
             return false;
         }
 
-        /// <summary>
-        /// 大明槓
-        /// </summary>
-        bool CanOpenQuad(out Commands.Kan[] commands)
+        bool Can大明槓(out Commands.Kan[] commands)
         {
             var result = new List<Commands.Kan>();
             foreach (var player in 局.players)
             {
-                if (CanOpenQuad(player, out var command))
+                if (Can大明槓(player, out var command))
                 {
                     result.Add(command);
                 }
@@ -321,10 +318,7 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        /// <summary>
-        /// 大明槓
-        /// </summary>
-        bool CanOpenQuad(Player player, out Commands.Kan command)
+        bool Can大明槓(Player player, out Commands.Kan command)
         {
             if (player == DiscardPlayer)
             {
@@ -337,7 +331,7 @@ namespace TSKT.Mahjongs
                 command = default;
                 return false;
             }
-            if (!player.CanOpenQuad(捨て牌.type))
+            if (!player.Can大明槓(捨て牌.type))
             {
                 command = default;
                 return false;
@@ -427,7 +421,7 @@ namespace TSKT.Mahjongs
             return true;
         }
 
-        public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
+        public AfterDraw? DoDefaultAction(out 局Result? roundResult)
         {
             return AdvanceTurn(out roundResult);
         }
@@ -445,7 +439,7 @@ namespace TSKT.Mahjongs
             CanChi(player, out var chies);
             CanPon(player, out var pons);
             Commands.Kan? kan;
-            if (CanOpenQuad(player, out var _kan))
+            if (Can大明槓(player, out var _kan))
             {
                 kan = _kan;
             }
@@ -479,7 +473,7 @@ namespace TSKT.Mahjongs
                 {
                     result.AddRange(pons.Cast<ICommand>());
                 }
-                if (CanOpenQuad(out var kans))
+                if (Can大明槓(out var kans))
                 {
                     result.AddRange(kans.Cast<ICommand>());
                 }

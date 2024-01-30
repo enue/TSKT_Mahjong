@@ -47,7 +47,7 @@ namespace TSKT.Mahjongs
                     .Select(_ => (_.Executor, _.RonResult))
                     .ToArray();
                 executedCommands.AddRange(selectedCommands);
-                return CompletedHand.Execute(rons);
+                return 和了.Execute(rons);
             }
 
             var selectedCommand = selectedCommands.First();
@@ -63,39 +63,39 @@ namespace TSKT.Mahjongs
         public readonly AfterDiscard? afterDiscard;
         public readonly AfterDraw? afterDraw;
 
-        public readonly RoundResult? roundResult;
-        public readonly Dictionary<Player, CompletedResult>? completedResults;
+        public readonly 局Result? 局Result;
+        public readonly Dictionary<Player, 和了Result>? 和了Results;
 
         public CommandResult(AfterDiscard? nextController,
-            RoundResult? roundResult = null,
-            Dictionary<Player, CompletedResult>? completedResults = null)
+            局Result? roundResult = null,
+            Dictionary<Player, 和了Result>? completedResults = null)
         {
             this.nextController = nextController;
             afterDiscard = nextController;
-            this.roundResult = roundResult;
-            this.completedResults = completedResults;
+            this.局Result = roundResult;
+            this.和了Results = completedResults;
 
             afterDraw = null;
         }
         public CommandResult(AfterDraw? nextController,
-            RoundResult? roundResult = null,
-            Dictionary<Player, CompletedResult>? completedResults = null)
+            局Result? roundResult = null,
+            Dictionary<Player, 和了Result>? completedResults = null)
         {
             this.nextController = nextController;
             afterDraw = nextController;
-            this.roundResult = roundResult;
-            this.completedResults = completedResults;
+            this.局Result = roundResult;
+            this.和了Results = completedResults;
 
             afterDiscard = null;
         }
         public CommandResult(IBefore槓? nextController,
-            RoundResult? roundResult = null,
-            Dictionary<Player, CompletedResult>? completedResults = null)
+            局Result? roundResult = null,
+            Dictionary<Player, 和了Result>? completedResults = null)
         {
             this.nextController = nextController;
 
-            this.roundResult = roundResult;
-            this.completedResults = completedResults;
+            this.局Result = roundResult;
+            this.和了Results = completedResults;
 
             afterDiscard = null;
             afterDraw = null;

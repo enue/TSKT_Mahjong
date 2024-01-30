@@ -6,15 +6,12 @@ using System.Linq;
 
 namespace TSKT.Mahjongs.Rounds
 {
-    public readonly struct CompletedHand
+    public readonly struct 和了
     {
         public readonly Hands.Structure structure;
         public readonly TileType[] 浮き牌 => structure.浮き牌;
         public readonly Hands.Structure.面子[] 面子 => structure.面子s;
         public readonly TileType[] 対子 => structure.対子;
-        /// <summary>
-        /// 副露
-        /// </summary>
         public readonly 副露[] 副露 => structure.副露;
         public readonly int 赤牌 => structure.赤牌;
 
@@ -27,14 +24,14 @@ namespace TSKT.Mahjongs.Rounds
         public readonly Dictionary<役, int> 役満;
 
         public readonly bool 役無し => 役.Count == 0 && 役満.Count == 0;
-        public readonly int 翻 => 役.Values.Sum() + Dora + UraDora + 赤牌;
+        public readonly int 翻 => 役.Values.Sum() + ドラ + 裏ドラ + 赤牌;
         public readonly bool 面前;
         public readonly bool 自摸 => ronTarget == null;
         public readonly TileType[] doraTiles;
         public readonly TileType[] uraDoraTiles;
         readonly IEnumerable<TileType> AllUsedTiles => structure.AllUsedTiles;
 
-        public CompletedHand(Hands.Structure structure, TileType 和了牌, TileType ownWind, TileType roundWind,
+        public 和了(Hands.Structure structure, TileType 和了牌, TileType ownWind, TileType roundWind,
             Player? ronTarget,
             bool riichi,
             bool doubleRiichi,
@@ -326,7 +323,7 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly public int Fu
+        readonly public int 符
         {
             get
             {
@@ -500,7 +497,7 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly public int Dora
+        readonly public int ドラ
         {
             get
             {
@@ -513,7 +510,7 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly public int UraDora
+        readonly public int 裏ドラ
         {
             get
             {
@@ -526,18 +523,18 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly public (ScoreType? type, int score) 基本点(Rules.HandCap handCap)
+        readonly public (ScoreType? type, int score) 基本点(Rules.役満複合上限 handCap)
         {
             int maxYakumanCount;
             switch(handCap)
             {
-                case Rules.HandCap.役満:
+                case Rules.役満複合上限.役満:
                     maxYakumanCount = 1;
                     break;
-                case Rules.HandCap.ダブル役満:
+                case Rules.役満複合上限.ダブル役満:
                     maxYakumanCount = 2;
                     break;
-                case Rules.HandCap.トリプル役満:
+                case Rules.役満複合上限.トリプル役満:
                     maxYakumanCount = 3;
                     break;
                 default:
@@ -581,7 +578,7 @@ namespace TSKT.Mahjongs.Rounds
                 return (ScoreType.数え役満, 8000);
             }
 
-            var fu = Fu;
+            var fu = 符;
 
             var value = fu * (1 << (han + 2));
             if (value < 2000)
@@ -594,9 +591,9 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly public CompletedResult BuildResult(Player player)
+        readonly public 和了Result BuildResult(Player player)
         {
-            var result = new CompletedResult(this, player);
+            var result = new 和了Result(this, player);
             foreach(var it in player.局.game.completedHandModifiers)
             {
                 it.Modify(ref result);
@@ -1330,22 +1327,22 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        public static CommandResult Execute(params (Player player, CompletedHand hand)[] completedHands)
+        public static CommandResult Execute(params (Player player, 和了 hand)[] 和了)
         {
-            var round = completedHands[0].player.局;
+            var round = 和了[0].player.局;
             var game = round.game;
 
-            if (completedHands.Length == 3
-                && game.rule.tripleRon == Rules.TripleRon.流局)
+            if (和了.Length == 3
+                && game.rule.tripleRon == Rules.トリロン.流局)
             {
-                var playerResults = new Dictionary<Player, CompletedResult>();
-                var result = game.AdvanceRoundBy子上がり(out var gameResult);
-                var roundResult = new RoundResult(gameResult, scoreDiffs: round.players.ToDictionary(_ => _, _ => 0));
+                var playerResults = new Dictionary<Player, 和了Result>();
+                var result = game.Advance局By子上がり(out var gameResult);
+                var roundResult = new 局Result(gameResult, scoreDiffs: round.players.ToDictionary(_ => _, _ => 0));
                 return new CommandResult(result, roundResult, playerResults);
             }
             else
             {
-                var playerResults = completedHands.ToDictionary(_ => _.player, _ => _.hand.BuildResult(_.player));
+                var playerResults = 和了.ToDictionary(_ => _.player, _ => _.hand.BuildResult(_.player));
 
                 var scoreDiffs = new Dictionary<Player, int>();
                 foreach (var it in round.players)
@@ -1361,9 +1358,9 @@ namespace TSKT.Mahjongs.Rounds
                     }
                 }
 
-                if (completedHands.Length == 1)
+                if (和了.Length == 1)
                 {
-                    foreach (var (player, hand) in completedHands)
+                    foreach (var (player, hand) in 和了)
                     {
                         player.Score += game.リーチ棒スコア;
                     }
@@ -1371,8 +1368,8 @@ namespace TSKT.Mahjongs.Rounds
                 else
                 {
                     // ダブロンのリーチ棒回収 : ロンされたプレイヤーから順番が近いほうをがリーチ棒を回収する
-                    var ronTarget = completedHands[0].hand.ronTarget!;
-                    var (player, hand) = completedHands
+                    var ronTarget = 和了[0].hand.ronTarget!;
+                    var (player, hand) = 和了
                         .OrderBy(_ => (_.player.index - ronTarget.index + _.player.局.players.Length) % _.player.局.players.Length)
                         .First();
                     player.Score += game.リーチ棒スコア;
@@ -1384,16 +1381,16 @@ namespace TSKT.Mahjongs.Rounds
                     scoreDiffs[it] += it.Score;
                 }
 
-                if (completedHands.Select(_ => _.player).Contains(round.親))
+                if (和了.Select(_ => _.player).Contains(round.親))
                 {
-                    var result = game.AdvanceRoundBy親上がり(out var gameResult);
-                    var roundResult = new RoundResult(gameResult, scoreDiffs);
+                    var result = game.Advance局By親上がり(out var gameResult);
+                    var roundResult = new 局Result(gameResult, scoreDiffs);
                     return new CommandResult(result, roundResult, playerResults);
                 }
                 else
                 {
-                    var result = game.AdvanceRoundBy子上がり(out var gameResult);
-                    var roundResult = new RoundResult(gameResult, scoreDiffs);
+                    var result = game.Advance局By子上がり(out var gameResult);
+                    var roundResult = new 局Result(gameResult, scoreDiffs);
                     return new CommandResult(result, roundResult, playerResults);
                 }
             }

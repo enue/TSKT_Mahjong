@@ -13,14 +13,14 @@ namespace TSKT.Mahjongs.Commands
         public static CommandPriority GetPriority => CommandPriority.Pon;
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor { get; }
-        public readonly (Tile, Tile) pair;
+        public readonly (Tile, Tile) 対子;
         public readonly Tile TargetTile => Controller.捨て牌;
 
-        public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) pair)
+        public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) 対子)
         {
             Controller = afterDiscard;
             Executor = player;
-            this.pair = pair;
+            this.対子 = 対子;
         }
         readonly public CommandResult Execute()
         {
@@ -34,13 +34,13 @@ namespace TSKT.Mahjongs.Commands
             var tile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            Executor.手牌.tiles.Remove(pair.Item1);
-            Executor.手牌.tiles.Remove(pair.Item2);
+            Executor.手牌.tiles.Remove(対子.Item1);
+            Executor.手牌.tiles.Remove(対子.Item2);
 
             var meld = new 副露(
                 (tile, Controller.DiscardPlayer.index),
-                (pair.Item1, Executor.index),
-                (pair.Item2, Executor.index));
+                (対子.Item1, Executor.index),
+                (対子.Item2, Executor.index));
             Executor.手牌.副露.Add(meld);
 
             Executor.OnTurnStart();
@@ -48,8 +48,8 @@ namespace TSKT.Mahjongs.Commands
         }
 
 
-        public (TileType, bool, TileType, bool, TileType, bool) Key => 副露Util.GetKey(TargetTile, pair.Item1, pair.Item2);
-        public 副露 副露 => new 副露((TargetTile, Controller.DiscardPlayer.index), (pair.Item1, Executor.index), (pair.Item2, Executor.index));
+        public (TileType, bool, TileType, bool, TileType, bool) Key => 副露Util.GetKey(TargetTile, 対子.Item1, 対子.Item2);
+        public 副露 副露 => new((TargetTile, Controller.DiscardPlayer.index), (対子.Item1, Executor.index), (対子.Item2, Executor.index));
         public int RedTileCount
         {
             get
@@ -59,11 +59,11 @@ namespace TSKT.Mahjongs.Commands
                 {
                     ++result;
                 }
-                if (pair.Item1.red)
+                if (対子.Item1.red)
                 {
                     ++result;
                 }
-                if (pair.Item2.red)
+                if (対子.Item2.red)
                 {
                     ++result;
                 }

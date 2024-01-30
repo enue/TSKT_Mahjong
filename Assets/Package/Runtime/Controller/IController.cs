@@ -11,7 +11,7 @@ namespace TSKT.Mahjongs
         局 局 { get; }
         bool Consumed { get; }
 
-        AfterDraw? DoDefaultAction(out RoundResult? roundResult);
+        AfterDraw? DoDefaultAction(out 局Result? roundResult);
         ICommand[] ExecutableCommands { get; }
         ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player);
         DiscardingCommandSet GetExecutableDiscardingCommandsBy(Player player);
@@ -33,9 +33,9 @@ namespace TSKT.Mahjongs
         readonly Commands.Discard[]? discards;
         public readonly Commands.Discard[] Discards => discards ?? System.Array.Empty<Commands.Discard>();
         readonly Commands.Discard[]? riichies;
-        public readonly Commands.Discard[] Riichies => riichies ?? System.Array.Empty<Commands.Discard>();
+        public readonly Commands.Discard[] リーチ => riichies ?? System.Array.Empty<Commands.Discard>();
         readonly Commands.Discard[]? openRiichies;
-        public readonly Commands.Discard[] OpenRiichies => openRiichies ?? System.Array.Empty<Commands.Discard>();
+        public readonly Commands.Discard[] オープンリーチ => openRiichies ?? System.Array.Empty<Commands.Discard>();
         public readonly Commands.ツモ上がり? ツモ上がり { get; }
         public readonly Commands.九種九牌? 九種九牌 { get; }
 
@@ -64,8 +64,8 @@ namespace TSKT.Mahjongs
                 return 暗槓.Length == 0
                     && 加槓.Length == 0
                     && Discards.Length == 0
-                    && Riichies.Length == 0
-                    && OpenRiichies.Length == 0
+                    && リーチ.Length == 0
+                    && オープンリーチ.Length == 0
                     && !ツモ上がり.HasValue
                     && !九種九牌.HasValue;
             }
@@ -79,8 +79,8 @@ namespace TSKT.Mahjongs
                     && 暗槓.Length == 0
                     && !九種九牌.HasValue
                     && !ツモ上がり.HasValue
-                    && Riichies.Length == 0
-                    && OpenRiichies.Length == 0;
+                    && リーチ.Length == 0
+                    && オープンリーチ.Length == 0;
             }
         }
 
@@ -110,14 +110,14 @@ namespace TSKT.Mahjongs
                         result = it.Priority;
                     }
                 }
-                foreach (var it in Riichies)
+                foreach (var it in リーチ)
                 {
                     if (result < it.Priority)
                     {
                         result = it.Priority;
                     }
                 }
-                foreach (var it in OpenRiichies)
+                foreach (var it in オープンリーチ)
                 {
                     if (result < it.Priority)
                     {

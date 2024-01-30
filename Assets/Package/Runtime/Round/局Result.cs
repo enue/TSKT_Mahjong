@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace TSKT.Mahjongs.Rounds
 {
-    public class RoundResult
+    public class 局Result
     {
         readonly public GameResult? gameResult;
         readonly public Dictionary<Player, int>? scoreDiffs;
         readonly public Dictionary<Player, ExhausiveDrawType>? states;
 
-        public RoundResult(GameResult? gameResult,
+        public 局Result(GameResult? gameResult,
             Dictionary<Player, int>? scoreDiffs = null,
             Dictionary<Player, ExhausiveDrawType>? states = null)
         {

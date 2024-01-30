@@ -1,9 +1,6 @@
 ﻿#nullable enable
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using TSKT.Mahjongs.Rounds;
+using UnityEngine;
 
 namespace TSKT.Mahjongs.Serializables
 {
@@ -14,80 +11,80 @@ namespace TSKT.Mahjongs.Serializables
         public AfterDiscard afterDiscard;
         public bool hasAfterDraw;
         public AfterDraw afterDraw;
-        public bool hasBeforeClosedQuad;
-        public BeforeClosedQuad beforeClosedQuad;
-        public bool hasBeforeAddedOpenQuad;
-        public BeforeAddedOpenQuad beforeAddedOpenQuad;
+        public bool hasBefore暗槓;
+        public Before暗槓 before暗槓;
+        public bool hasBefore加槓;
+        public Before加槓 before加槓;
 
         public Session(Mahjongs.AfterDiscard source)
         {
             hasAfterDiscard = true;
             hasAfterDraw = false;
-            hasBeforeAddedOpenQuad = false;
-            hasBeforeClosedQuad = false;
+            hasBefore加槓 = false;
+            hasBefore暗槓 = false;
 
             afterDiscard = source.ToSerializable();
             afterDraw = default;
-            beforeAddedOpenQuad = default;
-            beforeClosedQuad = default;
+            before加槓 = default;
+            before暗槓 = default;
         }
 
         public Session(Mahjongs.AfterDraw source)
         {
             hasAfterDiscard = false;
             hasAfterDraw = true;
-            hasBeforeAddedOpenQuad = false;
-            hasBeforeClosedQuad = false;
+            hasBefore加槓 = false;
+            hasBefore暗槓 = false;
 
             afterDiscard = default;
             afterDraw = source.ToSerializable();
-            beforeAddedOpenQuad = default;
-            beforeClosedQuad = default;
+            before加槓 = default;
+            before暗槓 = default;
         }
 
         public Session(Mahjongs.Before加槓 source)
         {
             hasAfterDiscard = false;
             hasAfterDraw = false;
-            hasBeforeAddedOpenQuad = true;
-            hasBeforeClosedQuad = false;
+            hasBefore加槓 = true;
+            hasBefore暗槓 = false;
 
             afterDiscard = default;
             afterDraw = default;
-            beforeAddedOpenQuad = source.ToSerializable();
-            beforeClosedQuad = default;
+            before加槓 = source.ToSerializable();
+            before暗槓 = default;
         }
 
         public Session(Mahjongs.Before暗槓 source)
         {
             hasAfterDiscard = false;
             hasAfterDraw = false;
-            hasBeforeAddedOpenQuad = false;
-            hasBeforeClosedQuad = true;
+            hasBefore加槓 = false;
+            hasBefore暗槓 = true;
 
             afterDiscard = default;
             afterDraw = default;
-            beforeAddedOpenQuad = default;
-            beforeClosedQuad = source.ToSerializable();
+            before加槓 = default;
+            before暗槓 = source.ToSerializable();
         }
 
         readonly public IController Deserialize()
         {
             if (hasAfterDiscard)
             {
-                return afterDiscard.Deserialzie();
+                return afterDiscard.Deserialize();
             }
             if (hasAfterDraw)
             {
-                return afterDraw.Deserialzie();
+                return afterDraw.Deserialize();
             }
-            if (hasBeforeAddedOpenQuad)
+            if (hasBefore加槓)
             {
-                return beforeAddedOpenQuad.Deserialzie();
+                return before加槓.Deserialize();
             }
-            if (hasBeforeClosedQuad)
+            if (hasBefore暗槓)
             {
-                return beforeClosedQuad.Deserialzie();
+                return before暗槓.Deserialize();
             }
             throw new System.Exception("no controller");
         }
@@ -115,7 +112,7 @@ namespace TSKT.Mahjongs.Serializables
             red = source.red;
             type = source.type;
         }
-        readonly public Mahjongs.Tile Deserialzie()
+        readonly public Mahjongs.Tile Deserialize()
         {
             return Mahjongs.Tile.FromSerializable(this);
         }
@@ -124,21 +121,21 @@ namespace TSKT.Mahjongs.Serializables
     [System.Serializable]
     public struct Game
     {
-        public int roundWindCount;
-        public int displayRoundCount;
-        public int riichiScore;
+        public int 場風Index;
+        public int display局;
+        public int リーチ棒スコア;
         public int 本場;
         public int 連荘;
-        public PlayerIndex firstDealer;
+        public PlayerIndex 起家;
         public int[] scores;
         public RuleSetting rule;
 
         public Game(Mahjongs.Game source)
         {
-            displayRoundCount = source.DisplayRoundCount;
-            firstDealer = source.起家;
-            riichiScore = source.リーチ棒スコア;
-            roundWindCount = source.RoundWindCount;
+            display局 = source.Display局;
+            起家 = source.起家;
+            リーチ棒スコア = source.リーチ棒スコア;
+            場風Index = source.場風Index;
             rule = source.rule;
             scores = source.seats.Select(_ => _.score).ToArray();
             本場 = source.本場;
@@ -152,25 +149,25 @@ namespace TSKT.Mahjongs.Serializables
     }
 
     [System.Serializable]
-    public struct Round
+    public struct 局
     {
         public Game game;
-        public WallTile wallTile;
-        public DeadWallTile deadWallTile;
+        public 壁牌 壁牌;
+        public 王牌 王牌;
         public Player[] players;
-        public TileType roundWind;
-        public PlayerIndex dealer;
+        public TileType 場風;
+        public PlayerIndex 親;
         public int[] totalDiscardedTiles;
 
-        public Round(Mahjongs.局 source)
+        public 局(Mahjongs.局 source)
         {
             game = source.game.ToSerializable();
-            deadWallTile = source.王牌.ToSerializable();
-            dealer = source.dealer;
+            王牌 = source.王牌.ToSerializable();
+            親 = source.親Index;
             players = source.players.Select(_ => _.ToSerializable()).ToArray();
-            roundWind = source.場風;
+            場風 = source.場風;
             totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => _.index).ToArray();
-            wallTile = source.壁牌.ToSerializable();
+            壁牌 = source.壁牌.ToSerializable();
         }
 
         public readonly Mahjongs.局 Deserialize()
@@ -183,30 +180,30 @@ namespace TSKT.Mahjongs.Serializables
     public struct Player
     {
         public PlayerIndex index;
-        public Hand hand;
-        public int[] discardPile;
-        public int[] discardedTiles;
-        public TileType wind;
+        public 手牌 手牌;
+        public int[] 河;
+        public int[] 捨て牌;
+        public TileType 自風;
         public int riichiIndexInDiscardPile;
         public int riichiIndexInTotalDiscardTiles;
 
-        public bool doubleRiichi;
-        public bool openRiichi;
+        public bool ダブルリーチ;
+        public bool オープンリーチ;
         public bool 一発;
-        public bool furitenByOtherPlayers;
+        public bool フリテンByOtherPlayers;
 
         public Player(Rounds.Player source)
         {
             index = source.index;
-            discardedTiles = source.捨て牌.Select(_ => _.index).ToArray();
-            discardPile = source.河.Select(_ => _.index).ToArray();
-            doubleRiichi = source.ダブルリーチ;
-            hand = source.手牌.ToSerializable();
-            openRiichi = source.オープンリーチ;
+            捨て牌 = source.捨て牌.Select(_ => _.index).ToArray();
+            河 = source.河.Select(_ => _.index).ToArray();
+            ダブルリーチ = source.ダブルリーチ;
+            手牌 = source.手牌.ToSerializable();
+            オープンリーチ = source.オープンリーチ;
             riichiIndexInDiscardPile = source.RiichiIndexInDiscardPile ?? -1;
             riichiIndexInTotalDiscardTiles = source.RiichiIndexInTotalDiscardTiles ?? -1;
-            wind = source.自風;
-            furitenByOtherPlayers = source.フリテンByOtherPlayers;
+            自風 = source.自風;
+            フリテンByOtherPlayers = source.フリテンByOtherPlayers;
             一発 = source.一発;
         }
 
@@ -217,15 +214,15 @@ namespace TSKT.Mahjongs.Serializables
     }
 
     [System.Serializable]
-    public struct Hand
+    public struct 手牌
     {
         public int[] tiles;
-        public Meld[] melds;
+        public 副露[] 副露;
 
-        public Hand(Mahjongs.手牌 source)
+        public 手牌(Mahjongs.手牌 source)
         {
             tiles = source.tiles.Select(_ => _.index).ToArray();
-            melds = source.副露.Select(_ => _.ToSerializable()).ToArray();
+            副露 = source.副露.Select(_ => _.ToSerializable()).ToArray();
         }
 
         public readonly Mahjongs.手牌 Deserialize(Rounds.Player owner)
@@ -235,7 +232,7 @@ namespace TSKT.Mahjongs.Serializables
     }
 
     [System.Serializable]
-    public struct Meld
+    public struct 副露
     {
         [System.Serializable]
         public struct Pair
@@ -245,27 +242,27 @@ namespace TSKT.Mahjongs.Serializables
         }
         public Pair[] tileFroms;
 
-        public Meld(Mahjongs.副露 source)
+        public 副露(Mahjongs.副露 source)
         {
             tileFroms = source.tileFroms
                 .Select(_ => new Pair() { tile = _.tile.index, fromPlayerIndex = _.fromPlayerIndex })
                 .ToArray();
         }
 
-        public Mahjongs.副露 Deserialize(Mahjongs.壁牌 wallTile)
+        public readonly Mahjongs.副露 Deserialize(Mahjongs.壁牌 wallTile)
         {
             return Mahjongs.副露.FromSerializable(this, wallTile);
         }
     }
 
     [System.Serializable]
-    public struct WallTile
+    public struct 壁牌
     {
         public int[] tiles;
         public Tile[] allTiles;
         public uint randomSeed;
 
-        public WallTile(Mahjongs.壁牌 source)
+        public 壁牌(Mahjongs.壁牌 source)
         {
             allTiles = source.allTiles.Select(_ => _.ToSerializable()).ToArray();
             tiles = source.tiles.Select(_ => _.index).ToArray();
@@ -279,19 +276,19 @@ namespace TSKT.Mahjongs.Serializables
     }
 
     [System.Serializable]
-    public struct DeadWallTile
+    public struct 王牌
     {
         public int[] tiles;
-        public int[] doraIndicatorTiles;
-        public int[] uraDoraIndicatorTiles;
+        public int[] ドラ表示牌;
+        public int[] 裏ドラ表示牌;
         public int drawnCount;
 
-        public DeadWallTile(Mahjongs.王牌 source)
+        public 王牌(Mahjongs.王牌 source)
         {
-            doraIndicatorTiles = source.ドラ表示牌.Select(_ => _.index).ToArray();
+            ドラ表示牌 = source.ドラ表示牌.Select(_ => _.index).ToArray();
             drawnCount = source.DrawnCount;
             tiles = source.tiles.Select(_ => _.index).ToArray();
-            uraDoraIndicatorTiles = source.裏ドラ表示牌.Select(_ => _.index).ToArray();
+            裏ドラ表示牌 = source.裏ドラ表示牌.Select(_ => _.index).ToArray();
         }
 
         public readonly Mahjongs.王牌 Deserialize(Mahjongs.壁牌 wallTile)

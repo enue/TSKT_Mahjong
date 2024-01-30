@@ -29,7 +29,7 @@ namespace TSKT.Mahjongs
             bool 嶺上,
             bool openDoraAfterDiscard)
         {
-            Debug.Assert(player.hand.tiles.Count % 3 == 2, "wrong hand tile count after draw");
+            Debug.Assert(player.手牌.tiles.Count % 3 == 2, "wrong hand tile count after draw");
             DrawPlayer = player;
             this.newTileInHand = newTileInHand;
             this.openDoraAfterDiscard = openDoraAfterDiscard;
@@ -40,12 +40,12 @@ namespace TSKT.Mahjongs
                 handSolution = DrawPlayer.手牌.Solve();
                 if (handSolution.向聴数 == -1)
                 {
-                    canツモ上がり = !CompletedHand.役無し;
+                    canツモ上がり = !和了.役無し;
                 }
             }
         }
 
-        public CompletedHand CompletedHand
+        public 和了 和了
         {
             get
             {
@@ -53,7 +53,7 @@ namespace TSKT.Mahjongs
                 {
                     throw new System.NullReferenceException();
                 }
-                return handSolution!.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
+                return handSolution!.Choice和了(DrawPlayer, newTileInHand.type,
                     ronTarget: null,
                     嶺上: 嶺上,
                     海底: !嶺上 && (局.壁牌.tiles.Count == 0),
@@ -67,7 +67,7 @@ namespace TSKT.Mahjongs
 
         static public AfterDraw FromSerializable(in Serializables.AfterDraw source)
         {
-            var round = source.round.Deserialize();
+            var round = source.局.Deserialize();
             var player = round.players[(int)source.drawPlayerIndex];
             var newTileInHand = source.newTileInHand >= 0 ? round.壁牌.allTiles[source.newTileInHand] : null;
             return new AfterDraw(player, newTileInHand, 嶺上: source.嶺上, openDoraAfterDiscard: source.openDoraAfterDiscard);
@@ -140,7 +140,7 @@ namespace TSKT.Mahjongs
 
         bool Canオープンリーチ(out Commands.Discard[] commands)
         {
-            if (局.game.rule.openRiichi == Rules.OpenRiichi.なし)
+            if (局.game.rule.オープンリーチ == Rules.オープンリーチ.なし)
             {
                 commands = System.Array.Empty<Commands.Discard>();
                 return false;
@@ -160,7 +160,7 @@ namespace TSKT.Mahjongs
 
         bool Canオープンリーチ(Tile tile, out Commands.Discard command)
         {
-            if (局.game.rule.openRiichi == Rules.OpenRiichi.なし)
+            if (局.game.rule.オープンリーチ == Rules.オープンリーチ.なし)
             {
                 command = default;
                 return false;
@@ -275,7 +275,7 @@ namespace TSKT.Mahjongs
                     return false;
                 }
             }
-            if (!DrawPlayer.CanClosedQuad(tile))
+            if (!DrawPlayer.Can暗槓(tile))
             {
                 command = default;
                 return false;
@@ -313,7 +313,7 @@ namespace TSKT.Mahjongs
                 command = default;
                 return false;
             }
-            if (!DrawPlayer.CanAddedOpenQuad(tile))
+            if (!DrawPlayer.Can加槓(tile))
             {
                 command = default;
                 return false;
@@ -351,10 +351,10 @@ namespace TSKT.Mahjongs
 
         public AfterDraw ResetRound(params TileType[]?[]? initialPlayerTilesByCheat)
         {
-            return 局.game.StartRound(initialPlayerTilesByCheat);
+            return 局.game.Start局(initialPlayerTilesByCheat);
         }
 
-        public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
+        public AfterDraw? DoDefaultAction(out 局Result? roundResult)
         {
             throw new System.NotImplementedException();
         }

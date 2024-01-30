@@ -99,7 +99,7 @@ namespace TSKT.Tests.Mahjongs
             var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(tiles.Select(_ => new Tile(0, _, red: false)));
-            var yakus = hand.Solve().ChoiceCompletedHand(round.players[0], tiles[0], null, false, false, false, false, false, false, false).役;
+            var yakus = hand.Solve().Choice和了(round.players[0], tiles[0], null, false, false, false, false, false, false, false).役;
             foreach (var it in expecteds)
             {
                 Assert.IsTrue(yakus.ContainsKey(it), string.Join(", ", yakus.Keys.Select(_ => _.ToString())));

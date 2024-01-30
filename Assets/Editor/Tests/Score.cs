@@ -47,7 +47,7 @@ namespace TSKT.Tests.Mahjongs
 
                 if (expected == -1)
                 {
-                    var completed = solution.ChoiceCompletedHand(newTileInHand: tiles[0], ownWind: TileType.東, roundWind: TileType.南,
+                    var completed = solution.Choice和了(newTileInHand: tiles[0], ownWind: TileType.東, roundWind: TileType.南,
                         ronTarget: null,
                         riichi: true,
                         doubleRiichi: false,
@@ -62,14 +62,14 @@ namespace TSKT.Tests.Mahjongs
                         doraTiles: new TileType[0],
                         uraDoraTiles: new TileType[0],
                         槍槓: false,
-                        handCap: round.game.rule.handCap);
-                    var player = round.players[(int)round.dealer + 1];
-                    var r = CompletedHand.Execute((player, completed));
-                    var result = r.completedResults[player];
-                    Debug.Log(result.tsumoPenalty!.Value);
-                    Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
+                        handCap: round.game.rule.役満複合);
+                    var player = round.players[(int)round.親Index + 1];
+                    var r = 和了.Execute((player, completed));
+                    var result = r.和了Results[player];
+                    Debug.Log(result.ツモ払い!.Value);
+                    Debug.Log(result.displayScore?.翻 + "翻 " + result.displayScore?.符 + "符 " + result.scoreType);
                     Debug.Log(string.Join(", ", completed.役.Keys.Concat(completed.役満.Keys)));
-                    Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
+                    Assert.AreEqual(0, r.局Result.scoreDiffs!.Values.Sum());
                 }
             }
 
@@ -106,7 +106,7 @@ namespace TSKT.Tests.Mahjongs
             var solution = hand.Solve();
             Assert.AreEqual(-1, solution.向聴数);
 
-            var completed = solution.ChoiceCompletedHand(newTileInHand: ツモ牌, ownWind: ownWind, roundWind: roundWind,
+            var completed = solution.Choice和了(newTileInHand: ツモ牌, ownWind: ownWind, roundWind: roundWind,
                 ronTarget: null,
                 riichi: riichi,
                 doubleRiichi: false,
@@ -121,15 +121,15 @@ namespace TSKT.Tests.Mahjongs
                 doraTiles: new TileType[0],
                 uraDoraTiles: new TileType[0],
                 槍槓: false,
-                handCap: round.game.rule.handCap);
+                handCap: round.game.rule.役満複合);
 
             var player = round.親;
-            var r = CompletedHand.Execute((player, completed));
-            var result = r.completedResults[player];
+            var r = 和了.Execute((player, completed));
+            var result = r.和了Results[player];
             Debug.Log(string.Join(", ", completed.役.Keys.Concat(completed.役満.Keys)));
-            Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
-            Assert.AreEqual(expected, result.dealerTsumoPenalty);
-            Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
+            Debug.Log(result.displayScore?.翻 + "翻 " + result.displayScore?.符 + "符 " + result.scoreType);
+            Assert.AreEqual(expected, result.親ツモ払い);
+            Assert.AreEqual(0, r.局Result.scoreDiffs!.Values.Sum());
         }
 
         [Test]
@@ -181,7 +181,7 @@ namespace TSKT.Tests.Mahjongs
             var solution = hand.Solve();
             Assert.AreEqual(-1, solution.向聴数);
 
-            var completed = solution.ChoiceCompletedHand(newTileInHand: ロン牌, ownWind: ownWind, roundWind: roundWind,
+            var completed = solution.Choice和了(newTileInHand: ロン牌, ownWind: ownWind, roundWind: roundWind,
                 ronTarget: round.players[0],
                 riichi: riichi,
                 doubleRiichi: false,
@@ -196,15 +196,15 @@ namespace TSKT.Tests.Mahjongs
                 doraTiles: new TileType[0],
                 uraDoraTiles: new TileType[0],
                 槍槓: false,
-                handCap: round.game.rule.handCap);
+                handCap: round.game.rule.役満複合);
 
             var player = round.players[1];
-            var r = CompletedHand.Execute((player, completed));
-            var result = r.completedResults[player];
+            var r = 和了.Execute((player, completed));
+            var result = r.和了Results[player];
             Debug.Log(string.Join(", ", completed.役.Keys.Concat(completed.役満.Keys)));
-            Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
+            Debug.Log(result.displayScore?.翻 + "翻 " + result.displayScore?.符 + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.ロン払い);
-            Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
+            Assert.AreEqual(0, r.局Result.scoreDiffs!.Values.Sum());
         }
         [Test]
         public void HandWithMeld()

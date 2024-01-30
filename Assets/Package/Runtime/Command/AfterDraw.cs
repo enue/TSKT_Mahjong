@@ -21,8 +21,8 @@ namespace TSKT.Mahjongs.Commands
 
         public readonly CommandResult Execute()
         {
-            var result = Controller.局.game.AdvanceRoundBy途中流局(out var gameResult);
-            var roundResult = new RoundResult(gameResult);
+            var result = Controller.局.game.Advance局By途中流局(out var gameResult);
+            var roundResult = new 局Result(gameResult);
             return new CommandResult(result, roundResult);
         }
     }
@@ -191,7 +191,7 @@ namespace TSKT.Mahjongs.Commands
 
         public 加槓(AfterDraw afterDraw, Tile tile)
         {
-            Controller =afterDraw;
+            Controller = afterDraw;
             this.tile = tile;
         }
 
@@ -224,7 +224,7 @@ namespace TSKT.Mahjongs.Commands
             {
                 Controller.局.王牌.OpenDora();
             }
-            return CompletedHand.Execute((Controller.DrawPlayer, Controller.CompletedHand));
+            return 和了.Execute((Controller.DrawPlayer, Controller.和了));
         }
     }
 }

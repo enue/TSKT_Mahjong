@@ -36,23 +36,23 @@ namespace TSKT.Tests.Mahjongs
             Assert.AreEqual(json1_0, json1_1);
         }
         [Test]
-        [TestCase(true, OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
-        [TestCase(false, OpenRiichi.あり, HandCap.トリプル役満, RedTile.赤ドラ4, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
-        [TestCase(true, OpenRiichi.なし, HandCap.役満, RedTile.赤無し, 喰い替え.あり, 四家立直.続行, TripleRon.流局, 明槓槓ドラ.即ノリ)]
-        [TestCase(true, OpenRiichi.あり, HandCap.ダブル役満, RedTile.赤ドラ3, 喰い替え.なし, 四家立直.流局, TripleRon.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(true, オープンリーチ.あり, 役満複合上限.トリプル役満, 赤牌.赤ドラ4, 喰い替え.なし, 四家立直.流局, トリロン.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(false, オープンリーチ.あり, 役満複合上限.トリプル役満, 赤牌.赤ドラ4, 喰い替え.なし, 四家立直.流局, トリロン.有効, 明槓槓ドラ.打牌後)]
+        [TestCase(true, オープンリーチ.なし, 役満複合上限.役満, 赤牌.赤無し, 喰い替え.あり, 四家立直.続行, トリロン.流局, 明槓槓ドラ.即ノリ)]
+        [TestCase(true, オープンリーチ.あり, 役満複合上限.ダブル役満, 赤牌.赤ドラ3, 喰い替え.なし, 四家立直.流局, トリロン.有効, 明槓槓ドラ.打牌後)]
         public void MonkeyTest(bool serialize,
-            OpenRiichi openRiichi,
-            HandCap handCap,
-            RedTile redTile,
+            オープンリーチ openRiichi,
+            役満複合上限 handCap,
+            赤牌 redTile,
             喰い替え kuikae,
             四家立直 allRiichi,
-            TripleRon tripleRon,
+            トリロン tripleRon,
             明槓槓ドラ 明槓槓ドラ)
         {
             IController controller = Game.Create(0, new RuleSetting()
             {
-                openRiichi = openRiichi,
-                handCap = handCap,
+                オープンリーチ = openRiichi,
+                役満複合 = handCap,
                 redTile = redTile,
                 喰い替え = kuikae,
                 四家立直 = allRiichi,

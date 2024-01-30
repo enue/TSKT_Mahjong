@@ -18,20 +18,20 @@ namespace TSKT.Mahjongs
             this.owner = owner;
         }
 
-        手牌(in Serializables.Hand source, Player owner)
+        手牌(in Serializables.手牌 source, Player owner)
         {
             this.owner = owner;
-            副露 = source.melds.Select(_ => _.Deserialize(owner.局.壁牌)).ToList();
+            副露 = source.副露.Select(_ => _.Deserialize(owner.局.壁牌)).ToList();
             tiles = source.tiles.Select(_ => owner.局.壁牌.allTiles[_]).ToList();
         }
 
-        static public 手牌 FromSerializable(in Serializables.Hand source, Player owner)
+        static public 手牌 FromSerializable(in Serializables.手牌 source, Player owner)
         {
             return new 手牌(source, owner);
         }
-        public Serializables.Hand ToSerializable()
+        public Serializables.手牌 ToSerializable()
         {
-            return new Serializables.Hand(this);
+            return new Serializables.手牌(this);
         }
 
         public void Sort()
@@ -89,7 +89,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public void BuildClosedQuad(TileType tileType)
+        public void Build暗槓(TileType tileType)
         {
             var quadTiles = new (Tile, PlayerIndex)[4];
             for (int i = 0; i < 4; ++i)
@@ -260,21 +260,21 @@ namespace TSKT.Mahjongs
             this.tileFroms = tileFroms.OrderBy(_ => _.tile.type).ToArray();
         }
         
-        副露(in Serializables.Meld source, 壁牌 wallTile)
+        副露(in Serializables.副露 source, 壁牌 wallTile)
         {
             tileFroms = source.tileFroms
                 .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex))
                 .ToArray();
         }
 
-        static public 副露 FromSerializable(in Serializables.Meld source, 壁牌 wallTile)
+        static public 副露 FromSerializable(in Serializables.副露 source, 壁牌 wallTile)
         {
             return new 副露(source, wallTile);
         }
 
-        public readonly Serializables.Meld ToSerializable()
+        public readonly Serializables.副露 ToSerializable()
         {
-            return new Serializables.Meld(this);
+            return new Serializables.副露(this);
         }
 
         public readonly bool TryGetTileFromOtherPlayer(out (Tile tile, PlayerIndex fromPlayerIndex) result)

@@ -14,8 +14,8 @@ namespace TSKT.Mahjongs.Commands
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor { get; }
 
-        public readonly CompletedHand RonResult { get; }
-        public Ron(Player player, IController controller, CompletedHand completedHand)
+        public readonly 和了 RonResult { get; }
+        public Ron(Player player, IController controller, 和了 completedHand)
         {
             Controller = controller;
             Executor = player;
@@ -23,7 +23,7 @@ namespace TSKT.Mahjongs.Commands
         }
         public readonly CommandResult Execute()
         {
-            return CompletedHand.Execute((Executor, RonResult));
+            return 和了.Execute((Executor, RonResult));
         }
     }
 }
