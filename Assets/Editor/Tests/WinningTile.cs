@@ -61,14 +61,14 @@ namespace TSKT.Tests.Mahjongs
             TileType.西, TileType.西)]
         public void GetWinningTiles(TileType[] expecteds, params TileType[] handTiles)
         {
-            var round = Game.Create(0, new RuleSetting()).Round;
+            var round = Game.Create(0, new RuleSetting()).局;
 
-            var hand = round.players[0].hand;
+            var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(handTiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             Assert.AreEqual(
                 expecteds.OrderBy(_ => _).ToArray(),
-                hand.GetWinningTiles().OrderBy(_ => _).ToArray());
+                hand.Get和了牌().OrderBy(_ => _).ToArray());
             Assert.IsTrue(hand.向聴数IsLessThanOrEqual(0));
             Assert.IsTrue(hand.向聴数IsLessThan(1));
             Assert.IsFalse(hand.向聴数IsLessThanOrEqual(-1));

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 #nullable enable
 
 namespace TSKT.Mahjongs
@@ -41,43 +40,43 @@ namespace TSKT.Mahjongs
             return result.ToArray();
         }
 
-        public static TileType GetDora(TileType indicatorTile)
+        public static TileType GetDora(TileType 表示牌)
         {
-            if (indicatorTile.IsSuited())
+            if (表示牌.Is数牌())
             {
-                var number = indicatorTile.Number() % 9 + 1;
-                return Get(indicatorTile.Suit(), number);
+                var number = 表示牌.Number() % 9 + 1;
+                return Get(表示牌.Suit(), number);
             }
-            if (indicatorTile == TileType.白)
+            if (表示牌 == TileType.白)
             {
                 return TileType.發;
             }
-            if (indicatorTile == TileType.發)
+            if (表示牌 == TileType.發)
             {
                 return TileType.中;
             }
-            if (indicatorTile == TileType.中)
+            if (表示牌 == TileType.中)
             {
                 return TileType.白;
             }
-            if (indicatorTile == TileType.東)
+            if (表示牌 == TileType.東)
             {
                 return TileType.南;
             }
-            if (indicatorTile == TileType.南)
+            if (表示牌 == TileType.南)
             {
                 return TileType.西;
             }
-            if (indicatorTile == TileType.西)
+            if (表示牌 == TileType.西)
             {
                 return TileType.北;
             }
-            if (indicatorTile == TileType.北)
+            if (表示牌 == TileType.北)
             {
                 return TileType.東;
             }
 
-            throw new System.ArgumentException(indicatorTile.ToString());
+            throw new System.ArgumentException(表示牌.ToString());
         }
 
         public static TileType Get(SuitType suit, int number)
@@ -124,14 +123,14 @@ namespace TSKT.Mahjongs
                 || (tile == TileType.M9);
         }
 
-        public static bool IsSuited(this TileType tile)
+        public static bool Is数牌(this TileType tile)
         {
             return tile.IsMan() || tile.IsPin() || tile.IsSou();
         }
 
-        public static bool 字牌(this TileType tile)
+        public static bool Is字牌(this TileType tile)
         {
-            return !tile.IsSuited();
+            return !tile.Is数牌();
         }
 
         public static SuitType Suit(this TileType tile)

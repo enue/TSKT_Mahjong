@@ -35,10 +35,10 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(2, TileType.M2, TileType.M5, TileType.M5, TileType.M6, TileType.M6, TileType.P2, TileType.P3, TileType.P4, TileType.P7, TileType.P9, TileType.S3, TileType.S4, TileType.南)]
         public void シャンテン数(int expected, params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
+            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).局;
 
             {
-                var hand = round.players[0].hand;
+                var hand = round.players[0].手牌;
                 hand.tiles.Clear();
                 hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
                 var solution = hand.Solve();
@@ -68,7 +68,7 @@ namespace TSKT.Tests.Mahjongs
                     var result = r.completedResults[player];
                     Debug.Log(result.tsumoPenalty!.Value);
                     Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
-                    Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
+                    Debug.Log(string.Join(", ", completed.役.Keys.Concat(completed.役満.Keys)));
                     Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
                 }
             }
@@ -76,7 +76,7 @@ namespace TSKT.Tests.Mahjongs
             // 上がりからひとつ抜いたらリーチ
             if (expected == -1)
             {
-                var hand = round.players[0].hand;
+                var hand = round.players[0].手牌;
                 hand.tiles.Clear();
                 hand.tiles.AddRange(tiles.Select(_ => new Tile(0, _, red: false)));
 
@@ -98,9 +98,9 @@ namespace TSKT.Tests.Mahjongs
             bool riichi,
             params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
+            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).局;
 
-            var hand = round.players[0].hand;
+            var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             var solution = hand.Solve();
@@ -123,10 +123,10 @@ namespace TSKT.Tests.Mahjongs
                 槍槓: false,
                 handCap: round.game.rule.handCap);
 
-            var player = round.Dealer;
+            var player = round.親;
             var r = CompletedHand.Execute((player, completed));
             var result = r.completedResults[player];
-            Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
+            Debug.Log(string.Join(", ", completed.役.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
             Assert.AreEqual(expected, result.dealerTsumoPenalty);
             Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
@@ -138,7 +138,7 @@ namespace TSKT.Tests.Mahjongs
             var count = 0;
             foreach (TileType it in System.Enum.GetValues(typeof(TileType)))
             {
-                if (it.IsSuited())
+                if (it.Is数牌())
                 {
                     it.Number();
                     ++count;
@@ -162,20 +162,20 @@ namespace TSKT.Tests.Mahjongs
             TileType[] tiles,
             TileType[]? meldTiles)
         {
-            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).Round;
+            var round = Game.Create(0, new RuleSetting()).ResetRound(tiles).局;
 
-            var hand = round.players[0].hand;
+            var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             if (meldTiles != null)
             {
                 for (int i = 0; i < meldTiles.Length / 3; ++i)
                 {
-                    var meld = new Meld(
+                    var meld = new 副露(
                         (new Tile(0, meldTiles[i * 3], red: false), PlayerIndex.Index0),
                         (new Tile(0, meldTiles[i * 3 + 1], red: false), PlayerIndex.Index0),
                         (new Tile(0, meldTiles[i * 3 + 2], red: false), PlayerIndex.Index1));
-                    hand.melds.Add(meld);
+                    hand.副露.Add(meld);
                 }
             }
             var solution = hand.Solve();
@@ -201,9 +201,9 @@ namespace TSKT.Tests.Mahjongs
             var player = round.players[1];
             var r = CompletedHand.Execute((player, completed));
             var result = r.completedResults[player];
-            Debug.Log(string.Join(", ", completed.Yakus.Keys.Concat(completed.役満.Keys)));
+            Debug.Log(string.Join(", ", completed.役.Keys.Concat(completed.役満.Keys)));
             Debug.Log(result.displayScore?.han + "翻 " + result.displayScore?.fu + "符 " + result.scoreType);
-            Assert.AreEqual(expected, result.ronPenalty);
+            Assert.AreEqual(expected, result.ロン払い);
             Assert.AreEqual(0, r.roundResult.scoreDiffs!.Values.Sum());
         }
         [Test]
@@ -215,26 +215,26 @@ namespace TSKT.Tests.Mahjongs
                 TileType.P5, TileType.P6,
                 TileType.S8, TileType.S8,
             };
-            var meld0 = new Meld(
+            var meld0 = new 副露(
                 (new Tile(0, TileType.S3, false), PlayerIndex.Index0),
                 (new Tile(0, TileType.S4, false), PlayerIndex.Index0),
                 (new Tile(0, TileType.S5, false), PlayerIndex.Index1));
-            var meld1 = new Meld(
+            var meld1 = new 副露(
                 (new Tile(0, TileType.P3, false), PlayerIndex.Index0),
                 (new Tile(0, TileType.P3, false), PlayerIndex.Index1),
                 (new Tile(0, TileType.P3, false), PlayerIndex.Index0));
 
-            var round = Game.Create(0, new RuleSetting()).Round;
-            var hand = round.players[0].hand;
+            var round = Game.Create(0, new RuleSetting()).局;
+            var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(tiles.Select(_ => new Tile(0, _, false)));
-            hand.melds.Add(meld0);
-            hand.melds.Add(meld1);
+            hand.副露.Add(meld0);
+            hand.副露.Add(meld1);
             var solution = hand.Solve();
             Assert.AreEqual(0, solution.向聴数);
             Assert.IsTrue(hand.向聴数IsLessThanOrEqual(0));
 
-            var winningTiles = hand.GetWinningTiles();
+            var winningTiles = hand.Get和了牌();
             Assert.AreEqual(new[] { TileType.P4, TileType.P7 }, winningTiles);
 
         }

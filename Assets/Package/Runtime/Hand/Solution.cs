@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 
@@ -12,7 +11,7 @@ namespace TSKT.Mahjongs.Hands
         public readonly int 向聴数;
         public readonly Structure[] structures;
 
-        public Solution(Hand hand)
+        public Solution(手牌 hand)
         {
             (向聴数, structures) = Structure.Build(hand);
         }
@@ -30,12 +29,12 @@ namespace TSKT.Mahjongs.Hands
         {
             return ChoiceCompletedHand(
                 newTileInHand,
-                ownWind: player.wind,
-                roundWind: player.round.roundWind,
+                ownWind: player.自風,
+                roundWind: player.局.場風,
                 ronTarget: ronTarget,
-                riichi: player.Riichi,
-                doubleRiichi: player.DoubleRiichi,
-                openRiichi: player.OpenRiichi,
+                riichi: player.リーチ,
+                doubleRiichi: player.ダブルリーチ,
+                openRiichi: player.オープンリーチ,
                 一発: player.一発,
                 嶺上: 嶺上,
                 海底: 海底,
@@ -43,10 +42,10 @@ namespace TSKT.Mahjongs.Hands
                 天和: 天和,
                 地和: 地和,
                 人和: 人和,
-                doraTiles: player.round.deadWallTile.DoraTiles,
-                uraDoraTiles: player.round.deadWallTile.UraDoraTiles,
+                doraTiles: player.局.王牌.DoraTiles,
+                uraDoraTiles: player.局.王牌.UraDoraTiles,
                 槍槓: 槍槓,
-                handCap: player.round.game.rule.handCap);
+                handCap: player.局.game.rule.handCap);
         }
 
         public CompletedHand ChoiceCompletedHand(TileType newTileInHand, TileType ownWind, TileType roundWind,

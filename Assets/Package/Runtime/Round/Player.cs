@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 #nullable enable
 
@@ -8,25 +7,22 @@ namespace TSKT.Mahjongs.Rounds
 {
     public class Player
     {
-        readonly public Round round;
+        readonly public 局 局;
         readonly public PlayerIndex index;
-        readonly public Hand hand;
-        /// <summary>
-        ///  河
-        /// </summary>
-        readonly public List<Tile> discardPile = new List<Tile>();
-        readonly public List<Tile> discardedTiles = new List<Tile>();
-        readonly public TileType wind;
+        readonly public 手牌 手牌;
+        readonly public List<Tile> 河 = new();
+        readonly public List<Tile> 捨て牌 = new();
+        readonly public TileType 自風;
         public int? RiichiIndexInDiscardPile { get; private set; }
         public int? RiichiIndexInTotalDiscardTiles { get; private set; }
 
-        public bool DoubleRiichi { get; private set; }
-        public bool OpenRiichi { get; private set; }
+        public bool ダブルリーチ { get; private set; }
+        public bool オープンリーチ { get; private set; }
         public bool 一発;
-        public bool FuritenByOtherPlayers { get; private set; }
-        public bool Furiten => FuritenByOtherPlayers || FuritenByMyself;
+        public bool フリテンByOtherPlayers { get; private set; }
+        public bool フリテン => フリテンByOtherPlayers || フリテンByMyself;
 
-        public bool Riichi
+        public bool リーチ
         {
             get => RiichiIndexInDiscardPile.HasValue;
             private set
@@ -35,10 +31,10 @@ namespace TSKT.Mahjongs.Rounds
                 {
                     if (!RiichiIndexInDiscardPile.HasValue)
                     {
-                        RiichiIndexInDiscardPile = discardPile.Count;
-                        RiichiIndexInTotalDiscardTiles = round.totalDiscardedTiles.Count;
+                        RiichiIndexInDiscardPile = 河.Count;
+                        RiichiIndexInTotalDiscardTiles = 局.totalDiscardedTiles.Count;
                         Score -= 1000;
-                        round.game.riichiScore += 1000;
+                        局.game.リーチ棒スコア += 1000;
                     }
                 }
                 else
@@ -48,40 +44,40 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        public bool IsDealer => round.dealer == index;
+        public bool Is親 => 局.dealer == index;
 
         public int Score
         {
-            get => round.game.seats[(int)index].score;
-            set => round.game.seats[(int)index].score = value;
+            get => 局.game.seats[(int)index].score;
+            set => 局.game.seats[(int)index].score = value;
         }
 
-        public Player(Round round, PlayerIndex index, TileType wind)
+        public Player(局 局, PlayerIndex index, TileType 自風)
         {
-            this.round = round;
+            this.局 = 局;
             this.index = index;
-            this.wind = wind;
-            hand = new Hand(this);
+            this.自風 = 自風;
+            手牌 = new 手牌(this);
         }
 
-        Player(in Serializables.Player source, Round round)
+        Player(in Serializables.Player source, 局 局)
         {
-            this.round = round;
+            this.局 = 局;
 
-            discardedTiles = source.discardedTiles.Select(_ => round.wallTile.allTiles[_]).ToList();
-            discardPile = source.discardPile.Select(_ => round.wallTile.allTiles[_]).ToList();
-            DoubleRiichi = source.doubleRiichi;
-            hand = source.hand.Deserialize(this);
+            捨て牌 = source.discardedTiles.Select(_ => 局.壁牌.allTiles[_]).ToList();
+            河 = source.discardPile.Select(_ => 局.壁牌.allTiles[_]).ToList();
+            ダブルリーチ = source.doubleRiichi;
+            手牌 = source.hand.Deserialize(this);
             index = source.index;
-            OpenRiichi = source.openRiichi;
+            オープンリーチ = source.openRiichi;
             RiichiIndexInDiscardPile = (source.riichiIndexInDiscardPile >= 0) ? source.riichiIndexInDiscardPile : (int?)null;
             RiichiIndexInTotalDiscardTiles = (source.riichiIndexInTotalDiscardTiles >= 0) ? source.riichiIndexInTotalDiscardTiles : (int?)null;
-            wind = source.wind;
-            FuritenByOtherPlayers = source.furitenByOtherPlayers;
+            自風 = source.wind;
+            フリテンByOtherPlayers = source.furitenByOtherPlayers;
             一発 = source.一発;
         }
 
-        public static Player FromSerializable(in Serializables.Player source, Round round)
+        public static Player FromSerializable(in Serializables.Player source, 局 round)
         {
             return new Player(source, round);
         }
@@ -93,9 +89,9 @@ namespace TSKT.Mahjongs.Rounds
 
         public AfterDraw Draw()
         {
-            var t = round.wallTile.tiles[0];
-            round.wallTile.tiles.RemoveAt(0);
-            hand.tiles.Add(t);
+            var t = 局.壁牌.tiles[0];
+            局.壁牌.tiles.RemoveAt(0);
+            手牌.tiles.Add(t);
 
             OnTurnStart();
             return new AfterDraw(this, t, 嶺上: false, openDoraAfterDiscard: false);
@@ -103,45 +99,45 @@ namespace TSKT.Mahjongs.Rounds
 
         public void OnTurnStart()
         {
-            if (!Riichi)
+            if (!リーチ)
             {
-                FuritenByOtherPlayers = false;
+                フリテンByOtherPlayers = false;
             }
         }
 
-        public void Discard(Tile tile, bool riichi, bool openRiichi)
+        public void Discard(Tile tile, bool リーチ, bool オープンリーチ)
         {
-            if (riichi || openRiichi)
+            if (リーチ || オープンリーチ)
             {
-                if (round.players.All(_ => _.hand.melds.Count == 0)
-                    && discardedTiles.Count == 0)
+                if (局.players.All(_ => _.手牌.副露.Count == 0)
+                    && 捨て牌.Count == 0)
                 {
-                    DoubleRiichi = true;
+                    ダブルリーチ = true;
                 }
-                Riichi = true;
+                this.リーチ = true;
                 一発 = true;
-                OpenRiichi = openRiichi;
+                this.オープンリーチ = オープンリーチ;
             }
             else
             {
                 一発 = false;
             }
 
-            hand.tiles.Remove(tile);
-            discardPile.Add(tile);
-            discardedTiles.Add(tile);
-            round.totalDiscardedTiles.Add(tile);
+            手牌.tiles.Remove(tile);
+            河.Add(tile);
+            捨て牌.Add(tile);
+            局.totalDiscardedTiles.Add(tile);
         }
 
         // 赤牌ルールだと、どの牌で鳴くか選択肢があるケースがある
         public bool CanPon(TileType tile, out List<(Tile left, Tile right)>? combinations)
         {
-            if (Riichi)
+            if (リーチ)
             {
                 combinations = null;
                 return false;
             }
-            var tiles = hand.tiles.Where(_ => _.type == tile).ToArray();
+            var tiles = 手牌.tiles.Where(_ => _.type == tile).ToArray();
             if (tiles.Length < 2)
             {
                 combinations = null;
@@ -163,12 +159,12 @@ namespace TSKT.Mahjongs.Rounds
 
         public bool CanChi(Tile discarded, out List<(Tile left, Tile right)>? combinations)
         {
-            if (Riichi)
+            if (リーチ)
             {
                 combinations = null;
                 return false;
             }
-            if (!discarded.type.IsSuited())
+            if (!discarded.type.Is数牌())
             {
                 combinations = null;
                 return false;
@@ -179,28 +175,28 @@ namespace TSKT.Mahjongs.Rounds
             if (discarded.type.Number() > 2)
             {
                 var minus2 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() - 2);
-                minus2Tiles = hand.tiles.Where(_ => _.type == minus2).ToArray();
+                minus2Tiles = 手牌.tiles.Where(_ => _.type == minus2).ToArray();
             }
 
             var minus1Tiles = System.Array.Empty<Tile>();
             if (discarded.type.Number() > 1)
             {
                 var minus1 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() - 1);
-                minus1Tiles = hand.tiles.Where(_ => _.type == minus1).ToArray();
+                minus1Tiles = 手牌.tiles.Where(_ => _.type == minus1).ToArray();
             }
 
             var plus1Tiles = System.Array.Empty<Tile>();
             if (discarded.type.Number() < 9)
             {
                 var plus1 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() + 1);
-                plus1Tiles = hand.tiles.Where(_ => _.type == plus1).ToArray();
+                plus1Tiles = 手牌.tiles.Where(_ => _.type == plus1).ToArray();
             }
 
             var plus2Tiles = System.Array.Empty<Tile>();
             if (discarded.type.Number() < 8)
             {
                 var plus2 = TileTypeUtil.Get(discarded.type.Suit(), discarded.type.Number() + 2);
-                plus2Tiles = hand.tiles.Where(_ => _.type == plus2).ToArray();
+                plus2Tiles = 手牌.tiles.Where(_ => _.type == plus2).ToArray();
             }
 
             var tilePairs = new[]
@@ -232,47 +228,47 @@ namespace TSKT.Mahjongs.Rounds
 
         bool CanDiscardAfterChi(Tile tileFromOtherPlayer, Tile left, Tile right)
         {
-            if (round.game.rule.喰い替え == Rules.喰い替え.あり)
+            if (局.game.rule.喰い替え == Rules.喰い替え.あり)
             {
                 return true;
             }
 
-            var meld = new Meld(
+            var meld = new 副露(
                 (left, index),
                 (right, index),
                 (tileFromOtherPlayer, (PlayerIndex)((int)(index + 3) % 4)));
-            return hand.tiles
+            return 手牌.tiles
                 .Where(_ => _ != left && _ != right)
                 .Any(_ => !meld.Is喰い替え(_));
         }
 
         public bool CanClosedQuad(TileType tile)
         {
-            if (round.CountKan == 4)
+            if (局.CountKan == 4)
             {
                 return false;
             }
 
-            if (hand.tiles.Count(_ => _.type == tile) < 4)
+            if (手牌.tiles.Count(_ => _.type == tile) < 4)
             {
                 return false;
             }
 
-            if (Riichi)
+            if (リーチ)
             {
                 // 待ち牌が変わる暗槓はできない
                 TileType[] winningTilesBeforeDraw;
                 TileType[] winningTilesAfterClosedQuad;
                 {
-                    var clone = hand.Clone();
+                    var clone = 手牌.Clone();
                     var drewTileIndex = clone.tiles.FindIndex(_ => _.type == tile);
                     clone.tiles.RemoveAt(drewTileIndex);
-                    winningTilesBeforeDraw = clone.GetWinningTiles();
+                    winningTilesBeforeDraw = clone.Get和了牌();
                 }
                 {
-                    var clone = hand.Clone();
+                    var clone = 手牌.Clone();
                     clone.BuildClosedQuad(tile);
-                    winningTilesAfterClosedQuad = clone.GetWinningTiles();
+                    winningTilesAfterClosedQuad = clone.Get和了牌();
                 }
                 if (!winningTilesBeforeDraw.SequenceEqual(winningTilesAfterClosedQuad))
                 {
@@ -285,27 +281,27 @@ namespace TSKT.Mahjongs.Rounds
 
         public bool CanOpenQuad(TileType tile)
         {
-            if (Riichi)
+            if (リーチ)
             {
                 return false;
             }
-            if (round.CountKan == 4)
+            if (局.CountKan == 4)
             {
                 return false;
             }
-            return hand.tiles.Count(_ => _.type == tile) >= 3;
+            return 手牌.tiles.Count(_ => _.type == tile) >= 3;
         }
         public bool CanAddedOpenQuad(TileType tile)
         {
-            if (Riichi)
+            if (リーチ)
             {
                 return false;
             }
-            if (round.CountKan == 4)
+            if (局.CountKan == 4)
             {
                 return false;
             }
-            return hand.melds.Any(_ => _.tileFroms.All(x => x.tile.type == tile));
+            return 手牌.副露.Any(_ => _.tileFroms.All(x => x.tile.type == tile));
         }
 
         public RelativePlayer GetRelativePlayer(Player target)
@@ -315,34 +311,34 @@ namespace TSKT.Mahjongs.Rounds
 
         public void TryAttachFuritenByOtherPlayers(Tile tile)
         {
-            if (FuritenByOtherPlayers)
+            if (フリテンByOtherPlayers)
             {
                 return;
             }
 
-            var cloneHand = hand.Clone();
+            var cloneHand = 手牌.Clone();
             cloneHand.tiles.Add(tile);
             if (cloneHand.向聴数IsLessThanOrEqual(-1))
             {
-                FuritenByOtherPlayers = true;
+                フリテンByOtherPlayers = true;
             }
         }
 
-        bool FuritenByMyself
+        bool フリテンByMyself
         {
             get
             {
-                if (hand.tiles.Count % 3 != 1)
+                if (手牌.tiles.Count % 3 != 1)
                 {
                     return false;
                 }
 
-                var discardedTiles = this.discardedTiles
+                var discardedTiles = this.捨て牌
                     .Select(_ => _.type)
                     .Distinct();
                 foreach(var it in discardedTiles)
                 {
-                    var cloneHand = hand.Clone();
+                    var cloneHand = 手牌.Clone();
                     cloneHand.tiles.Add(new Tile(0, it, false));
                     if (cloneHand.向聴数IsLessThanOrEqual(-1))
                     {
@@ -352,7 +348,7 @@ namespace TSKT.Mahjongs.Rounds
                 return false;
             }
         }
-        public Dictionary<TileType, int> HiddenTileCounts => round.HiddenTileCountFrom(this);
-        public int HiddenTileCount(TileType t) => round.HiddenTileCountFrom(this, t);
+        public Dictionary<TileType, int> HiddenTileCounts => 局.HiddenTileCountFrom(this);
+        public int HiddenTileCount(TileType t) => 局.HiddenTileCountFrom(this, t);
     }
 }

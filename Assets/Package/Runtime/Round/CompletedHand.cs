@@ -9,32 +9,32 @@ namespace TSKT.Mahjongs.Rounds
     public readonly struct CompletedHand
     {
         public readonly Hands.Structure structure;
-        public readonly TileType[] IsolatedTiles => structure.IsolatedTiles;
-        public readonly Hands.Structure.Set[] Sets => structure.Sets;
-        public readonly TileType[] Pairs => structure.Pairs;
+        public readonly TileType[] 浮き牌 => structure.浮き牌;
+        public readonly Hands.Structure.面子[] 面子 => structure.面子s;
+        public readonly TileType[] 対子 => structure.対子;
         /// <summary>
         /// 副露
         /// </summary>
-        public readonly Meld[] Melds => structure.melds;
-        public readonly int RedTile => structure.redTileCount;
+        public readonly 副露[] 副露 => structure.副露;
+        public readonly int 赤牌 => structure.赤牌;
 
         public readonly Player? ronTarget;
 
-        readonly TileType newTileInHand;
-        readonly TileType ownWind;
-        readonly TileType roundWind;
-        public readonly Dictionary<役, int> Yakus;
+        readonly TileType 和了牌;
+        readonly TileType 自風;
+        readonly TileType 場風;
+        public readonly Dictionary<役, int> 役;
         public readonly Dictionary<役, int> 役満;
 
-        public readonly bool 役無し => Yakus.Count == 0 && 役満.Count == 0;
-        public readonly int Han => Yakus.Values.Sum() + Dora + UraDora + RedTile;
+        public readonly bool 役無し => 役.Count == 0 && 役満.Count == 0;
+        public readonly int 翻 => 役.Values.Sum() + Dora + UraDora + 赤牌;
         public readonly bool 面前;
         public readonly bool 自摸 => ronTarget == null;
         public readonly TileType[] doraTiles;
         public readonly TileType[] uraDoraTiles;
         readonly IEnumerable<TileType> AllUsedTiles => structure.AllUsedTiles;
 
-        public CompletedHand(Hands.Structure structure, TileType newTileInHand, TileType ownWind, TileType roundWind,
+        public CompletedHand(Hands.Structure structure, TileType 和了牌, TileType ownWind, TileType roundWind,
             Player? ronTarget,
             bool riichi,
             bool doubleRiichi,
@@ -51,219 +51,219 @@ namespace TSKT.Mahjongs.Rounds
             TileType[] uraDoraTiles)
         {
             this.structure = structure;
-            this.newTileInHand = newTileInHand;
-            this.ownWind = ownWind;
-            this.roundWind = roundWind;
+            this.和了牌 = 和了牌;
+            this.自風 = ownWind;
+            this.場風 = roundWind;
             this.ronTarget = ronTarget;
-            Yakus = new Dictionary<役, int>();
+            役 = new Dictionary<役, int>();
             役満 = new Dictionary<役, int>();
-            面前 = structure.melds.Length == 0 || structure.melds.All(_ => _.暗槓);
+            面前 = structure.副露.Length == 0 || structure.副露.All(_ => _.暗槓);
             this.doraTiles = doraTiles ?? System.Array.Empty<TileType>();
             this.uraDoraTiles = (riichi ? uraDoraTiles : null) ?? System.Array.Empty<TileType>();
 
             if (面前 && 自摸)
             {
-                Yakus.Add(役.門前清自摸和, 1);
+                役.Add(Mahjongs.役.門前清自摸和, 1);
             }
 
             if (doubleRiichi)
             {
-                Yakus.Add(役.ダブル立直, 2);
+                役.Add(Mahjongs.役.ダブル立直, 2);
             }
             else if (riichi)
             {
-                Yakus.Add(役.立直, 1);
+                役.Add(Mahjongs.役.立直, 1);
             }
             if (openRiichi)
             {
                 // 立直していない状態でオープンリーチに放銃すると役満払い
                 if (ronTarget != null
-                    && !ronTarget.Riichi)
+                    && !ronTarget.リーチ)
                 {
-                    役満.Add(役.オープン立直, 1);
+                    役満.Add(Mahjongs.役.オープン立直, 1);
                 }
                 else
                 {
-                    Yakus.Add(役.オープン立直, 1);
+                    役.Add(Mahjongs.役.オープン立直, 1);
                 }
             }
 
             if (一発)
             {
-                Yakus.Add(役.一発, 1);
+                役.Add(Mahjongs.役.一発, 1);
             }
 
             if (嶺上)
             {
-                Yakus.Add(役.嶺上開花, 1);
+                役.Add(Mahjongs.役.嶺上開花, 1);
             }
 
             if (海底)
             {
-                Yakus.Add(役.海底撈月, 1);
+                役.Add(Mahjongs.役.海底撈月, 1);
             }
 
             if (河底)
             {
-                Yakus.Add(役.河底撈魚, 1);
+                役.Add(Mahjongs.役.河底撈魚, 1);
             }
             if (槍槓)
             {
-                Yakus.Add(役.槍槓, 1);
+                役.Add(Mahjongs.役.槍槓, 1);
             }
             if (天和)
             {
-                役満.Add(役.天和, 1);
+                役満.Add(Mahjongs.役.天和, 1);
             }
             if (地和)
             {
-                役満.Add(役.地和, 1);
+                役満.Add(Mahjongs.役.地和, 1);
             }
             if (人和)
             {
-                役満.Add(役.人和, 1);
+                役満.Add(Mahjongs.役.人和, 1);
             }
             {
                 var v = タンヤオ;
                 if (v > 0)
                 {
-                    Yakus.Add(役.タンヤオ, v);
+                    役.Add(Mahjongs.役.タンヤオ, v);
                 }
             }
             {
                 var v = 平和;
                 if (v > 0)
                 {
-                    Yakus.Add(役.平和, v);
+                    役.Add(Mahjongs.役.平和, v);
                 }
             }
             {
                 var v = 白;
                 if (v > 0)
                 {
-                    Yakus.Add(役.白, v);
+                    役.Add(Mahjongs.役.白, v);
                 }
             }
             {
                 var v = 發;
                 if (v > 0)
                 {
-                    Yakus.Add(役.發, v);
+                    役.Add(Mahjongs.役.發, v);
                 }
             }
             {
                 var v = 中;
                 if (v > 0)
                 {
-                    Yakus.Add(役.中, v);
+                    役.Add(Mahjongs.役.中, v);
                 }
             }
             {
                 var v = 場風牌;
                 if (v > 0)
                 {
-                    Yakus.Add(役.場風, v);
+                    役.Add(Mahjongs.役.場風, v);
                 }
             }
             {
                 var v = 自風牌;
                 if (v > 0)
                 {
-                    Yakus.Add(役.自風, v);
+                    役.Add(Mahjongs.役.自風, v);
                 }
             }
             {
                 var v = 七対子;
                 if (v > 0)
                 {
-                    Yakus.Add(役.七対子, v);
+                    役.Add(Mahjongs.役.七対子, v);
                 }
             }
             {
                 var v = 対々和;
                 if (v > 0)
                 {
-                    Yakus.Add(役.対々和, v);
+                    役.Add(Mahjongs.役.対々和, v);
                 }
             }
             {
                 var v = 三暗刻;
                 if (v > 0)
                 {
-                    Yakus.Add(役.三暗刻, v);
+                    役.Add(Mahjongs.役.三暗刻, v);
                 }
             }
             {
                 var v = 三色同順;
                 if (v > 0)
                 {
-                    Yakus.Add(役.三色同順, v);
+                    役.Add(Mahjongs.役.三色同順, v);
                 }
             }
             {
                 var v = 三色同刻;
                 if (v > 0)
                 {
-                    Yakus.Add(役.三色同刻, v);
+                    役.Add(Mahjongs.役.三色同刻, v);
                 }
             }
             {
                 var v = 混老頭;
                 if (v > 0)
                 {
-                    Yakus.Add(役.混老頭, v);
+                    役.Add(Mahjongs.役.混老頭, v);
                 }
             }
             {
                 var v = 一気通貫;
                 if (v > 0)
                 {
-                    Yakus.Add(役.一気通貫, v);
+                    役.Add(Mahjongs.役.一気通貫, v);
                 }
             }
             {
                 var v = 小三元;
                 if (v > 0)
                 {
-                    Yakus.Add(役.小三元, v);
+                    役.Add(Mahjongs.役.小三元, v);
                 }
             }
             {
                 var v = 三槓子;
                 if (v > 0)
                 {
-                    Yakus.Add(役.三槓子, v);
+                    役.Add(Mahjongs.役.三槓子, v);
                 }
             }
             {
                 var v = 純チャン;
                 if (v > 0)
                 {
-                    Yakus.Add(役.純チャン, v);
+                    役.Add(Mahjongs.役.純チャン, v);
                 }
             }
-            if (!Yakus.ContainsKey(役.純チャン)
-                && !Yakus.ContainsKey(役.混老頭))
+            if (!役.ContainsKey(Mahjongs.役.純チャン)
+                && !役.ContainsKey(Mahjongs.役.混老頭))
             {
                 var v = チャンタ;
                 if (v > 0)
                 {
-                    Yakus.Add(役.チャンタ, v);
+                    役.Add(Mahjongs.役.チャンタ, v);
                 }
             }
             {
                 var v = 二盃口;
                 if (v > 0)
                 {
-                    Yakus.Add(役.二盃口, v);
+                    役.Add(Mahjongs.役.二盃口, v);
                 }
             }
-            if (!Yakus.ContainsKey(役.二盃口))
+            if (!役.ContainsKey(Mahjongs.役.二盃口))
             {
                 var v = 一盃口;
                 if (v > 0)
                 {
-                    Yakus.Add(役.一盃口, v);
+                    役.Add(Mahjongs.役.一盃口, v);
                 }
             }
 
@@ -271,58 +271,58 @@ namespace TSKT.Mahjongs.Rounds
                 var v = 清一色;
                 if (v > 0)
                 {
-                    Yakus.Add(役.清一色, v);
+                    役.Add(Mahjongs.役.清一色, v);
                 }
             }
-            if (!Yakus.ContainsKey(役.清一色))
+            if (!役.ContainsKey(Mahjongs.役.清一色))
             {
                 var v = 混一色;
                 if (v > 0)
                 {
-                    Yakus.Add(役.混一色, v);
+                    役.Add(Mahjongs.役.混一色, v);
                 }
             }
 
             if (緑一色)
             {
-                役満.Add(役.緑一色, 1);
+                役満.Add(Mahjongs.役.緑一色, 1);
             }
             if (大三元)
             {
-                役満.Add(役.大三元, 1);
+                役満.Add(Mahjongs.役.大三元, 1);
             }
             if (字一色)
             {
-                役満.Add(役.字一色, 1);
+                役満.Add(Mahjongs.役.字一色, 1);
             }
             if (国士無双)
             {
-                役満.Add(役.国士無双, 1);
+                役満.Add(Mahjongs.役.国士無双, 1);
             }
             if (九蓮宝燈)
             {
-                役満.Add(役.九蓮宝燈, 1);
+                役満.Add(Mahjongs.役.九蓮宝燈, 1);
             }
             if (四暗刻)
             {
-                役満.Add(役.四暗刻, 1);
+                役満.Add(Mahjongs.役.四暗刻, 1);
             }
             if (清老頭)
             {
-                役満.Add(役.清老頭, 1);
+                役満.Add(Mahjongs.役.清老頭, 1);
             }
             if (四槓子)
             {
-                役満.Add(役.四槓子, 1);
+                役満.Add(Mahjongs.役.四槓子, 1);
             }
 
             if (大四喜)
             {
-                役満.Add(役.大四喜, 2);
+                役満.Add(Mahjongs.役.大四喜, 2);
             }
             else if (小四喜)
             {
-                役満.Add(役.小四喜, 1);
+                役満.Add(Mahjongs.役.小四喜, 1);
             }
         }
 
@@ -331,12 +331,12 @@ namespace TSKT.Mahjongs.Rounds
             get
             {
                 int fu;
-                if (Yakus.ContainsKey(役.七対子))
+                if (役.ContainsKey(Mahjongs.役.七対子))
                 {
                     // 七対子は固定
                     fu = 25;
                 }
-                else if (Yakus.ContainsKey(役.平和))
+                else if (役.ContainsKey(Mahjongs.役.平和))
                 {
                     // 平和は固定
                     if (自摸)
@@ -359,12 +359,12 @@ namespace TSKT.Mahjongs.Rounds
                     fu = 20;
 
                     // 暗刻
-                    foreach (var it in Sets)
+                    foreach (var it in 面子)
                     {
                         if (it.刻子)
                         {
                             // ロン上がりだと明刻扱いとなる
-                            if (it.first == newTileInHand
+                            if (it.first == 和了牌
                                 && !自摸)
                             {
                                 if (it.first.么九牌())
@@ -390,7 +390,7 @@ namespace TSKT.Mahjongs.Rounds
                         }
                     }
                     // 副露
-                    foreach (var it in Melds)
+                    foreach (var it in 副露)
                     {
                         if (it.暗槓)
                         {
@@ -428,13 +428,13 @@ namespace TSKT.Mahjongs.Rounds
                             }
                         }
                     }
-                    foreach (var it in Pairs)
+                    foreach (var it in 対子)
                     {
-                        if (it == ownWind)
+                        if (it == 自風)
                         {
                             fu += 2;
                         }
-                        else if (it == roundWind)
+                        else if (it == 場風)
                         {
                             fu += 2;
                         }
@@ -448,25 +448,25 @@ namespace TSKT.Mahjongs.Rounds
                     {
                         bool 待ち符 = false;
                         // 単騎
-                        待ち符 |= Pairs.Contains(newTileInHand);
+                        待ち符 |= 対子.Contains(和了牌);
 
-                        if (newTileInHand.IsSuited())
+                        if (和了牌.Is数牌())
                         {
-                            foreach (var it in Sets)
+                            foreach (var it in 面子)
                             {
                                 if (it.順子)
                                 {
                                     // 嵌張
-                                    待ち符 |= it.second == newTileInHand;
+                                    待ち符 |= it.second == 和了牌;
 
                                     // 辺張待ち
                                     if (it.first.Number() == 1
-                                        && newTileInHand.Number() == 3)
+                                        && 和了牌.Number() == 3)
                                     {
                                         待ち符 = true;
                                     }
                                     if (it.first.Number() == 7
-                                        && newTileInHand.Number() == 7)
+                                        && 和了牌.Number() == 7)
                                     {
                                         待ち符 = true;
                                     }
@@ -558,7 +558,7 @@ namespace TSKT.Mahjongs.Rounds
                 return (ScoreType.トリプル役満, 24000);
             }
 
-            var han = Han;
+            var han = 翻;
 
             if (han == 5)
             {
@@ -597,7 +597,7 @@ namespace TSKT.Mahjongs.Rounds
         readonly public CompletedResult BuildResult(Player player)
         {
             var result = new CompletedResult(this, player);
-            foreach(var it in player.round.game.completedHandModifiers)
+            foreach(var it in player.局.game.completedHandModifiers)
             {
                 it.Modify(ref result);
             }
@@ -608,14 +608,14 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                foreach (var it in Sets)
+                foreach (var it in 面子)
                 {
                     if (it.刻子)
                     {
                         yield return it.first;
                     }
                 }
-                foreach (var it in Melds)
+                foreach (var it in 副露)
                 {
                     if (!it.順子)
                     {
@@ -628,14 +628,14 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                foreach (var it in Sets)
+                foreach (var it in 面子)
                 {
                     if (it.順子)
                     {
                         yield return it.first;
                     }
                 }
-                foreach (var it in Melds)
+                foreach (var it in 副露)
                 {
                     if (it.順子)
                     {
@@ -647,21 +647,21 @@ namespace TSKT.Mahjongs.Rounds
 
         readonly bool 平和形(out bool 役, out bool 食い平和)
         {
-            if (Melds.Any(_ => !_.順子))
+            if (副露.Any(_ => !_.順子))
             {
                 役 = false;
                 食い平和 = false;
                 return false;
             }
-            var 鳴き = Melds.Any();
+            var 鳴き = 副露.Any();
 
-            if (Pairs.Length > 1)
+            if (対子.Length > 1)
             {
                 役 = false;
                 食い平和 = false;
                 return false;
             }
-            foreach (var it in Sets)
+            foreach (var it in 面子)
             {
                 if (it.刻子)
                 {
@@ -679,13 +679,13 @@ namespace TSKT.Mahjongs.Rounds
                     食い平和 = false;
                     return false;
                 }
-                if (it == ownWind)
+                if (it == 自風)
                 {
                     役 = false;
                     食い平和 = false;
                     return false;
                 }
-                if (it == roundWind)
+                if (it == 場風)
                 {
                     役 = false;
                     食い平和 = false;
@@ -693,20 +693,20 @@ namespace TSKT.Mahjongs.Rounds
                 }
             }
 
-            foreach (var it in Sets)
+            foreach (var it in 面子)
             {
-                if (it.first == newTileInHand
+                if (it.first == 和了牌
                     && it.first.Number() != 7)
                 {
-                    役 = !Melds.Any();
-                    食い平和 = Melds.Any();
+                    役 = !副露.Any();
+                    食い平和 = 副露.Any();
                     return true;
                 }
-                if (it.third == newTileInHand
+                if (it.third == 和了牌
                     && it.first.Number() != 1)
                 {
-                    役 = !Melds.Any();
-                    食い平和 = Melds.Any();
+                    役 = !副露.Any();
+                    食い平和 = 副露.Any();
                     return true;
                 }
             }
@@ -737,7 +737,7 @@ namespace TSKT.Mahjongs.Rounds
             {
                 foreach (var it in AllUsedTiles)
                 {
-                    if (!it.IsSuited())
+                    if (!it.Is数牌())
                     {
                         return 0;
                     }
@@ -802,10 +802,10 @@ namespace TSKT.Mahjongs.Rounds
         readonly int 白 => Has刻子槓子(TileType.白) ? 1 : 0;
         readonly int 發 => Has刻子槓子(TileType.發) ? 1 : 0;
         readonly int 中 => Has刻子槓子(TileType.中) ? 1 : 0;
-        readonly int 自風牌 => Has刻子槓子(ownWind) ? 1 : 0;
-        readonly int 場風牌 => Has刻子槓子(roundWind) ? 1 : 0;
+        readonly int 自風牌 => Has刻子槓子(自風) ? 1 : 0;
+        readonly int 場風牌 => Has刻子槓子(場風) ? 1 : 0;
 
-        readonly int 七対子 => (Pairs.Length == 7) ? 2 : 0;
+        readonly int 七対子 => (対子.Length == 7) ? 2 : 0;
 
         readonly int 対々和
         {
@@ -821,13 +821,13 @@ namespace TSKT.Mahjongs.Rounds
 
         readonly bool N暗刻(int n)
         {
-            var setCount = Sets.Count(_ => _.刻子) + Melds.Count(_ => _.暗槓);
+            var setCount = 面子.Count(_ => _.刻子) + 副露.Count(_ => _.暗槓);
             if (自摸)
             {
                 return setCount == n;
             }
 
-            if (Pairs.Contains(newTileInHand))
+            if (対子.Contains(和了牌))
             {
                 // 単騎待ち
                 return (setCount == n);
@@ -849,7 +849,7 @@ namespace TSKT.Mahjongs.Rounds
 
                 foreach (var it in 刻子槓子)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         if (counters[it.Number() - 1] == null)
                         {
@@ -903,7 +903,7 @@ namespace TSKT.Mahjongs.Rounds
             {
                 foreach (var it in AllUsedTiles)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         var number = it.Number();
                         if (number > 1 && number < 9)
@@ -953,9 +953,9 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                foreach (var it in Pairs)
+                foreach (var it in 対子)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         if (it.Number() > 1
                             && it.Number() < 9)
@@ -966,7 +966,7 @@ namespace TSKT.Mahjongs.Rounds
                 }
                 foreach (var it in 刻子槓子)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         if (it.Number() > 1
                         && it.Number() < 9)
@@ -989,7 +989,7 @@ namespace TSKT.Mahjongs.Rounds
 
                 foreach (var it in AllUsedTiles)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         containsSuited = true;
                     }
@@ -1023,9 +1023,9 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                if (!Pairs.Contains(TileType.白)
-                    && !Pairs.Contains(TileType.發)
-                    && !Pairs.Contains(TileType.中))
+                if (!対子.Contains(TileType.白)
+                    && !対子.Contains(TileType.發)
+                    && !対子.Contains(TileType.中))
                 {
                     return 0;
                 }
@@ -1055,7 +1055,7 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                if (Melds.Count(_ => _.槓子) == 3)
+                if (副露.Count(_ => _.槓子) == 3)
                 {
                     return 2;
                 }
@@ -1071,7 +1071,7 @@ namespace TSKT.Mahjongs.Rounds
                 SuitType? suit = null;
                 foreach (var it in AllUsedTiles)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         if (suit.HasValue)
                         {
@@ -1114,9 +1114,9 @@ namespace TSKT.Mahjongs.Rounds
                         return 0;
                     }
                 }
-                foreach (var it in 刻子槓子.Concat(Pairs).Concat(IsolatedTiles))
+                foreach (var it in 刻子槓子.Concat(対子).Concat(浮き牌))
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         if (it.Number() > 1
                             && it.Number() < 9)
@@ -1144,7 +1144,7 @@ namespace TSKT.Mahjongs.Rounds
                 SuitType? suit = null;
                 foreach (var it in AllUsedTiles)
                 {
-                    if (it.IsSuited())
+                    if (it.Is数牌())
                     {
                         if (suit.HasValue)
                         {
@@ -1220,7 +1220,7 @@ namespace TSKT.Mahjongs.Rounds
                 }
                 if (requires.Count == 1)
                 {
-                    if (Pairs[0] == requires[0])
+                    if (対子[0] == requires[0])
                     {
                         return true;
                     }
@@ -1241,21 +1241,21 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly bool 字一色 => AllUsedTiles.All(_ => _.字牌());
+        readonly bool 字一色 => AllUsedTiles.All(_ => _.Is字牌());
 
         readonly bool 九蓮宝燈
         {
             get
             {
                 // 暗槓も認められない
-                if (Melds.Length > 0)
+                if (副露.Length > 0)
                 {
                     return false;
                 }
 
                 var tiles = AllUsedTiles.ToList();
                 var first = tiles[0];
-                if (!first.IsSuited())
+                if (!first.Is数牌())
                 {
                     return false;
                 }
@@ -1282,26 +1282,26 @@ namespace TSKT.Mahjongs.Rounds
         }
 
         readonly bool 四暗刻 => N暗刻(4);
-        readonly bool 清老頭 => AllUsedTiles.All(_ => _.IsSuited() && (_.Number() == 1 || _.Number() == 9));
-        readonly bool 四槓子 => Melds.Count(_ => _.槓子) == 4;
+        readonly bool 清老頭 => AllUsedTiles.All(_ => _.Is数牌() && (_.Number() == 1 || _.Number() == 9));
+        readonly bool 四槓子 => 副露.Count(_ => _.槓子) == 4;
 
         readonly bool 国士無双
         {
             get
             {
-                if (Melds.Length > 0)
+                if (副露.Length > 0)
                 {
                     return false;
                 }
-                if (Sets.Length > 0)
+                if (面子.Length > 0)
                 {
                     return false;
                 }
-                if (IsolatedTiles.Length != 12)
+                if (浮き牌.Length != 12)
                 {
                     return false;
                 }
-                if (Pairs.Length != 1)
+                if (対子.Length != 1)
                 {
                     return false;
                 }
@@ -1332,7 +1332,7 @@ namespace TSKT.Mahjongs.Rounds
 
         public static CommandResult Execute(params (Player player, CompletedHand hand)[] completedHands)
         {
-            var round = completedHands[0].player.round;
+            var round = completedHands[0].player.局;
             var game = round.game;
 
             if (completedHands.Length == 3
@@ -1365,7 +1365,7 @@ namespace TSKT.Mahjongs.Rounds
                 {
                     foreach (var (player, hand) in completedHands)
                     {
-                        player.Score += game.riichiScore;
+                        player.Score += game.リーチ棒スコア;
                     }
                 }
                 else
@@ -1373,18 +1373,18 @@ namespace TSKT.Mahjongs.Rounds
                     // ダブロンのリーチ棒回収 : ロンされたプレイヤーから順番が近いほうをがリーチ棒を回収する
                     var ronTarget = completedHands[0].hand.ronTarget!;
                     var (player, hand) = completedHands
-                        .OrderBy(_ => (_.player.index - ronTarget.index + _.player.round.players.Length) % _.player.round.players.Length)
+                        .OrderBy(_ => (_.player.index - ronTarget.index + _.player.局.players.Length) % _.player.局.players.Length)
                         .First();
-                    player.Score += game.riichiScore;
+                    player.Score += game.リーチ棒スコア;
                 }
-                game.riichiScore = 0;
+                game.リーチ棒スコア = 0;
 
                 foreach (var it in round.players)
                 {
                     scoreDiffs[it] += it.Score;
                 }
 
-                if (completedHands.Select(_ => _.player).Contains(round.Dealer))
+                if (completedHands.Select(_ => _.player).Contains(round.親))
                 {
                     var result = game.AdvanceRoundBy親上がり(out var gameResult);
                     var roundResult = new RoundResult(gameResult, scoreDiffs);

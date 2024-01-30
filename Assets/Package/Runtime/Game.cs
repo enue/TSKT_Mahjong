@@ -8,17 +8,17 @@ namespace TSKT.Mahjongs
     {
         readonly TileType[] winds = new[] { TileType.東, TileType.南, TileType.西, TileType.北 };
         public int RoundWindCount { get; private set; } = 0;
-        public TileType Wind => winds[RoundWindCount % winds.Length];
+        public TileType 場風 => winds[RoundWindCount % winds.Length];
         public int DisplayRoundCount { get; private set; } = 1;
-        public int riichiScore;
+        public int リーチ棒スコア;
         public int 本場 { get; private set; }
         public int 連荘 { get; private set; }
-        public readonly PlayerIndex firstDealer;
+        public readonly PlayerIndex 起家;
         public readonly Seat[] seats;
         public readonly RuleSetting rule;
         public readonly List<ScriptableRules.ICompletedResultModifier> completedHandModifiers = new();
 
-        public PlayerIndex Dealer => (PlayerIndex)(((int)firstDealer + DisplayRoundCount - 1) % 4);
+        public PlayerIndex 親 => (PlayerIndex)(((int)起家 + DisplayRoundCount - 1) % 4);
 
         static public AfterDraw Create(PlayerIndex firstDealer, RuleSetting rule)
         {
@@ -26,10 +26,10 @@ namespace TSKT.Mahjongs
             return game.StartRound();
         }
 
-        Game(PlayerIndex firstDealer, RuleSetting rule)
+        Game(PlayerIndex 起家, RuleSetting rule)
         {
             this.rule = rule;
-            this.firstDealer = firstDealer;
+            this.起家 = 起家;
             seats = new Seat[4];
             for (int i = 0; i < seats.Length; ++i)
             {
@@ -39,10 +39,12 @@ namespace TSKT.Mahjongs
 
         static public Game FromSerializable(in Serializables.Game source)
         {
-            var result = new Game(source.firstDealer, source.rule);
-            result.DisplayRoundCount = source.displayRoundCount;
-            result.riichiScore = source.riichiScore;
-            result.RoundWindCount = source.roundWindCount;
+            var result = new Game(source.firstDealer, source.rule)
+            {
+                DisplayRoundCount = source.displayRoundCount,
+                リーチ棒スコア = source.riichiScore,
+                RoundWindCount = source.roundWindCount
+            };
             for (int i = 0; i < source.scores.Length; ++i)
             {
                 result.seats[i].score = source.scores[i];
@@ -60,7 +62,7 @@ namespace TSKT.Mahjongs
 
         public AfterDraw StartRound(params TileType[]?[]? initialPlayerTilesByCheat)
         {
-            var round = new Round(this, Wind, Dealer, initialPlayerTilesByCheat);
+            var round = new 局(this, 場風, 親, initialPlayerTilesByCheat);
             return round.Start();
         }
 
@@ -77,10 +79,10 @@ namespace TSKT.Mahjongs
 
             if (rule.end.アガリ止め == Rules.アガリ止め.あり)
             {
-                if (IsFinalRound)
+                if (Isオーラス)
                 {
                     gameResult = new GameResult(this);
-                    if (gameResult.playerRanks[Dealer].rank == 1)
+                    if (gameResult.playerRanks[親].rank == 1)
                     {
                         return null;
                     }
@@ -171,7 +173,7 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public bool IsFinalRound
+        public bool Isオーラス
         {
             get
             {

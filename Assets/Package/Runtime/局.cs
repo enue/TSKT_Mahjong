@@ -1,46 +1,45 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 
 namespace TSKT.Mahjongs
 {
-    public class Round
+    public class 局
     {
         public readonly Game game;
-        public readonly WallTile wallTile;
+        public readonly 壁牌 壁牌;
         /// <summary>
         /// 王牌
         /// </summary>
-        public readonly DeadWallTile deadWallTile = new DeadWallTile();
+        public readonly 王牌 王牌 = new();
         public readonly Player[] players = new Player[4];
         /// <summary>
         /// 場風
         /// </summary>
-        public readonly TileType roundWind;
+        public readonly TileType 場風;
         /// <summary>
         /// 親
         /// </summary>
         public readonly PlayerIndex dealer;
-        public Player Dealer => players[(int)dealer];
-        public int CountKan => players.Sum(_ => _.hand.melds.Count(x => x.槓子));
-        public readonly List<Tile> totalDiscardedTiles = new List<Tile>();
+        public Player 親 => players[(int)dealer];
+        public int CountKan => players.Sum(_ => _.手牌.副露.Count(x => x.槓子));
+        public readonly List<Tile> totalDiscardedTiles = new();
 
-        public Round(Game game, TileType prevailingWind, PlayerIndex dealer,
+        public 局(Game game, TileType 場風, PlayerIndex 親,
             params TileType[]?[]? initialPlayerTilesByCheat)
         {
             this.game = game;
-            roundWind = prevailingWind;
-            this.dealer = dealer;
-            wallTile = new WallTile(game.rule.redTile);
+            this.場風 = 場風;
+            this.dealer = 親;
+            壁牌 = new 壁牌(game.rule.redTile);
 
             var winds = new TileType[] { TileType.東, TileType.南, TileType.西, TileType.北 };
 
             for (int i = 0; i < players.Length; ++i)
             {
-                var wind = winds[(i - (int)dealer + winds.Length) % winds.Length];
+                var wind = winds[(i - (int)親 + winds.Length) % winds.Length];
                 var player = new Player(this, (PlayerIndex)i, wind);
                 players[i] = player;
             }
@@ -53,11 +52,11 @@ namespace TSKT.Mahjongs
                     {
                         foreach (var it in initialPlayerTilesByCheat[i]!)
                         {
-                            var t = wallTile.tiles.FirstOrDefault(_ => _.type == it);
+                            var t = 壁牌.tiles.FirstOrDefault(_ => _.type == it);
                             if (t != null)
                             {
-                                wallTile.tiles.Remove(t);
-                                players[i].hand.tiles.Add(t);
+                                壁牌.tiles.Remove(t);
+                                players[i].手牌.tiles.Add(t);
                             }
                         }
                     }
@@ -66,37 +65,37 @@ namespace TSKT.Mahjongs
 
             foreach (var player in players)
             {
-                while (player.hand.tiles.Count < 13)
+                while (player.手牌.tiles.Count < 13)
                 {
-                    var t = wallTile.tiles[0];
-                    wallTile.tiles.RemoveAt(0);
-                    player.hand.tiles.Add(t);
+                    var t = 壁牌.tiles[0];
+                    壁牌.tiles.RemoveAt(0);
+                    player.手牌.tiles.Add(t);
                 }
-                player.hand.Sort();
+                player.手牌.Sort();
             }
 
-            for (int i = 0; i < DeadWallTile.Count; ++i)
+            for (int i = 0; i < 王牌.Count; ++i)
             {
-                var t = wallTile.tiles[0];
-                wallTile.tiles.RemoveAt(0);
-                deadWallTile.tiles.Add(t);
+                var t = 壁牌.tiles[0];
+                壁牌.tiles.RemoveAt(0);
+                王牌.tiles.Add(t);
             }
-            deadWallTile.OpenDora();
+            王牌.OpenDora();
         }
 
-        Round(in Serializables.Round source)
+        局(in Serializables.Round source)
         {
-            wallTile = source.wallTile.Deserialize();
-            deadWallTile = source.deadWallTile.Deserialize(wallTile);
+            壁牌 = source.wallTile.Deserialize();
+            王牌 = source.deadWallTile.Deserialize(壁牌);
             dealer = source.dealer;
             game = source.game.Deserialize();
             players = source.players.Select(_ => _.Deserialize(this)).ToArray();
-            roundWind = source.roundWind;
-            totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => wallTile.allTiles[_]).ToList();
+            場風 = source.roundWind;
+            totalDiscardedTiles = source.totalDiscardedTiles.Select(_ => 壁牌.allTiles[_]).ToList();
         }
-        static public Round FromSerializable(in Serializables.Round source)
+        static public 局 FromSerializable(in Serializables.Round source)
         {
-            return new Round(source);
+            return new 局(source);
         }
 
         public Serializables.Round ToSerializable()
@@ -106,40 +105,37 @@ namespace TSKT.Mahjongs
 
         public AfterDraw Start()
         {
-            if (Dealer.hand.tiles.Count == 13)
+            if (親.手牌.tiles.Count == 13)
             {
-                return Dealer.Draw();
+                return 親.Draw();
             }
-            else if (Dealer.hand.tiles.Count == 14)
+            else if (親.手牌.tiles.Count == 14)
             {
                 // イカサマ機能によって配牌14枚が固定している場合があるので、手牌14枚を許容する。
-                Dealer.OnTurnStart();
-                return new AfterDraw(Dealer, null, 嶺上: false, openDoraAfterDiscard: false);
+                親.OnTurnStart();
+                return new AfterDraw(親, null, 嶺上: false, openDoraAfterDiscard: false);
             }
             else
             {
-                throw new System.Exception("wrong hand tile count : " + Dealer.hand.tiles.Count);
+                throw new System.Exception("wrong hand tile count : " + 親.手牌.tiles.Count);
             }
         }
 
         Tile DrawFromDeadWallTile(Player player)
         {
-            var t = deadWallTile.Draw();
-            player.hand.tiles.Add(t);
+            var t = 王牌.Draw();
+            player.手牌.tiles.Add(t);
 
-            if (wallTile.tiles.Count > 0)
+            if (壁牌.tiles.Count > 0)
             {
-                var wall = wallTile.tiles[0];
-                wallTile.tiles.RemoveAt(0);
-                deadWallTile.tiles.Add(wall);
+                var wall = 壁牌.tiles[0];
+                壁牌.tiles.RemoveAt(0);
+                王牌.tiles.Add(wall);
             }
             return t;
         }
 
-        /// <summary>
-        /// 暗槓
-        /// </summary>
-        public AfterDraw ExecuteClosedQuad(Player player, TileType tileType)
+        public AfterDraw Execute暗槓(Player player, TileType tileType)
         {
             // 国士無双の槍槓見逃しでフリテンになるが、どのみち上がれないので無視する
             foreach (var it in players)
@@ -147,10 +143,10 @@ namespace TSKT.Mahjongs
                 it.一発 = false;
             }
 
-            player.hand.BuildClosedQuad(tileType);
+            player.手牌.BuildClosedQuad(tileType);
 
             var t = DrawFromDeadWallTile(player);
-            deadWallTile.OpenDora();
+            王牌.OpenDora();
 
             foreach (var it in players)
             {
@@ -165,10 +161,7 @@ namespace TSKT.Mahjongs
             return new AfterDraw(player, t, 嶺上: true, openDoraAfterDiscard: false);
         }
 
-        /// <summary>
-        /// 加槓
-        /// </summary>
-        public AfterDraw ExecuteAddedOpenQuad(Player player, Tile tile)
+        public AfterDraw Execute加槓(Player player, Tile tile)
         {
             foreach (var it in players)
             {
@@ -183,19 +176,19 @@ namespace TSKT.Mahjongs
                 it.一発 = false;
             }
 
-            var meldIndex = player.hand.melds.FindIndex(_ => _.tileFroms.All(x => x.tile.type == tile.type));
-            var tiles = player.hand.melds[meldIndex].tileFroms
+            var meldIndex = player.手牌.副露.FindIndex(_ => _.tileFroms.All(x => x.tile.type == tile.type));
+            var tiles = player.手牌.副露[meldIndex].tileFroms
                 .Append((tile, player.index))
                 .ToArray();
-            player.hand.melds[meldIndex] = new Meld(tiles);
+            player.手牌.副露[meldIndex] = new 副露(tiles);
 
-            player.hand.tiles.Remove(tile);
+            player.手牌.tiles.Remove(tile);
 
             var drawTile = DrawFromDeadWallTile(player);
 
             if (game.rule.明槓槓ドラ == Rules.明槓槓ドラ.即ノリ)
             {
-                deadWallTile.OpenDora();
+                王牌.OpenDora();
             }
             foreach (var it in players)
             {
@@ -211,16 +204,13 @@ namespace TSKT.Mahjongs
                 openDoraAfterDiscard: game.rule.明槓槓ドラ == Rules.明槓槓ドラ.打牌後);
         }
 
-        /// <summary>
-        /// 大明槓
-        /// </summary>
-        public AfterDraw ExecuteOpenQuad(Player player, Player discardPlayer)
+        public AfterDraw Execute大明槓(Player player, Player discardPlayer)
         {
             foreach (var it in players)
             {
                 it.一発 = false;
             }
-            var discardPile = discardPlayer.discardPile;
+            var discardPile = discardPlayer.河;
             var discardTile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
@@ -228,18 +218,18 @@ namespace TSKT.Mahjongs
             meldTiles.Add((discardTile, discardPlayer.index));
             for (int i = 0; i < 3; ++i)
             {
-                var tile = player.hand.tiles.First(_ => _.type == discardTile.type);
-                player.hand.tiles.Remove(tile);
+                var tile = player.手牌.tiles.First(_ => _.type == discardTile.type);
+                player.手牌.tiles.Remove(tile);
                 meldTiles.Add((tile, player.index));
             }
-            var meld = new Meld(meldTiles.ToArray());
-            player.hand.melds.Add(meld);
+            var meld = new 副露(meldTiles.ToArray());
+            player.手牌.副露.Add(meld);
 
             var drawTile = DrawFromDeadWallTile(player);
 
             if (game.rule.明槓槓ドラ == Rules.明槓槓ドラ.即ノリ)
             {
-                deadWallTile.OpenDora();
+                王牌.OpenDora();
             }
 
             player.OnTurnStart();
@@ -250,33 +240,33 @@ namespace TSKT.Mahjongs
         public int HiddenTileCountFrom(Player observer, TileType target)
         {
             var result = 4;
-            result -= observer.hand.tiles.Count(_ => _.type == target);
+            result -= observer.手牌.tiles.Count(_ => _.type == target);
             foreach (var player in players)
             {
-                result -= player.hand.melds
+                result -= player.手牌.副露
                     .SelectMany(_ => _.tileFroms)
                     .Count(_ => _.tile.type == target);
-                result -= player.discardPile.Count(_ => _.type == target);
+                result -= player.河.Count(_ => _.type == target);
             }
             return result;
         }
 
         public Dictionary<TileType, int> HiddenTileCountFrom(Player observer)
         {
-            var result = wallTile.allTiles
+            var result = 壁牌.allTiles
                 .Select(_ => _.type)
                 .Distinct()
                 .ToDictionary(_ => _, _ => 4);
 
             // 自分の手牌
-            foreach (var it in observer.hand.tiles)
+            foreach (var it in observer.手牌.tiles)
             {
                 --result[it.type];
             }
             foreach (var player in players)
             {
                 // 副露
-                foreach (var meld in player.hand.melds)
+                foreach (var meld in player.手牌.副露)
                 {
                     foreach (var (tile, _) in meld.tileFroms)
                     {
@@ -284,13 +274,13 @@ namespace TSKT.Mahjongs
                     }
                 }
                 // 河
-                foreach (var tile in player.discardPile)
+                foreach (var tile in player.河)
                 {
                     --result[tile.type];
                 }
             }
             // ドラ表示
-            foreach (var it in deadWallTile.doraIndicatorTiles)
+            foreach (var it in 王牌.ドラ表示牌)
             {
                 --result[it.type];
             }

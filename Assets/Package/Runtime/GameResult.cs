@@ -28,7 +28,7 @@ namespace TSKT.Mahjongs
             sortedPlayerIndices = System.Enum.GetValues(typeof(PlayerIndex))
                 .Cast<PlayerIndex>()
                 .OrderByDescending(_ => game.seats[(int)_].score)
-                .ThenByDescending(_ => orderedPositionFromFirstOrder[RelativePlayerUtil.GetByPlayerIndex(game.firstDealer, _)])
+                .ThenByDescending(_ => orderedPositionFromFirstOrder[RelativePlayerUtil.GetByPlayerIndex(game.起家, _)])
                 .ToArray();
 
             var rewards = new Dictionary<PlayerIndex, int>();

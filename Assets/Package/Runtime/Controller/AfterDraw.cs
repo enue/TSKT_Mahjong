@@ -9,21 +9,21 @@ namespace TSKT.Mahjongs
 {
     public class AfterDraw : IController
     {
-        public Round Round => DrawPlayer.round;
+        public 局 局 => DrawPlayer.局;
         public bool Consumed { get; private set; }
         public PlayerIndex DrawPlayerIndex => DrawPlayer.index;
         public Player DrawPlayer { get; }
 
         public readonly Tile? newTileInHand;
         public readonly Hands.Solution? handSolution;
-        public readonly bool canTsumo;
+        public readonly bool canツモ上がり;
 
         public readonly bool 嶺上;
         public readonly bool openDoraAfterDiscard;
 
-        bool 鳴きなし => Round.players.All(_ => _.hand.melds.Count == 0);
-        bool 一巡目 => DrawPlayer.discardedTiles.Count == 0;
-        bool BuiltMeld => newTileInHand == null;
+        bool 鳴きなし => 局.players.All(_ => _.手牌.副露.Count == 0);
+        bool 一巡目 => DrawPlayer.捨て牌.Count == 0;
+        bool Built副露 => newTileInHand == null;
 
         public AfterDraw(Player player, Tile? newTileInHand,
             bool 嶺上,
@@ -37,10 +37,10 @@ namespace TSKT.Mahjongs
 
             if (newTileInHand != null)
             {
-                handSolution = DrawPlayer.hand.Solve();
+                handSolution = DrawPlayer.手牌.Solve();
                 if (handSolution.向聴数 == -1)
                 {
-                    canTsumo = !CompletedHand.役無し;
+                    canツモ上がり = !CompletedHand.役無し;
                 }
             }
         }
@@ -56,10 +56,10 @@ namespace TSKT.Mahjongs
                 return handSolution!.ChoiceCompletedHand(DrawPlayer, newTileInHand.type,
                     ronTarget: null,
                     嶺上: 嶺上,
-                    海底: !嶺上 && (Round.wallTile.tiles.Count == 0),
+                    海底: !嶺上 && (局.壁牌.tiles.Count == 0),
                     河底: false,
-                    天和: 鳴きなし && 一巡目 && DrawPlayer.IsDealer,
-                    地和: 鳴きなし && 一巡目 && !DrawPlayer.IsDealer,
+                    天和: 鳴きなし && 一巡目 && DrawPlayer.Is親,
+                    地和: 鳴きなし && 一巡目 && !DrawPlayer.Is親,
                     人和: false,
                     槍槓: false);
             }
@@ -69,7 +69,7 @@ namespace TSKT.Mahjongs
         {
             var round = source.round.Deserialize();
             var player = round.players[(int)source.drawPlayerIndex];
-            var newTileInHand = source.newTileInHand >= 0 ? round.wallTile.allTiles[source.newTileInHand] : null;
+            var newTileInHand = source.newTileInHand >= 0 ? round.壁牌.allTiles[source.newTileInHand] : null;
             return new AfterDraw(player, newTileInHand, 嶺上: source.嶺上, openDoraAfterDiscard: source.openDoraAfterDiscard);
         }
 
@@ -82,12 +82,12 @@ namespace TSKT.Mahjongs
             return new Serializables.Session(this);
         }
 
-        bool CanRiichi(out Commands.Discard[] commands)
+        bool Canリーチ(out Commands.Discard[] commands)
         {
             var result = new List<Commands.Discard>();
-            foreach (var it in DrawPlayer.hand.tiles)
+            foreach (var it in DrawPlayer.手牌.tiles)
             {
-                if (CanRiichi(it, out var command))
+                if (Canリーチ(it, out var command))
                 {
                     result.Add(command);
                 }
@@ -96,14 +96,14 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        bool CanRiichi(Tile tile, out Commands.Discard command)
+        bool Canリーチ(Tile tile, out Commands.Discard command)
         {
-            if (DrawPlayer.Riichi)
+            if (DrawPlayer.リーチ)
             {
                 command = default;
                 return false;
             }
-            if (Round.game.rule.end.endWhenScoreUnderZero)
+            if (局.game.rule.end.endWhenScoreUnderZero)
             {
                 if (DrawPlayer.Score < 1000)
                 {
@@ -111,22 +111,22 @@ namespace TSKT.Mahjongs
                     return false;
                 }
             }
-            if (!DrawPlayer.hand.tiles.Contains(tile))
+            if (!DrawPlayer.手牌.tiles.Contains(tile))
             {
                 command = default;
                 return false;
             }
-            if (DrawPlayer.hand.melds.Count > 0 && DrawPlayer.hand.melds.Any(_ => !_.暗槓))
+            if (DrawPlayer.手牌.副露.Count > 0 && DrawPlayer.手牌.副露.Any(_ => !_.暗槓))
             {
                 command = default;
                 return false;
             }
-            if (Round.wallTile.tiles.Count == 0)
+            if (局.壁牌.tiles.Count == 0)
             {
                 command = default;
                 return false;
             }
-            var cloneHand = DrawPlayer.hand.Clone();
+            var cloneHand = DrawPlayer.手牌.Clone();
             cloneHand.tiles.Remove(tile);
             if (!cloneHand.向聴数IsLessThanOrEqual(0))
             {
@@ -134,22 +134,22 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            command = new Commands.Discard(this, tile, riichi: true, openRiichi: false);
+            command = new Commands.Discard(this, tile, リーチ: true, オープンリーチ: false);
             return true;
         }
 
-        bool CanOpenRiichi(out Commands.Discard[] commands)
+        bool Canオープンリーチ(out Commands.Discard[] commands)
         {
-            if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
+            if (局.game.rule.openRiichi == Rules.OpenRiichi.なし)
             {
                 commands = System.Array.Empty<Commands.Discard>();
                 return false;
             }
 
             var result = new List<Commands.Discard>();
-            foreach (var it in DrawPlayer.hand.tiles)
+            foreach (var it in DrawPlayer.手牌.tiles)
             {
-                if (CanOpenRiichi(it, out var command))
+                if (Canオープンリーチ(it, out var command))
                 {
                     result.Add(command);
                 }
@@ -158,15 +158,15 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        bool CanOpenRiichi(Tile tile, out Commands.Discard command)
+        bool Canオープンリーチ(Tile tile, out Commands.Discard command)
         {
-            if (Round.game.rule.openRiichi == Rules.OpenRiichi.なし)
+            if (局.game.rule.openRiichi == Rules.OpenRiichi.なし)
             {
                 command = default;
                 return false;
             }
 
-            if (CanRiichi(tile, out var riichi))
+            if (Canリーチ(tile, out var riichi))
             {
                 command = new Commands.Discard(riichi.Controller, riichi.tile, true, true);
                 return true;
@@ -178,7 +178,7 @@ namespace TSKT.Mahjongs
         bool CanDiscard(out Commands.Discard[] commands)
         {
             var result = new List<Commands.Discard>();
-            foreach (var it in DrawPlayer.hand.tiles)
+            foreach (var it in DrawPlayer.手牌.tiles)
             {
                 if (CanDiscard(it, out var command))
                 {
@@ -193,21 +193,21 @@ namespace TSKT.Mahjongs
         {
             if (tile == newTileInHand)
             {
-                command = new Commands.Discard(this, tile, riichi: false, openRiichi: false);
+                command = new Commands.Discard(this, tile, リーチ: false, オープンリーチ: false);
                 return true;
             }
 
-            if (DrawPlayer.Riichi)
+            if (DrawPlayer.リーチ)
             {
                 command = default;
                 return false;
             }
 
-            if (DrawPlayer.round.game.rule.喰い替え == Rules.喰い替え.なし)
+            if (DrawPlayer.局.game.rule.喰い替え == Rules.喰い替え.なし)
             {
-                if (BuiltMeld)
+                if (Built副露)
                 {
-                    var meld = DrawPlayer.hand.melds.Last();
+                    var meld = DrawPlayer.手牌.副露.Last();
                     if (meld.Is喰い替え(tile))
                     {
                         command = default;
@@ -215,37 +215,34 @@ namespace TSKT.Mahjongs
                     }
                 }
             }
-            if (!DrawPlayer.hand.tiles.Contains(tile))
+            if (!DrawPlayer.手牌.tiles.Contains(tile))
             {
                 command = default;
                 return false;
             }
 
-            command = new Commands.Discard(this, tile, riichi: false, openRiichi: false);
+            command = new Commands.Discard(this, tile, リーチ: false, オープンリーチ: false);
             return true;
         }
 
-        bool CanTsumo(out Commands.Tsumo command)
+        bool Canツモ上がり(out Commands.ツモ上がり command)
         {
-            if (!canTsumo)
+            if (!canツモ上がり)
             {
                 command = default;
                 return false;
             }
 
-            command = new Commands.Tsumo(this);
+            command = new Commands.ツモ上がり(this);
             return true;
         }
 
-        /// <summary>
-        /// 暗槓
-        /// </summary>
-        bool CanDeclareClosedQuad(out Commands.DeclareClosedQuad[] commands)
+        bool Can暗槓(out Commands.暗槓[] commands)
         {
-            var result = new List<Commands.DeclareClosedQuad>();
-            foreach (var tile in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
+            var result = new List<Commands.暗槓>();
+            foreach (var tile in DrawPlayer.手牌.tiles.Select(_ => _.type).Distinct())
             {
-                if (CanDeclareClosedQuad(tile, out var command))
+                if (Can暗槓(tile, out var command))
                 {
                     result.Add(command);
                 }
@@ -255,25 +252,22 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        /// <summary>
-        /// 暗槓
-        /// </summary>
-        bool CanDeclareClosedQuad(TileType tile, out Commands.DeclareClosedQuad command)
+        bool Can暗槓(TileType tile, out Commands.暗槓 command)
         {
             // 海底はカンできない
-            if (Round.wallTile.tiles.Count == 0)
+            if (局.壁牌.tiles.Count == 0)
             {
                 command = default;
                 return false;
             }
             // 鳴いた直後にカンはできない
-            if (BuiltMeld)
+            if (Built副露)
             {
                 command = default;
                 return false;
             }
             // 暗槓は立直後でもできるが、ツモ牌でのみ
-            if (DrawPlayer.Riichi)
+            if (DrawPlayer.リーチ)
             {
                 if (newTileInHand?.type != tile)
                 {
@@ -287,19 +281,16 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            command = new Commands.DeclareClosedQuad(this, tile);
+            command = new Commands.暗槓(this, tile);
             return true;
         }
 
-        /// <summary>
-        /// 加槓
-        /// </summary>
-        bool CanDeclareAddedOpenQuad(out Commands.DeclareAddedOpenQuad[] commands)
+        bool Can加槓(out Commands.加槓[] commands)
         {
-            var result = new List<Commands.DeclareAddedOpenQuad>();
-            foreach (var it in DrawPlayer.hand.tiles.Select(_ => _.type).Distinct())
+            var result = new List<Commands.加槓>();
+            foreach (var it in DrawPlayer.手牌.tiles.Select(_ => _.type).Distinct())
             {
-                if (CanDeclareAddedOpenQuad(it, out var command))
+                if (Can加槓(it, out var command))
                 {
                     result.Add(command);
                 }
@@ -308,19 +299,16 @@ namespace TSKT.Mahjongs
             return commands.Length > 0;
         }
 
-        /// <summary>
-        /// 加槓
-        /// </summary>
-        bool CanDeclareAddedOpenQuad(TileType tile, out Commands.DeclareAddedOpenQuad command)
+        bool Can加槓(TileType tile, out Commands.加槓 command)
         {
             // 海底はカンできない
-            if (Round.wallTile.tiles.Count == 0)
+            if (局.壁牌.tiles.Count == 0)
             {
                 command = default;
                 return false;
             }
             // 鳴いた直後にカンはできない
-            if (BuiltMeld)
+            if (Built副露)
             {
                 command = default;
                 return false;
@@ -330,8 +318,8 @@ namespace TSKT.Mahjongs
                 command = default;
                 return false;
             }
-            var t = DrawPlayer.hand.tiles.First(_ => _.type == tile);
-            command = new Commands.DeclareAddedOpenQuad(this, t);
+            var t = DrawPlayer.手牌.tiles.First(_ => _.type == tile);
+            command = new Commands.加槓(this, t);
             return true;
         }
         bool Can九種九牌(out Commands.九種九牌 command)
@@ -347,7 +335,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            if (DrawPlayer.hand.tiles
+            if (DrawPlayer.手牌.tiles
                 .Select(_ => _.type)
                 .Where(_ => _.么九牌())
                 .Distinct()
@@ -363,7 +351,7 @@ namespace TSKT.Mahjongs
 
         public AfterDraw ResetRound(params TileType[]?[]? initialPlayerTilesByCheat)
         {
-            return Round.game.StartRound(initialPlayerTilesByCheat);
+            return 局.game.StartRound(initialPlayerTilesByCheat);
         }
 
         public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
@@ -379,13 +367,13 @@ namespace TSKT.Mahjongs
         {
             if (player == DrawPlayer)
             {
-                CanDeclareClosedQuad(out var declareCloseQuads);
-                CanDeclareAddedOpenQuad(out var declareAddedOpenQuads);
+                Can暗槓(out var declareCloseQuads);
+                Can加槓(out var declareAddedOpenQuads);
                 CanDiscard(out var discards);
-                CanRiichi(out var riichies);
-                CanOpenRiichi(out var openRiichies);
-                Commands.Tsumo? tsumo;
-                if (CanTsumo(out var t))
+                Canリーチ(out var riichies);
+                Canオープンリーチ(out var openRiichies);
+                Commands.ツモ上がり? tsumo;
+                if (Canツモ上がり(out var t))
                 {
                     tsumo = t;
                 }
@@ -402,9 +390,9 @@ namespace TSKT.Mahjongs
                 {
                     nineTiles = null;
                 }
-                return new DiscardingCommandSet(addedOpenQuads: declareAddedOpenQuads, closedQuads: declareCloseQuads,
+                return new DiscardingCommandSet(加槓: declareAddedOpenQuads, 暗槓: declareCloseQuads,
                         discards: discards, riichies: riichies, openRiichies: openRiichies,
-                        tsumo: tsumo, nineTiles: nineTiles);
+                        ツモ上がり: tsumo, nineTiles: nineTiles);
             }
             else
             {
@@ -419,11 +407,11 @@ namespace TSKT.Mahjongs
             {
                 var result = new List<ICommand>();
 
-                if (CanDeclareClosedQuad(out var closedQuads))
+                if (Can暗槓(out var closedQuads))
                 {
                     result.AddRange(closedQuads.Cast<ICommand>());
                 }
-                if (CanDeclareAddedOpenQuad(out var addedOpenQuads))
+                if (Can加槓(out var addedOpenQuads))
                 {
                     result.AddRange(addedOpenQuads.Cast<ICommand>());
                 }
@@ -431,15 +419,15 @@ namespace TSKT.Mahjongs
                 {
                     result.AddRange(discards.Cast<ICommand>());
                 }
-                if (CanRiichi(out var riichies))
+                if (Canリーチ(out var riichies))
                 {
                     result.AddRange(riichies.Cast<ICommand>());
                 }
-                if (CanOpenRiichi(out var openRiichies))
+                if (Canオープンリーチ(out var openRiichies))
                 {
                     result.AddRange(openRiichies.Cast<ICommand>());
                 }
-                if (CanTsumo(out var tsumo))
+                if (Canツモ上がり(out var tsumo))
                 {
                     result.Add(tsumo);
                 }

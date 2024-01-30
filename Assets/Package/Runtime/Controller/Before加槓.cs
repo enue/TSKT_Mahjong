@@ -1,49 +1,48 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
-using TSKT.Mahjongs.Commands;
 
 namespace TSKT.Mahjongs
 {
     /// <summary>
-    /// 暗槓宣言時。国士無双ロンができる
+    /// 加槓宣言時。槍槓ができる
     /// </summary>
-    public class BeforeClosedQuad : IBeforeQuad
+    public class Before加槓 : IBefore槓
     {
-        public Round Round => DeclarePlayer.round;
+        public 局 局 => DeclarePlayer.局;
         public bool Consumed { get; private set; }
         public PlayerIndex DeclarePlayerIndex => DeclarePlayer.index;
         public Player DeclarePlayer { get; }
 
-        public readonly TileType tile;
+
+        public readonly Tile tile;
         Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
-        public BeforeClosedQuad(Player declarePlayer, TileType tile)
+        public Before加槓(Player declarePlayer, Tile tile)
         {
             DeclarePlayer = declarePlayer;
             this.tile = tile;
 
-            foreach (var ronPlayer in Round.players)
+            foreach (var ronPlayer in 局.players)
             {
                 if (ronPlayer == DeclarePlayer)
                 {
                     continue;
                 }
-                if (ronPlayer.Furiten)
+                if (ronPlayer.フリテン)
                 {
                     continue;
                 }
-                var hand = ronPlayer.hand.Clone();
-                hand.tiles.Add(new Tile(0, tile, false));
+                var hand = ronPlayer.手牌.Clone();
+                hand.tiles.Add(tile);
                 var solution = hand.Solve();
                 if (solution.向聴数 > -1)
                 {
                     continue;
                 }
-                var completed = solution.ChoiceCompletedHand(ronPlayer, tile,
+                var completed = solution.ChoiceCompletedHand(ronPlayer, tile.type,
                     ronTarget: declarePlayer,
                     嶺上: false,
                     海底: false,
@@ -51,24 +50,24 @@ namespace TSKT.Mahjongs
                     天和: false,
                     地和: false,
                     人和: false,
-                    槍槓: false);
-                if (completed.役満.ContainsKey(役.国士無双))
+                    槍槓: true);
+                if (!completed.役無し)
                 {
                     PlayerRons.Add(ronPlayer, completed);
                 }
             }
         }
 
-        public static BeforeClosedQuad FromSerializable(in Serializables.BeforeClosedQuad source)
+        public static Before加槓 FromSerializable(in Serializables.BeforeAddedOpenQuad source)
         {
             var round = source.round.Deserialize();
             var player = round.players[(int)source.declarePlayerIndex];
-            return new BeforeClosedQuad(player, source.tile);
+            var tile = round.壁牌.allTiles[source.tile];
+            return new Before加槓(player, tile);
         }
-
-        public Serializables.BeforeClosedQuad ToSerializable()
+        public Serializables.BeforeAddedOpenQuad ToSerializable()
         {
-            return new Serializables.BeforeClosedQuad(this);
+            return new Serializables.BeforeAddedOpenQuad(this);
         }
         public Serializables.Session SerializeSession()
         {
@@ -94,7 +93,7 @@ namespace TSKT.Mahjongs
 
         AfterDraw BuildQuad()
         {
-            return Round.ExecuteClosedQuad(DeclarePlayer, tile);
+            return 局.Execute加槓(DeclarePlayer, tile);
         }
 
         public AfterDraw? DoDefaultAction(out RoundResult? roundResult)
@@ -103,22 +102,25 @@ namespace TSKT.Mahjongs
             return BuildQuad();
         }
 
-        public ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player)
+        public void GetExecutableCommands(out Commands.Ron[] rons)
         {
-            Commands.Ron? ron;
-            if (CanRon(player, out var _ron))
-            {
-                ron = _ron;
-            }
-            else
-            {
-                ron = null;
-            }
-            return new ClaimingCommandSet(ron: ron, null, null, null);
+            CanRon(out rons);
         }
+
         public DiscardingCommandSet GetExecutableDiscardingCommandsBy(Player player)
         {
             return default;
+        }
+        public ClaimingCommandSet GetExecutableClaimingCommandsBy(Player player)
+        {
+            if (CanRon(player, out var ron))
+            {
+                return new ClaimingCommandSet(ron: ron, null, null, null);
+            }
+            else
+            {
+                return default;
+            }
         }
 
         public ICommand[] ExecutableCommands
@@ -126,6 +128,7 @@ namespace TSKT.Mahjongs
             get
             {
                 var result = new List<ICommand>();
+
                 if (CanRon(out var rons))
                 {
                     result.AddRange(rons.Cast<ICommand>());
@@ -133,7 +136,6 @@ namespace TSKT.Mahjongs
                 return result.ToArray();
             }
         }
-
         public CommandResult ExecuteCommands(out List<ICommand> executedCommands, params ICommand[] commands)
         {
             if (Consumed)

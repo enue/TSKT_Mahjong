@@ -82,7 +82,7 @@ namespace TSKT.Tests.Mahjongs
             });
             for (int i = 0; i < 1000; ++i)
             {
-                foreach (var player in controller.Round.players)
+                foreach (var player in controller.局.players)
                 {
                     var set = controller.GetExecutableClaimingCommandsBy(player);
                     var discarding = controller.GetExecutableDiscardingCommandsBy(player);

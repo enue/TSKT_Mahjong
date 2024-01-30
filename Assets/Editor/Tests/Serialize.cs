@@ -98,8 +98,8 @@ namespace TSKT.Tests.Mahjongs
 
             var json = controller0.SerializeSession().ToJson();
             var controller1 = TSKT.Mahjongs.Serializables.Session.FromJson(json);
-            Assert.AreEqual(JsonUtility.ToJson(rule.end), JsonUtility.ToJson(controller1.Round.game.rule.end));
-            Assert.AreEqual(JsonUtility.ToJson(rule.payment), JsonUtility.ToJson(controller1.Round.game.rule.payment));
+            Assert.AreEqual(JsonUtility.ToJson(rule.end), JsonUtility.ToJson(controller1.局.game.rule.end));
+            Assert.AreEqual(JsonUtility.ToJson(rule.payment), JsonUtility.ToJson(controller1.局.game.rule.payment));
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 #nullable enable
 
 namespace TSKT.Mahjongs.Serializables
@@ -14,7 +13,7 @@ namespace TSKT.Mahjongs.Serializables
 
         public AfterDiscard(Mahjongs.AfterDiscard source)
         {
-            round = source.Round.ToSerializable();
+            round = source.局.ToSerializable();
 
             discardPlayerIndex = source.DiscardPlayerIndex;
         }
@@ -36,7 +35,7 @@ namespace TSKT.Mahjongs.Serializables
 
         public AfterDraw(Mahjongs.AfterDraw source)
         {
-            round = source.Round.ToSerializable();
+            round = source.局.ToSerializable();
 
             drawPlayerIndex = source.DrawPlayerIndex;
             newTileInHand = source.newTileInHand?.index ?? -1;
@@ -57,16 +56,16 @@ namespace TSKT.Mahjongs.Serializables
         public PlayerIndex declarePlayerIndex;
         public int tile;
         
-        public BeforeAddedOpenQuad(Mahjongs.BeforeAddedOpenQuad source)
+        public BeforeAddedOpenQuad(Mahjongs.Before加槓 source)
         {
-            round = source.Round.ToSerializable();
+            round = source.局.ToSerializable();
 
             declarePlayerIndex = source.DeclarePlayerIndex;
             tile = source.tile.index;
         }
-        readonly public Mahjongs.BeforeAddedOpenQuad Deserialzie()
+        readonly public Mahjongs.Before加槓 Deserialzie()
         {
-            return Mahjongs.BeforeAddedOpenQuad.FromSerializable(this);
+            return Mahjongs.Before加槓.FromSerializable(this);
         }
     }
 
@@ -78,16 +77,16 @@ namespace TSKT.Mahjongs.Serializables
         public PlayerIndex declarePlayerIndex;
         public TileType tile;
 
-        public BeforeClosedQuad(Mahjongs.BeforeClosedQuad source)
+        public BeforeClosedQuad(Mahjongs.Before暗槓 source)
         {
-            round = source.Round.ToSerializable();
+            round = source.局.ToSerializable();
 
             declarePlayerIndex = source.DeclarePlayerIndex;
             tile = source.tile;
         }
-        readonly public Mahjongs.BeforeClosedQuad Deserialzie()
+        readonly public Mahjongs.Before暗槓 Deserialzie()
         {
-            return Mahjongs.BeforeClosedQuad.FromSerializable(this);
+            return Mahjongs.Before暗槓.FromSerializable(this);
         }
     }
 }

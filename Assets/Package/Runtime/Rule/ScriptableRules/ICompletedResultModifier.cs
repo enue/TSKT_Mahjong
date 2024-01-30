@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TSKT.Mahjongs.Rounds;
-using UnityEngine;
 
 namespace TSKT.Mahjongs.ScriptableRules
 {

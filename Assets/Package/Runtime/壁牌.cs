@@ -1,18 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 #nullable enable
 
 namespace TSKT.Mahjongs
 {
-    public class WallTile
+    public class 壁牌
     {
         readonly public uint randomSeed;
         readonly public List<Tile> tiles = new List<Tile>();
         readonly public Tile[] allTiles;
 
-        public WallTile(Rules.RedTile redTile)
+        public 壁牌(Rules.RedTile redTile)
         {
             int m5rCount;
             int p5rCount;
@@ -69,7 +68,7 @@ namespace TSKT.Mahjongs
             random.Shuffle(ref tiles);
         }
 
-        WallTile(in Serializables.WallTile source)
+        壁牌(in Serializables.WallTile source)
         {
             allTiles = source.allTiles
                 .Select(_ => _.Deserialzie())
@@ -80,9 +79,9 @@ namespace TSKT.Mahjongs
             randomSeed = source.randomSeed;
         }
 
-        static public WallTile FromSerializable(in Serializables.WallTile source)
+        static public 壁牌 FromSerializable(in Serializables.WallTile source)
         {
-            return new WallTile(source);
+            return new 壁牌(source);
         }
         public Serializables.WallTile ToSerializable()
         {
@@ -90,30 +89,30 @@ namespace TSKT.Mahjongs
         }
     }
 
-    public class DeadWallTile
+    public class 王牌
     {
         public const int Count = 14;
-        readonly public List<Tile> tiles = new List<Tile>();
-        readonly public List<Tile> doraIndicatorTiles = new List<Tile>();
-        readonly public List<Tile> uraDoraIndicatorTiles = new List<Tile>();
+        readonly public List<Tile> tiles = new();
+        readonly public List<Tile> ドラ表示牌 = new();
+        readonly public List<Tile> 裏ドラ表示牌 = new();
         public int DrawnCount { get; private set; }
         public int RemainingReplacementTileCount => 4 - DrawnCount;
 
-        public DeadWallTile()
+        public 王牌()
         {
         }
 
-        DeadWallTile(in Serializables.DeadWallTile source, WallTile wallTile)
+        王牌(in Serializables.DeadWallTile source, 壁牌 wallTile)
         {
             tiles = source.tiles.Select(_ => wallTile.allTiles[_]).ToList();
-            doraIndicatorTiles = source.doraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
-            uraDoraIndicatorTiles = source.uraDoraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
+            ドラ表示牌 = source.doraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
+            裏ドラ表示牌 = source.uraDoraIndicatorTiles.Select(_ => wallTile.allTiles[_]).ToList();
             DrawnCount = source.drawnCount;
         }
 
-        public static DeadWallTile FromSerializable(in Serializables.DeadWallTile source, WallTile wallTile)
+        public static 王牌 FromSerializable(in Serializables.DeadWallTile source, 壁牌 wallTile)
         {
-            return new DeadWallTile(source, wallTile);
+            return new 王牌(source, wallTile);
         }
 
         public Serializables.DeadWallTile ToSerializable()
@@ -126,12 +125,12 @@ namespace TSKT.Mahjongs
             {
                 var t = tiles[0];
                 tiles.RemoveAt(0);
-                doraIndicatorTiles.Add(t);
+                ドラ表示牌.Add(t);
             }
             {
                 var t = tiles[0];
                 tiles.RemoveAt(0);
-                uraDoraIndicatorTiles.Add(t);
+                裏ドラ表示牌.Add(t);
             }
         }
 
@@ -143,8 +142,8 @@ namespace TSKT.Mahjongs
             return result;
         }
 
-        public TileType[] DoraTiles => doraIndicatorTiles.Select(_ => TileTypeUtil.GetDora(_.type)).ToArray();
-        public TileType[] UraDoraTiles => uraDoraIndicatorTiles.Select(_ => TileTypeUtil.GetDora(_.type)).ToArray();
+        public TileType[] DoraTiles => ドラ表示牌.Select(_ => TileTypeUtil.GetDora(_.type)).ToArray();
+        public TileType[] UraDoraTiles => 裏ドラ表示牌.Select(_ => TileTypeUtil.GetDora(_.type)).ToArray();
     }
 
 }

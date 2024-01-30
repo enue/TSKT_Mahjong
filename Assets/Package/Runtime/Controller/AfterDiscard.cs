@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 
@@ -9,45 +8,44 @@ namespace TSKT.Mahjongs
 {
     public class AfterDiscard : IController
     {
-        public Round Round => DiscardPlayer.round;
+        public 局 局 => DiscardPlayer.局;
         public bool Consumed { get; private set; }
         public PlayerIndex DiscardPlayerIndex => DiscardPlayer.index;
         public Player DiscardPlayer { get; }
 
         Dictionary<Player, CompletedHand> PlayerRons { get; } = new Dictionary<Player, CompletedHand>();
 
-        public Tile DiscardedTile => Round.players[(int)DiscardPlayerIndex].discardPile.Last();
+        public Tile 捨て牌 => 局.players[(int)DiscardPlayerIndex].河.Last();
 
         public AfterDiscard(Player discardPlayer)
         {
-            Debug.Assert(discardPlayer.hand.tiles.Count % 3 == 1, "wrong hand tile count after discard");
             DiscardPlayer = discardPlayer;
 
-            var 鳴きなし = Round.players.All(_ => _.hand.melds.Count == 0);
+            var 鳴きなし = 局.players.All(_ => _.手牌.副露.Count == 0);
 
-            foreach (var ronPlayer in Round.players)
+            foreach (var ronPlayer in 局.players)
             {
                 if (ronPlayer == DiscardPlayer)
                 {
                     continue;
                 }
-                if (ronPlayer.Furiten)
+                if (ronPlayer.フリテン)
                 {
                     continue;
                 }
-                var hand = ronPlayer.hand.Clone();
-                hand.tiles.Add(DiscardedTile);
+                var hand = ronPlayer.手牌.Clone();
+                hand.tiles.Add(捨て牌);
                 var solution = hand.Solve();
                 if (solution.向聴数 > -1)
                 {
                     continue;
                 }
-                var 一巡目 = ronPlayer.discardedTiles.Count == 0;
-                var completed = solution.ChoiceCompletedHand(ronPlayer, DiscardedTile.type,
+                var 一巡目 = ronPlayer.捨て牌.Count == 0;
+                var completed = solution.ChoiceCompletedHand(ronPlayer, 捨て牌.type,
                     ronTarget: DiscardPlayer,
                     嶺上: false,
                     海底: false,
-                    河底: Round.wallTile.tiles.Count == 0,
+                    河底: 局.壁牌.tiles.Count == 0,
 
                     天和: false,
                     地和: false,
@@ -84,19 +82,19 @@ namespace TSKT.Mahjongs
                 {
                     return false;
                 }
-                return Round.wallTile.tiles.Count > 0;
+                return 局.壁牌.tiles.Count > 0;
             }
         }
 
         public void TryAttachFuriten()
         {
-            foreach (var player in Round.players)
+            foreach (var player in 局.players)
             {
                 if (player == DiscardPlayer)
                 {
                     continue;
                 }
-                player.TryAttachFuritenByOtherPlayers(DiscardedTile);
+                player.TryAttachFuritenByOtherPlayers(捨て牌);
             }
         }
 
@@ -105,14 +103,14 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                if (Round.game.rule.四家立直 == Rules.四家立直.流局)
+                if (局.game.rule.四家立直 == Rules.四家立直.流局)
                 {
                     if (四家立直)
                     {
                         return true;
                     }
                 }
-                if (Round.game.rule.四槓流れ == Rules.四槓流れ.流局)
+                if (局.game.rule.四槓流れ == Rules.四槓流れ.流局)
                 {
                     if (四開槓)
                     {
@@ -127,17 +125,17 @@ namespace TSKT.Mahjongs
             }
         }
 
-        bool 四家立直 => Round.players.All(_ => _.Riichi);
+        bool 四家立直 => 局.players.All(_ => _.リーチ);
         bool 四開槓
         {
             get
             {
                 // 一人がカンを四回している場合は四槓子テンパイとなり流れない
-                if (Round.players.Any(_ => _.hand.melds.Count(x => x.槓子) == 4))
+                if (局.players.Any(_ => _.手牌.副露.Count(x => x.槓子) == 4))
                 {
                     return false;
                 }
-                return Round.CountKan == 4;
+                return 局.CountKan == 4;
             }
         }
 
@@ -146,17 +144,17 @@ namespace TSKT.Mahjongs
             get
             {
                 Tile? tile = null;
-                foreach (var it in Round.players)
+                foreach (var it in 局.players)
                 {
-                    if (it.hand.melds.Count > 0)
+                    if (it.手牌.副露.Count > 0)
                     {
                         return false;
                     }
-                    if (it.discardedTiles.Count != 1)
+                    if (it.捨て牌.Count != 1)
                     {
                         return false;
                     }
-                    var discardedTile = it.discardedTiles[0];
+                    var discardedTile = it.捨て牌[0];
                     if (!discardedTile.type.風牌())
                     {
                         return false;
@@ -177,32 +175,32 @@ namespace TSKT.Mahjongs
 
             if (CanRoundContinue)
             {
-                var playerIndex = ((int)DiscardPlayerIndex + 1) % Round.players.Length;
+                var playerIndex = ((int)DiscardPlayerIndex + 1) % 局.players.Length;
                 roundResult = null;
-                return Round.players[playerIndex].Draw();
+                return 局.players[playerIndex].Draw();
             }
 
             if (ShouldSuspendRound)
             {
-                var result = Round.game.AdvanceRoundBy途中流局(out var gameResult);
+                var result = 局.game.AdvanceRoundBy途中流局(out var gameResult);
                 roundResult = new RoundResult(gameResult);
                 return result;
             }
 
-            var scoreDiffs = Round.players.ToDictionary(_ => _, _ => 0);
+            var scoreDiffs = 局.players.ToDictionary(_ => _, _ => 0);
             var states = new Dictionary<Player, ExhausiveDrawType>();
 
-            var 流し満貫 = Round.players
-                .Where(_ => _.discardedTiles.Count == _.discardPile.Count && _.discardedTiles.All(x => x.type.么九牌()))
+            var 流し満貫 = 局.players
+                .Where(_ => _.捨て牌.Count == _.河.Count && _.捨て牌.All(x => x.type.么九牌()))
                 .ToArray();
             if (流し満貫.Length > 0)
             {
                 foreach (var it in 流し満貫)
                 {
                     states.Add(it, ExhausiveDrawType.流し満貫);
-                    if (it.IsDealer)
+                    if (it.Is親)
                     {
-                        foreach (var player in Round.players)
+                        foreach (var player in 局.players)
                         {
                             if (player != it)
                             {
@@ -213,11 +211,11 @@ namespace TSKT.Mahjongs
                     }
                     else
                     {
-                        foreach (var player in Round.players)
+                        foreach (var player in 局.players)
                         {
                             if (player != it)
                             {
-                                scoreDiffs[player] -= player.IsDealer ? 4000 : 2000;
+                                scoreDiffs[player] -= player.Is親 ? 4000 : 2000;
                             }
                         }
                         scoreDiffs[it] += 8000;
@@ -226,9 +224,9 @@ namespace TSKT.Mahjongs
             }
             else
             {
-                foreach (var it in Round.players)
+                foreach (var it in 局.players)
                 {
-                    states.Add(it, (it.hand.向聴数IsLessThanOrEqual(0))
+                    states.Add(it, (it.手牌.向聴数IsLessThanOrEqual(0))
                         ? ExhausiveDrawType.テンパイ
                         : ExhausiveDrawType.ノーテン);
                 }
@@ -255,23 +253,23 @@ namespace TSKT.Mahjongs
                 it.Key.Score += it.Value;
             }
 
-            if (states.TryGetValue(Round.Dealer, out var dealerState))
+            if (states.TryGetValue(局.親, out var dealerState))
             {
                 if (dealerState == ExhausiveDrawType.ノーテン)
                 {
-                    var result = Round.game.AdvanceRoundByノーテン流局(out var gameResult);
+                    var result = 局.game.AdvanceRoundByノーテン流局(out var gameResult);
                     roundResult = new RoundResult(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.流し満貫)
                 {
-                    var result = Round.game.AdvanceRoundBy親上がり(out var gameResult);
+                    var result = 局.game.AdvanceRoundBy親上がり(out var gameResult);
                     roundResult = new RoundResult(gameResult, scoreDiffs, states);
                     return result;
                 }
                 else if (dealerState == ExhausiveDrawType.テンパイ)
                 {
-                    var result = Round.game.AdvanceRoundByテンパイ流局(out var gameResult);
+                    var result = 局.game.AdvanceRoundByテンパイ流局(out var gameResult);
                     roundResult = new RoundResult(gameResult, scoreDiffs, states);
                     return result;
                 }
@@ -283,7 +281,7 @@ namespace TSKT.Mahjongs
             else
             {
                 // 子の流し満貫
-                var result = Round.game.AdvanceRoundBy子上がり(out var gameResult);
+                var result = 局.game.AdvanceRoundBy子上がり(out var gameResult);
                 roundResult = new RoundResult(gameResult, scoreDiffs, states);
                 return result;
             }
@@ -312,7 +310,7 @@ namespace TSKT.Mahjongs
         bool CanOpenQuad(out Commands.Kan[] commands)
         {
             var result = new List<Commands.Kan>();
-            foreach (var player in Round.players)
+            foreach (var player in 局.players)
             {
                 if (CanOpenQuad(player, out var command))
                 {
@@ -334,12 +332,12 @@ namespace TSKT.Mahjongs
                 return false;
             }
             // 河底はカンできない
-            if (Round.wallTile.tiles.Count == 0)
+            if (局.壁牌.tiles.Count == 0)
             {
                 command = default;
                 return false;
             }
-            if (!player.CanOpenQuad(DiscardedTile.type))
+            if (!player.CanOpenQuad(捨て牌.type))
             {
                 command = default;
                 return false;
@@ -352,7 +350,7 @@ namespace TSKT.Mahjongs
         bool CanPon(out Commands.Pon[] commands)
         {
             var result = new List<Commands.Pon>();
-            foreach (var player in Round.players)
+            foreach (var player in 局.players)
             {
                 if (CanPon(player, out var command))
                 {
@@ -371,12 +369,12 @@ namespace TSKT.Mahjongs
                 return false;
             }
             // 河底はポンできない
-            if (Round.wallTile.tiles.Count == 0)
+            if (局.壁牌.tiles.Count == 0)
             {
                 commands = System.Array.Empty<Commands.Pon>();
                 return false;
             }
-            if (!player.CanPon(DiscardedTile.type, out var combinations))
+            if (!player.CanPon(捨て牌.type, out var combinations))
             {
                 commands = System.Array.Empty<Commands.Pon>();
                 return false;
@@ -388,7 +386,7 @@ namespace TSKT.Mahjongs
         bool CanChi(out Commands.Chi[] commands)
         {
             var result = new List<Commands.Chi>();
-            foreach (var player in Round.players)
+            foreach (var player in 局.players)
             {
                 if (CanChi(player, out var command))
                 {
@@ -408,7 +406,7 @@ namespace TSKT.Mahjongs
             }
 
             // 河底はチーできない
-            if (Round.wallTile.tiles.Count == 0)
+            if (局.壁牌.tiles.Count == 0)
             {
                 commands = System.Array.Empty<Commands.Chi>();
                 return false;
@@ -419,7 +417,7 @@ namespace TSKT.Mahjongs
                 return false;
             }
 
-            if (!player.CanChi(DiscardedTile, out var combinations))
+            if (!player.CanChi(捨て牌, out var combinations))
             {
                 commands = System.Array.Empty<Commands.Chi>();
                 return false;

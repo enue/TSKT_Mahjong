@@ -1,34 +1,33 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 using TSKT.Mahjongs.Hands;
 
 namespace TSKT.Mahjongs
 {
-    public class Hand
+    public class 手牌
     {
         readonly Player owner;
         readonly public List<Tile> tiles = new();
-        readonly public List<Meld> melds = new();
+        readonly public List<副露> 副露 = new();
 
-        public Hand(Player owner)
+        public 手牌(Player owner)
         {
             this.owner = owner;
         }
 
-        Hand(in Serializables.Hand source, Player owner)
+        手牌(in Serializables.Hand source, Player owner)
         {
             this.owner = owner;
-            melds = source.melds.Select(_ => _.Deserialize(owner.round.wallTile)).ToList();
-            tiles = source.tiles.Select(_ => owner.round.wallTile.allTiles[_]).ToList();
+            副露 = source.melds.Select(_ => _.Deserialize(owner.局.壁牌)).ToList();
+            tiles = source.tiles.Select(_ => owner.局.壁牌.allTiles[_]).ToList();
         }
 
-        static public Hand FromSerializable(in Serializables.Hand source, Player owner)
+        static public 手牌 FromSerializable(in Serializables.Hand source, Player owner)
         {
-            return new Hand(source, owner);
+            return new 手牌(source, owner);
         }
         public Serializables.Hand ToSerializable()
         {
@@ -47,11 +46,11 @@ namespace TSKT.Mahjongs
             }
         }
 
-        public Hand Clone()
+        public 手牌 Clone()
         {
-            var result = new Hand(owner);
+            var result = new 手牌(owner);
             result.tiles.AddRange(tiles);
-            result.melds.AddRange(melds);
+            result.副露.AddRange(副露);
             return result;
         }
 
@@ -80,7 +79,7 @@ namespace TSKT.Mahjongs
                 {
                     yield return it;
                 }
-                foreach (var meld in melds)
+                foreach (var meld in 副露)
                 {
                     foreach (var (tile, from) in meld.tileFroms)
                     {
@@ -99,20 +98,20 @@ namespace TSKT.Mahjongs
                 tiles.Remove(tile);
                 quadTiles[i] = (tile, owner.index);
             }
-            var meld = new Meld(quadTiles);
-            melds.Add(meld);
+            var meld = new 副露(quadTiles);
+            副露.Add(meld);
         }
         
-        public TileType[] GetWinningTiles()
+        public TileType[] Get和了牌()
         {
             if (!向聴数IsLessThanOrEqual(0))
             {
                 return System.Array.Empty<TileType>();
             }
-            return GetAdoptableTiles();
+            return Get有効牌();
         }
 
-        public TileType[] GetAdoptableTiles()
+        public TileType[] Get有効牌()
         {
             var currentScore = new Solution(this).向聴数;
             var tilesToCheck = new List<TileType>();
@@ -125,7 +124,7 @@ namespace TSKT.Mahjongs
             {
                 tilesToCheck.Add(it.type);
 
-                if (it.type.IsSuited())
+                if (it.type.Is数牌())
                 {
                     var number = it.type.Number();
                     if (number > 1)
@@ -182,7 +181,7 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                if (melds.Count > 0)
+                if (副露.Count > 0)
                 {
                     return int.MaxValue;
                 }
@@ -205,7 +204,7 @@ namespace TSKT.Mahjongs
         {
             get
             {
-                if (melds.Count > 0)
+                if (副露.Count > 0)
                 {
                     return int.MaxValue;
                 }
@@ -229,7 +228,7 @@ namespace TSKT.Mahjongs
     /// <summary>
     /// 副露
     /// </summary>
-    public readonly struct Meld
+    public readonly struct 副露
     {
         public readonly (Tile tile, PlayerIndex fromPlayerIndex)[] tileFroms;
 
@@ -256,21 +255,21 @@ namespace TSKT.Mahjongs
 
         public readonly Tile Min => tileFroms[0].tile;
 
-        public Meld(params (Tile tile, PlayerIndex fromPlayerIndex)[] tileFroms)
+        public 副露(params (Tile tile, PlayerIndex fromPlayerIndex)[] tileFroms)
         {
             this.tileFroms = tileFroms.OrderBy(_ => _.tile.type).ToArray();
         }
         
-        Meld(in Serializables.Meld source, WallTile wallTile)
+        副露(in Serializables.Meld source, 壁牌 wallTile)
         {
             tileFroms = source.tileFroms
                 .Select(_ => (wallTile.allTiles[_.tile], _.fromPlayerIndex))
                 .ToArray();
         }
 
-        static public Meld FromSerializable(in Serializables.Meld source, WallTile wallTile)
+        static public 副露 FromSerializable(in Serializables.Meld source, 壁牌 wallTile)
         {
-            return new Meld(source, wallTile);
+            return new 副露(source, wallTile);
         }
 
         public readonly Serializables.Meld ToSerializable()
@@ -319,7 +318,7 @@ namespace TSKT.Mahjongs
 
             if (順子)
             {
-                if (tileToDiscard.type.IsSuited())
+                if (tileToDiscard.type.Is数牌())
                 {
                     if (tileFroms[0].tile.type.Suit() == tileToDiscard.type.Suit())
                     {
@@ -340,7 +339,7 @@ namespace TSKT.Mahjongs
             return false;
         }
     }
-    public static class MeldUtil
+    public static class 副露Util
     {
         public static (TileType, bool, TileType, bool, TileType, bool) GetKey(Tile a, Tile b, Tile c)
         {

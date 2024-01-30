@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TSKT;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
@@ -22,7 +21,7 @@ namespace TSKT.Mahjongs.Commands
 
         public readonly CommandResult Execute()
         {
-            var result = Controller.Round.game.AdvanceRoundBy途中流局(out var gameResult);
+            var result = Controller.局.game.AdvanceRoundBy途中流局(out var gameResult);
             var roundResult = new RoundResult(gameResult);
             return new CommandResult(result, roundResult);
         }
@@ -35,22 +34,22 @@ namespace TSKT.Mahjongs.Commands
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
-        public readonly bool riichi;
-        public readonly bool openRiichi;
+        public readonly bool リーチ;
+        public readonly bool オープンリーチ;
 
-        public Discard(AfterDraw afterDraw, Tile tile, bool riichi, bool openRiichi)
+        public Discard(AfterDraw afterDraw, Tile tile, bool リーチ, bool オープンリーチ)
         {
             Controller = afterDraw;
             this.tile = tile;
-            this.riichi = riichi;
-            this.openRiichi = openRiichi;
+            this.リーチ = リーチ;
+            this.オープンリーチ = オープンリーチ;
         }
 
-        readonly public bool Furiten
+        public readonly bool フリテン
         {
             get
             {
-                var winningTiles = WinningTiles;
+                var winningTiles = 和了牌;
                 if (winningTiles.Length == 0)
                 {
                     return false;
@@ -60,7 +59,7 @@ namespace TSKT.Mahjongs.Commands
                 {
                     return true;
                 }
-                var discardedTiles = Executor.discardedTiles.Select(_ => _.type).Distinct();
+                var discardedTiles = Executor.捨て牌.Select(_ => _.type).Distinct();
                 foreach (var it in discardedTiles)
                 {
                     if (winningTiles.Contains(it))
@@ -72,7 +71,7 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        readonly public TileType[] WinningTiles => HandAfterDiscard.GetWinningTiles();
+        readonly public TileType[] 和了牌 => HandAfterDiscard.Get和了牌();
 
         readonly public Dictionary<TileType, int> WinningTilesHiddenCount
         {
@@ -80,7 +79,7 @@ namespace TSKT.Mahjongs.Commands
             {
                 var controller = Controller;
                 var executor = Executor;
-                return WinningTiles.ToDictionary(_ => _, _ => controller.Round.HiddenTileCountFrom(executor, _));
+                return 和了牌.ToDictionary(_ => _, _ => controller.局.HiddenTileCountFrom(executor, _));
             }
         }
 
@@ -90,7 +89,7 @@ namespace TSKT.Mahjongs.Commands
             {
                 var result = new List<TileType>();
 
-                var winningTiles = WinningTiles;
+                var winningTiles = 和了牌;
                 foreach (var winningTile in winningTiles)
                 {
                     var cloneHand = HandAfterDiscard;
@@ -99,12 +98,12 @@ namespace TSKT.Mahjongs.Commands
                     foreach (var structure in solution.structures)
                     {
                         // IsolatedTilesがあるアガリは国士なので手牌全てが関係牌
-                        if (structure.IsolatedTiles.Length != 0)
+                        if (structure.浮き牌.Length != 0)
                         {
                             return HandAfterDiscard.tiles.Select(_ => _.type).Distinct().ToArray();
                         }
 
-                        foreach (var set in structure.Sets)
+                        foreach (var set in structure.面子s)
                         {
                             if (set.first == winningTile)
                             {
@@ -122,7 +121,7 @@ namespace TSKT.Mahjongs.Commands
                                 result.Add(set.second);
                             }
                         }
-                        foreach (var pair in structure.Pairs)
+                        foreach (var pair in structure.対子)
                         {
                             if (pair == winningTile)
                             {
@@ -136,11 +135,11 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        readonly public Hand HandAfterDiscard
+        readonly public 手牌 HandAfterDiscard
         {
             get
             {
-                var cloneHand = Controller.DrawPlayer.hand.Clone();
+                var cloneHand = Controller.DrawPlayer.手牌.Clone();
                 cloneHand.tiles.Remove(tile);
                 return cloneHand;
             }
@@ -148,20 +147,17 @@ namespace TSKT.Mahjongs.Commands
 
         public readonly CommandResult Execute()
         {
-            Controller.DrawPlayer.Discard(tile, riichi, openRiichi);
+            Controller.DrawPlayer.Discard(tile, リーチ, オープンリーチ);
             if (Controller.openDoraAfterDiscard)
             {
-                Controller.DrawPlayer.round.deadWallTile.OpenDora();
+                Controller.DrawPlayer.局.王牌.OpenDora();
             }
 
             return new CommandResult(new AfterDiscard(Controller.DrawPlayer));
         }
     }
 
-    /// <summary>
-    /// 暗槓
-    /// </summary>
-    public readonly struct DeclareClosedQuad : ICommand<AfterDraw>
+    public readonly struct 暗槓 : ICommand<AfterDraw>
     {
         public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
@@ -169,7 +165,7 @@ namespace TSKT.Mahjongs.Commands
         public readonly Player Executor => Controller.DrawPlayer;
         public readonly TileType tile;
 
-        public DeclareClosedQuad(AfterDraw afterDraw, TileType tile)
+        public 暗槓(AfterDraw afterDraw, TileType tile)
         {
             Controller = afterDraw;
             this.tile = tile;
@@ -179,16 +175,13 @@ namespace TSKT.Mahjongs.Commands
         {
             if (Controller.openDoraAfterDiscard)
             {
-                Controller.DrawPlayer.round.deadWallTile.OpenDora();
+                Controller.DrawPlayer.局.王牌.OpenDora();
             }
-            return new CommandResult(new BeforeClosedQuad(Controller.DrawPlayer, tile));
+            return new CommandResult(new Before暗槓(Controller.DrawPlayer, tile));
         }
     }
 
-    /// <summary>
-    /// 加槓
-    /// </summary>
-    public readonly struct DeclareAddedOpenQuad : ICommand<AfterDraw>
+    public readonly struct 加槓 : ICommand<AfterDraw>
     {
         public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Lowest;
@@ -196,7 +189,7 @@ namespace TSKT.Mahjongs.Commands
         public readonly Player Executor => Controller.DrawPlayer;
         public readonly Tile tile;
 
-        public DeclareAddedOpenQuad(AfterDraw afterDraw, Tile tile)
+        public 加槓(AfterDraw afterDraw, Tile tile)
         {
             Controller =afterDraw;
             this.tile = tile;
@@ -206,20 +199,20 @@ namespace TSKT.Mahjongs.Commands
         {
             if (Controller.openDoraAfterDiscard)
             {
-                Controller.DrawPlayer.round.deadWallTile.OpenDora();
+                Controller.DrawPlayer.局.王牌.OpenDora();
             }
-            return new CommandResult(new BeforeAddedOpenQuad(Controller.DrawPlayer, tile));
+            return new CommandResult(new Before加槓(Controller.DrawPlayer, tile));
         }
     }
 
-    public readonly struct Tsumo : ICommand<AfterDraw>
+    public readonly struct ツモ上がり : ICommand<AfterDraw>
     {
         public readonly AfterDraw Controller { get; }
         public static CommandPriority GetPriority => CommandPriority.Tsumo;
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor => Controller.DrawPlayer;
 
-        public Tsumo(AfterDraw afterDraw)
+        public ツモ上がり(AfterDraw afterDraw)
         {
             Controller = afterDraw;
         }
@@ -229,7 +222,7 @@ namespace TSKT.Mahjongs.Commands
             // 明槓だとここでドラが増えるので点数の確定もここでおこなう
             if (Controller.openDoraAfterDiscard)
             {
-                Controller.Round.deadWallTile.OpenDora();
+                Controller.局.王牌.OpenDora();
             }
             return CompletedHand.Execute((Controller.DrawPlayer, Controller.CompletedHand));
         }

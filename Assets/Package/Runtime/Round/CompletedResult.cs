@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 
@@ -12,7 +11,7 @@ namespace TSKT.Mahjongs.Rounds
         public readonly Player winner;
         public readonly (int dealer, int player)? tsumoPenalty;
         public readonly int? dealerTsumoPenalty;
-        public readonly int? ronPenalty;
+        public readonly int? ロン払い;
         public readonly Dictionary<Player, int> scoreDiffs;
         public readonly (int han, int fu)? displayScore;
         public readonly ScoreType? scoreType;
@@ -24,10 +23,10 @@ namespace TSKT.Mahjongs.Rounds
         public CompletedResult(CompletedHand source, Player player)
         {
             winner = player;
-            scoreType = source.基本点(player.round.game.rule.handCap).type;
+            scoreType = source.基本点(player.局.game.rule.handCap).type;
             dora = source.Dora;
             uraDora = source.UraDora;
-            redTile = source.RedTile;
+            redTile = source.赤牌;
             if (source.役満.Count > 0)
             {
                 display役s = source.役満.ToDictionary(_ => _.Key, _ => 0);
@@ -35,29 +34,29 @@ namespace TSKT.Mahjongs.Rounds
             }
             else
             {
-                display役s = source.Yakus;
-                if (source.Han >= 5)
+                display役s = source.役;
+                if (source.翻 >= 5)
                 {
                     displayScore = null;
                 }
                 else
                 {
-                    displayScore = (source.Han, source.Fu);
+                    displayScore = (source.翻, source.Fu);
                 }
             }
 
-            var asDealer = player.IsDealer;
+            var asDealer = player.Is親;
             scoreDiffs = new Dictionary<Player, int>();
 
             if (source.自摸)
             {
-                ronPenalty = null;
+                ロン払い = null;
                 if (asDealer)
                 {
-                    dealerTsumoPenalty = 親自摸Penalty(source.基本点(player.round.game.rule.handCap).score, player.round.game.本場);
+                    dealerTsumoPenalty = 親自摸Penalty(source.基本点(player.局.game.rule.handCap).score, player.局.game.本場);
                     tsumoPenalty = null;
 
-                    foreach (var it in player.round.players)
+                    foreach (var it in player.局.players)
                     {
                         if (it != player)
                         {
@@ -68,14 +67,14 @@ namespace TSKT.Mahjongs.Rounds
                 }
                 else
                 {
-                    tsumoPenalty = 子自摸Penalty(source.基本点(player.round.game.rule.handCap).score, player.round.game.本場);
+                    tsumoPenalty = 子自摸Penalty(source.基本点(player.局.game.rule.handCap).score, player.局.game.本場);
                     dealerTsumoPenalty = null;
 
-                    foreach (var it in player.round.players)
+                    foreach (var it in player.局.players)
                     {
                         if (it != player)
                         {
-                            if (it.IsDealer)
+                            if (it.Is親)
                             {
                                 scoreDiffs[it] = -tsumoPenalty.Value.dealer;
                             }
@@ -90,12 +89,12 @@ namespace TSKT.Mahjongs.Rounds
             }
             else
             {
-                ronPenalty = RonPenalty(source.基本点(player.round.game.rule.handCap).score, asDealer, player.round.game.本場);
+                ロン払い = RonPenalty(source.基本点(player.局.game.rule.handCap).score, asDealer, player.局.game.本場);
                 dealerTsumoPenalty = null;
                 tsumoPenalty = null;
 
-                scoreDiffs[source.ronTarget!] = -ronPenalty.Value;
-                scoreDiffs[player] = ronPenalty.Value;
+                scoreDiffs[source.ronTarget!] = -ロン払い.Value;
+                scoreDiffs[player] = ロン払い.Value;
             }
         }
 

@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 
@@ -9,7 +8,7 @@ namespace TSKT.Mahjongs
 {
     public interface IController
     {
-        Round Round { get; }
+        局 局 { get; }
         bool Consumed { get; }
 
         AfterDraw? DoDefaultAction(out RoundResult? roundResult);
@@ -21,54 +20,54 @@ namespace TSKT.Mahjongs
         Serializables.Session SerializeSession();
     }
 
-    public interface IBeforeQuad : IController
+    public interface IBefore槓 : IController
     {
     }
 
     public readonly struct DiscardingCommandSet
     {
-        readonly Commands.DeclareClosedQuad[]? closedQuads;
-        public readonly Commands.DeclareClosedQuad[] ClosedQuads => closedQuads ?? System.Array.Empty<Commands.DeclareClosedQuad>();
-        readonly Commands.DeclareAddedOpenQuad[]? addedOpenQuads;
-        public readonly Commands.DeclareAddedOpenQuad[] AddedOpenQuads => addedOpenQuads ?? System.Array.Empty<Commands.DeclareAddedOpenQuad>();
+        readonly Commands.暗槓[]? closedQuads;
+        public readonly Commands.暗槓[] 暗槓 => closedQuads ?? System.Array.Empty<Commands.暗槓>();
+        readonly Commands.加槓[]? addedOpenQuads;
+        public readonly Commands.加槓[] 加槓 => addedOpenQuads ?? System.Array.Empty<Commands.加槓>();
         readonly Commands.Discard[]? discards;
         public readonly Commands.Discard[] Discards => discards ?? System.Array.Empty<Commands.Discard>();
         readonly Commands.Discard[]? riichies;
         public readonly Commands.Discard[] Riichies => riichies ?? System.Array.Empty<Commands.Discard>();
         readonly Commands.Discard[]? openRiichies;
         public readonly Commands.Discard[] OpenRiichies => openRiichies ?? System.Array.Empty<Commands.Discard>();
-        public readonly Commands.Tsumo? Tsumo { get; }
-        public readonly Commands.九種九牌? NineTiles { get; }
+        public readonly Commands.ツモ上がり? ツモ上がり { get; }
+        public readonly Commands.九種九牌? 九種九牌 { get; }
 
         public DiscardingCommandSet(
-            Commands.DeclareClosedQuad[]? closedQuads,
-            Commands.DeclareAddedOpenQuad[]? addedOpenQuads,
+            Commands.暗槓[]? 暗槓,
+            Commands.加槓[]? 加槓,
             Commands.Discard[]? discards,
             Commands.Discard[]? riichies,
             Commands.Discard[]? openRiichies,
-            Commands.Tsumo? tsumo,
+            Commands.ツモ上がり? ツモ上がり,
             Commands.九種九牌? nineTiles)
         {
-            this.closedQuads = closedQuads;
-            this.addedOpenQuads = addedOpenQuads;
+            this.closedQuads = 暗槓;
+            this.addedOpenQuads = 加槓;
             this.discards = discards;
             this.riichies = riichies;
             this.openRiichies = openRiichies;
-            Tsumo = tsumo;
-            NineTiles = nineTiles;
+            this.ツモ上がり = ツモ上がり;
+            九種九牌 = nineTiles;
         }
 
         public bool Empty
         {
             get
             {
-                return ClosedQuads.Length == 0
-                    && AddedOpenQuads.Length == 0
+                return 暗槓.Length == 0
+                    && 加槓.Length == 0
                     && Discards.Length == 0
                     && Riichies.Length == 0
                     && OpenRiichies.Length == 0
-                    && !Tsumo.HasValue
-                    && !NineTiles.HasValue;
+                    && !ツモ上がり.HasValue
+                    && !九種九牌.HasValue;
             }
         }
         public bool ShouldDiscardLastDrawnTile
@@ -76,10 +75,10 @@ namespace TSKT.Mahjongs
             get
             {
                 return Discards.Length == 1
-                    && AddedOpenQuads.Length == 0
-                    && ClosedQuads.Length == 0
-                    && !NineTiles.HasValue
-                    && !Tsumo.HasValue
+                    && 加槓.Length == 0
+                    && 暗槓.Length == 0
+                    && !九種九牌.HasValue
+                    && !ツモ上がり.HasValue
                     && Riichies.Length == 0
                     && OpenRiichies.Length == 0;
             }
@@ -90,14 +89,14 @@ namespace TSKT.Mahjongs
             get
             {
                 var result = Commands.CommandPriority.Lowest;
-                foreach (var it in ClosedQuads)
+                foreach (var it in 暗槓)
                 {
                     if (result < it.Priority)
                     {
                         result = it.Priority;
                     }
                 }
-                foreach (var it in AddedOpenQuads)
+                foreach (var it in 加槓)
                 {
                     if (result < it.Priority)
                     {
@@ -125,13 +124,13 @@ namespace TSKT.Mahjongs
                         result = it.Priority;
                     }
                 }
-                if (Tsumo.HasValue && result < Tsumo.Value.Priority)
+                if (ツモ上がり.HasValue && result < ツモ上がり.Value.Priority)
                 {
-                    result = Tsumo.Value.Priority;
+                    result = ツモ上がり.Value.Priority;
                 }
-                if (NineTiles.HasValue && result < NineTiles.Value.Priority)
+                if (九種九牌.HasValue && result < 九種九牌.Value.Priority)
                 {
-                    result = NineTiles.Value.Priority;
+                    result = 九種九牌.Value.Priority;
                 }
 
                 return result;

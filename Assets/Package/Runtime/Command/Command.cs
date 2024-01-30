@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using TSKT.Mahjongs.Rounds;
 
 namespace TSKT.Mahjongs
@@ -89,7 +88,7 @@ namespace TSKT.Mahjongs
 
             afterDiscard = null;
         }
-        public CommandResult(IBeforeQuad? nextController,
+        public CommandResult(IBefore槓? nextController,
             RoundResult? roundResult = null,
             Dictionary<Player, CompletedResult>? completedResults = null)
         {

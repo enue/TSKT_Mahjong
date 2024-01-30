@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TSKT;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
@@ -15,7 +14,7 @@ namespace TSKT.Mahjongs.Commands
         public readonly CommandPriority Priority => GetPriority;
         public readonly Player Executor { get; }
         public readonly (Tile, Tile) pair;
-        public readonly Tile TargetTile => Controller.DiscardedTile;
+        public readonly Tile TargetTile => Controller.捨て牌;
 
         public Pon(Player player, AfterDiscard afterDiscard, (Tile, Tile) pair)
         {
@@ -26,31 +25,31 @@ namespace TSKT.Mahjongs.Commands
         readonly public CommandResult Execute()
         {
             Controller.TryAttachFuriten();
-            foreach (var it in Controller.Round.players)
+            foreach (var it in Controller.局.players)
             {
                 it.一発 = false;
             }
 
-            var discardPile = Controller.DiscardPlayer.discardPile;
+            var discardPile = Controller.DiscardPlayer.河;
             var tile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            Executor.hand.tiles.Remove(pair.Item1);
-            Executor.hand.tiles.Remove(pair.Item2);
+            Executor.手牌.tiles.Remove(pair.Item1);
+            Executor.手牌.tiles.Remove(pair.Item2);
 
-            var meld = new Meld(
+            var meld = new 副露(
                 (tile, Controller.DiscardPlayer.index),
                 (pair.Item1, Executor.index),
                 (pair.Item2, Executor.index));
-            Executor.hand.melds.Add(meld);
+            Executor.手牌.副露.Add(meld);
 
             Executor.OnTurnStart();
             return new CommandResult(new AfterDraw(Executor, null, 嶺上: false, openDoraAfterDiscard: false));
         }
 
 
-        public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, pair.Item1, pair.Item2);
-        public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (pair.Item1, Executor.index), (pair.Item2, Executor.index));
+        public (TileType, bool, TileType, bool, TileType, bool) Key => 副露Util.GetKey(TargetTile, pair.Item1, pair.Item2);
+        public 副露 副露 => new 副露((TargetTile, Controller.DiscardPlayer.index), (pair.Item1, Executor.index), (pair.Item2, Executor.index));
         public int RedTileCount
         {
             get
@@ -79,7 +78,7 @@ namespace TSKT.Mahjongs.Commands
         public static CommandPriority GetPriority => CommandPriority.Chi;
         public readonly CommandPriority Priority => GetPriority;
         public readonly (Tile left, Tile right) 塔子;
-        public readonly Tile TargetTile => Controller.DiscardedTile;
+        public readonly Tile TargetTile => Controller.捨て牌;
         public readonly Player Executor { get; }
 
         public Chi(Player player, AfterDiscard afterDiscard, (Tile left, Tile right) 塔子)
@@ -91,31 +90,31 @@ namespace TSKT.Mahjongs.Commands
         public readonly CommandResult Execute()
         {
             Controller.TryAttachFuriten();
-            foreach (var it in Controller.Round.players)
+            foreach (var it in Controller.局.players)
             {
                 it.一発 = false;
             }
 
-            var discardPile = Controller.DiscardPlayer.discardPile;
+            var discardPile = Controller.DiscardPlayer.河;
             var tile = discardPile[discardPile.Count - 1];
             discardPile.RemoveAt(discardPile.Count - 1);
 
-            Executor.hand.tiles.Remove(塔子.Item1);
-            Executor.hand.tiles.Remove(塔子.Item2);
+            Executor.手牌.tiles.Remove(塔子.left);
+            Executor.手牌.tiles.Remove(塔子.right);
 
-            var meld = new Meld(
+            var meld = new 副露(
                 (tile, Controller.DiscardPlayer.index),
-                (塔子.Item1, Executor.index),
-                (塔子.Item2, Executor.index));
-            Executor.hand.melds.Add(meld);
+                (塔子.left, Executor.index),
+                (塔子.right, Executor.index));
+            Executor.手牌.副露.Add(meld);
 
             Executor.OnTurnStart();
 
             return new CommandResult(new AfterDraw(Executor, null, 嶺上: false, openDoraAfterDiscard: false));
         }
 
-        public (TileType, bool, TileType, bool, TileType, bool) Key => MeldUtil.GetKey(TargetTile, 塔子.left, 塔子.right);
-        public Meld Meld => new Meld((TargetTile, Controller.DiscardPlayer.index), (塔子.left, Executor.index), (塔子.right, Executor.index));
+        public (TileType, bool, TileType, bool, TileType, bool) Key => 副露Util.GetKey(TargetTile, 塔子.left, 塔子.right);
+        public 副露 副露 => new((TargetTile, Controller.DiscardPlayer.index), (塔子.left, Executor.index), (塔子.right, Executor.index));
 
         public int RedTileCount
         {
@@ -154,7 +153,7 @@ namespace TSKT.Mahjongs.Commands
         readonly public CommandResult Execute()
         {
             Controller.TryAttachFuriten();
-            var afterDraw = Controller.Round.ExecuteOpenQuad(Executor, Controller.DiscardPlayer);
+            var afterDraw = Controller.局.Execute大明槓(Executor, Controller.DiscardPlayer);
             return new CommandResult(afterDraw);
         }
     }

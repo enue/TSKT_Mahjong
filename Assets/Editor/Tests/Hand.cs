@@ -21,7 +21,7 @@ namespace TSKT.Tests.Mahjongs
         [TestCase(false, TileType.M2, TileType.M3, TileType.M4, TileType.M3)]
         public void 喰い替え(bool expected, TileType tile1, TileType tile2, TileType tileFromOtherPlayer, TileType tileToDiscard)
         {
-            var meld = new Meld((new Tile(0, tile1, false), PlayerIndex.Index0),
+            var meld = new 副露((new Tile(0, tile1, false), PlayerIndex.Index0),
                 (new Tile(0, tile2, false), PlayerIndex.Index0),
                 (new Tile(0, tileFromOtherPlayer, false), PlayerIndex.Index1));
 
@@ -57,20 +57,20 @@ namespace TSKT.Tests.Mahjongs
         )]
         public void 七対子向聴数(int expected, params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).Round;
+            var round = Game.Create(0, new RuleSetting()).局;
 
-            var hand = round.players[0].hand;
+            var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(RandomUtil.GenerateShuffledArray(tiles.Select(_ => new Tile(0, _, red: false)).ToList()));
             Assert.IsTrue(hand.向聴数IsLessThanOrEqual(expected));
             Assert.IsFalse(hand.向聴数IsLessThanOrEqual(expected - 1));
             if (expected == 0)
             {
-                Assert.AreEqual(1, hand.GetWinningTiles().Length);
+                Assert.AreEqual(1, hand.Get和了牌().Length);
             }
             else
             {
-                Assert.AreEqual(0, hand.GetWinningTiles().Length);
+                Assert.AreEqual(0, hand.Get和了牌().Length);
             }
             Assert.AreEqual(expected, hand.Solve().向聴数);
         }
@@ -95,11 +95,11 @@ namespace TSKT.Tests.Mahjongs
         )]
         public void Yaku(役[] expecteds, params TileType[] tiles)
         {
-            var round = Game.Create(0, new RuleSetting()).Round;
-            var hand = round.players[0].hand;
+            var round = Game.Create(0, new RuleSetting()).局;
+            var hand = round.players[0].手牌;
             hand.tiles.Clear();
             hand.tiles.AddRange(tiles.Select(_ => new Tile(0, _, red: false)));
-            var yakus = hand.Solve().ChoiceCompletedHand(round.players[0], tiles[0], null, false, false, false, false, false, false, false).Yakus;
+            var yakus = hand.Solve().ChoiceCompletedHand(round.players[0], tiles[0], null, false, false, false, false, false, false, false).役;
             foreach (var it in expecteds)
             {
                 Assert.IsTrue(yakus.ContainsKey(it), string.Join(", ", yakus.Keys.Select(_ => _.ToString())));
