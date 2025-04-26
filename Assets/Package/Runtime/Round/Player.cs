@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Buffers;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #nullable enable
@@ -257,20 +258,20 @@ namespace TSKT.Mahjongs.Rounds
             if (リーチ)
             {
                 // 待ち牌が変わる暗槓はできない
-                TileType[] 和了牌BeforeDraw;
-                TileType[] 和了牌After暗槓;
+                var 和了牌BeforeDraw = new ArrayBufferWriter<TileType>();
+                var 和了牌After暗槓 = new ArrayBufferWriter<TileType>();
                 {
                     var clone = 手牌.Clone();
                     var drewTileIndex = clone.tiles.FindIndex(_ => _.type == tile);
                     clone.tiles.RemoveAt(drewTileIndex);
-                    和了牌BeforeDraw = clone.Get和了牌();
+                    clone.Get和了牌(和了牌BeforeDraw);
                 }
                 {
                     var clone = 手牌.Clone();
                     clone.Build暗槓(tile);
-                    和了牌After暗槓 = clone.Get和了牌();
+                    clone.Get和了牌(和了牌After暗槓);
                 }
-                if (!和了牌BeforeDraw.SequenceEqual(和了牌After暗槓))
+                if (!和了牌BeforeDraw.WrittenSpan.ToArray().SequenceEqual(和了牌After暗槓.WrittenSpan.ToArray()))
                 {
                     return false;
                 }

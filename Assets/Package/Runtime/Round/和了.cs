@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 namespace TSKT.Mahjongs.Rounds
 {
@@ -29,7 +30,7 @@ namespace TSKT.Mahjongs.Rounds
         public readonly bool 自摸 => ronTarget == null;
         public readonly TileType[] doraTiles;
         public readonly TileType[] uraDoraTiles;
-        readonly IEnumerable<TileType> AllUsedTiles => structure.AllUsedTiles;
+        public readonly TileType[] allUsedTiles;
 
         public 和了(Hands.Structure structure, TileType 和了牌, TileType ownWind, TileType roundWind,
             Player? ronTarget,
@@ -57,6 +58,7 @@ namespace TSKT.Mahjongs.Rounds
             面前 = structure.副露.Length == 0 || structure.副露.All(_ => _.暗槓);
             this.doraTiles = doraTiles ?? System.Array.Empty<TileType>();
             this.uraDoraTiles = (riichi ? uraDoraTiles : null) ?? System.Array.Empty<TileType>();
+            allUsedTiles = structure.AllUsedTiles.ToArray();
 
             if (面前 && 自摸)
             {
@@ -505,12 +507,12 @@ namespace TSKT.Mahjongs.Rounds
                 {
                     return 0;
                 }
-                var allUsedTiles = AllUsedTiles.ToArray();
+                var allUsedTiles = this.allUsedTiles.ToArray();
                 return doraTiles.Sum(_ => allUsedTiles.Count(x => x == _));
             }
         }
 
-        readonly public int 裏ドラ
+        public readonly int 裏ドラ
         {
             get
             {
@@ -518,12 +520,12 @@ namespace TSKT.Mahjongs.Rounds
                 {
                     return 0;
                 }
-                var allUsedTiles = AllUsedTiles.ToArray();
-                return uraDoraTiles.Sum(_ => allUsedTiles.Count(x => x == _));
+                var u = uraDoraTiles;
+                return allUsedTiles.Sum(_ => u.Count(x => x == _));
             }
         }
 
-        readonly public (ScoreType? type, int score) 基本点(Rules.役満複合上限 handCap)
+        public readonly (ScoreType? type, int score) 基本点(Rules.役満複合上限 handCap)
         {
             int maxYakumanCount;
             switch(handCap)
@@ -668,7 +670,7 @@ namespace TSKT.Mahjongs.Rounds
                 }
             }
 
-            foreach (var it in AllUsedTiles)
+            foreach (var it in allUsedTiles)
             {
                 if (it.三元牌())
                 {
@@ -732,7 +734,7 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     if (!it.Is数牌())
                     {
@@ -868,7 +870,7 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                var counters = new HashSet<SuitType>[9];
+                var counters = new HashSet<SuitType>?[9];
 
                 foreach (var it in 順子)
                 {
@@ -898,7 +900,7 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     if (it.Is数牌())
                     {
@@ -984,7 +986,7 @@ namespace TSKT.Mahjongs.Rounds
                 bool containsSuited = false;
                 bool containsNotSuited = false;
 
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     if (it.Is数牌())
                     {
@@ -1066,7 +1068,7 @@ namespace TSKT.Mahjongs.Rounds
             {
                 bool contains字牌 = false;
                 SuitType? suit = null;
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     if (it.Is数牌())
                     {
@@ -1139,7 +1141,7 @@ namespace TSKT.Mahjongs.Rounds
             get
             {
                 SuitType? suit = null;
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     if (it.Is数牌())
                     {
@@ -1174,7 +1176,7 @@ namespace TSKT.Mahjongs.Rounds
         {
             get
             {
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     if (!緑一色牌.Contains(it))
                     {
@@ -1238,7 +1240,7 @@ namespace TSKT.Mahjongs.Rounds
             }
         }
 
-        readonly bool 字一色 => AllUsedTiles.All(_ => _.Is字牌());
+        readonly bool 字一色 => allUsedTiles.All(_ => _.Is字牌());
 
         readonly bool 九蓮宝燈
         {
@@ -1250,7 +1252,7 @@ namespace TSKT.Mahjongs.Rounds
                     return false;
                 }
 
-                var tiles = AllUsedTiles.ToList();
+                var tiles = allUsedTiles.ToList();
                 var first = tiles[0];
                 if (!first.Is数牌())
                 {
@@ -1279,7 +1281,7 @@ namespace TSKT.Mahjongs.Rounds
         }
 
         readonly bool 四暗刻 => N暗刻(4);
-        readonly bool 清老頭 => AllUsedTiles.All(_ => _.Is数牌() && (_.Number() == 1 || _.Number() == 9));
+        readonly bool 清老頭 => allUsedTiles.All(_ => _.Is数牌() && (_.Number() == 1 || _.Number() == 9));
         readonly bool 四槓子 => 副露.Count(_ => _.槓子) == 4;
 
         readonly bool 国士無双
@@ -1319,7 +1321,7 @@ namespace TSKT.Mahjongs.Rounds
                         TileType.西,
                         TileType.北,
                     };
-                foreach (var it in AllUsedTiles)
+                foreach (var it in allUsedTiles)
                 {
                     requires.Remove(it);
                 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TSKT.Mahjongs.Rounds;
 using TSKT.Mahjongs.Hands;
+using System.Buffers;
 
 namespace TSKT.Mahjongs
 {
@@ -101,17 +102,29 @@ namespace TSKT.Mahjongs
             var meld = new 副露(quadTiles);
             副露.Add(meld);
         }
-        
+
         public TileType[] Get和了牌()
+        {
+            var writer = new ArrayBufferWriter<TileType>();
+            Get和了牌(writer);
+            return writer.WrittenSpan.ToArray();
+        }
+        public void Get和了牌(IBufferWriter<TileType> writer)
         {
             if (!向聴数IsLessThanOrEqual(0))
             {
-                return System.Array.Empty<TileType>();
+                return;
             }
-            return Get有効牌();
+            Get有効牌(writer);
+        }
+        public TileType[] Get有効牌()
+        {
+            var writer = new ArrayBufferWriter<TileType>();
+            Get有効牌(writer);
+            return writer.WrittenSpan.ToArray();
         }
 
-        public TileType[] Get有効牌()
+        public void Get有効牌(IBufferWriter<TileType> writer)
         {
             var currentScore = new Solution(this).向聴数;
             var tilesToCheck = new List<TileType>();
@@ -154,7 +167,6 @@ namespace TSKT.Mahjongs
             }
 
             var allTilesInHand = AllTiles.ToArray();
-            var result = new List<TileType>();
             foreach (var tile in tilesToCheck.Distinct())
             {
                 // 手牌内で4枚使っている場合は待ち牌扱いにしない
@@ -168,11 +180,10 @@ namespace TSKT.Mahjongs
                 clone.tiles.Add(new Tile(0, tile, false));
                 if (clone.向聴数IsLessThan(currentScore))
                 {
-                    result.Add(tile);
+                    writer.GetSpan(1)[0] = tile;
+                    writer.Advance(1);
                 }
             }
-
-            return result.ToArray();
         }
 
         public bool Discarding => tiles.Count % 3 == 2;

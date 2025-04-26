@@ -6,7 +6,7 @@ using TSKT.Mahjongs.Rounds;
 
 namespace TSKT.Mahjongs.Hands
 {
-    public class Solution
+    public readonly struct Solution
     {
         public readonly int 向聴数;
         public readonly Structure[] structures;
@@ -16,7 +16,7 @@ namespace TSKT.Mahjongs.Hands
             (向聴数, structures) = Structure.Build(hand);
         }
 
-        public 和了 Choice和了(Player player,
+        public readonly 和了 Choice和了(Player player,
             TileType newTileInHand,
             Player? ronTarget,
             bool 嶺上,
@@ -48,7 +48,7 @@ namespace TSKT.Mahjongs.Hands
                 handCap: player.局.game.rule.役満複合);
         }
 
-        public 和了 Choice和了(TileType newTileInHand, TileType ownWind, TileType roundWind,
+        public readonly 和了 Choice和了(TileType newTileInHand, TileType ownWind, TileType roundWind,
             Player? ronTarget,
             bool riichi,
             bool doubleRiichi,

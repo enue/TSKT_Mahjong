@@ -83,7 +83,7 @@ namespace TSKT.Mahjongs.Commands
             }
         }
 
-        readonly public TileType[] TilesToShowWhenOpenRiichi
+        public readonly TileType[] TilesToShowWhenOpenRiichi
         {
             get
             {

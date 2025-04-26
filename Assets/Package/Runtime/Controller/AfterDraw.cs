@@ -38,7 +38,7 @@ namespace TSKT.Mahjongs
             if (newTileInHand != null)
             {
                 handSolution = DrawPlayer.手牌.Solve();
-                if (handSolution.向聴数 == -1)
+                if (handSolution.Value.向聴数 == -1)
                 {
                     canツモ上がり = !和了.役無し;
                 }
@@ -53,7 +53,7 @@ namespace TSKT.Mahjongs
                 {
                     throw new System.NullReferenceException();
                 }
-                return handSolution!.Choice和了(DrawPlayer, newTileInHand.type,
+                return handSolution.Value.Choice和了(DrawPlayer, newTileInHand.type,
                     ronTarget: null,
                     嶺上: 嶺上,
                     海底: !嶺上 && (局.壁牌.tiles.Count == 0),
